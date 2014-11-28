@@ -24,8 +24,9 @@ public class plugin implements Plugin<Project> {
         project.ext.addAPTReq = { artifactMap ->
             project.artifactMaps << [(artifactMap.name): artifactMap]
         }
-        project.task("copyInAPTThings", dependsOn: 'cleanCopyInAPTThings') {
-            description "Copies apt libraries to an appropriate directory for adding to eclipse."
+        project.task("copyInAPTThings") {
+            mustRunAfter 'cleanCopyInAPTThings'
+            description "Copies apt libraries to an appropriate directory for adding to Eclipse."
             ext.outputDir = "libs/apt"
             inputs.files(project.configurations.compile)
             outputs.dir(outputDir)
@@ -43,6 +44,29 @@ public class plugin implements Plugin<Project> {
                         from it
                     }
                     into outputDir
+                }
+            }
+        }
+
+        project.task("writeFactoryPathFile", dependsOn: 'copyInAPTThings') {
+            description "Writes the factory path for Eclipse"
+            ext.outputFile = ".factorypath"
+            inputs.file(project.copyInAPTThings.outputs.getFiles().iterator().next())
+            outputs.file(outputFile)
+            doLast {
+                def cwd = new File(".").getAbsoluteFile().getParentFile().getAbsolutePath()
+                def xml = ''
+                inputs.getFiles().each { dir ->
+                    dir.listFiles().each { file ->
+                        def relToHere = file.toString().replace(cwd, "/${project.name}").replace('\\', '/')
+                        xml = "${xml}    <factorypathentry kind=\"WKSPJAR\" id=\"${relToHere}\" enabled=\"true\" runInBatchMode=\"false\"/>\n"
+                    }
+                }
+                xml = '<factorypath>\n' + xml + '</factorypath>'
+                outputs.getFiles().each { file ->
+                    file.withWriter { w ->
+                        w.writeLine(xml)
+                    }
                 }
             }
         }
