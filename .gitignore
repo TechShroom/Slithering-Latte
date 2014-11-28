@@ -15,3 +15,6 @@ build/
 # custom
 .build/
 *.log*
+/.apt_generated/
+
+*.factorypath
