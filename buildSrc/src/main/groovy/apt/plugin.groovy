@@ -71,6 +71,6 @@ public class plugin implements Plugin<Project> {
             }
         }
 
-        project.eclipseClasspath.dependsOn(project.copyInAPTThings)
+        project.eclipseClasspath.dependsOn(project.writeFactoryPathFile)
     }
 }
