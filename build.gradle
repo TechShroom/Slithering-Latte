@@ -4,15 +4,6 @@ version = ext.version = "1.0.0"
 apply plugin: 'java'
 apply from: 'util.gradle', to: project
 
-if (!project.hasJDK6RT()) {
-    throw new RuntimeException("Need to know where your JDK6 rt.jar is! " +
-    "(set JAVA6_HOME to a jdk6 home or set JDK6_RT to the rt.jar)")
-}
-
-// token: a54f9f87121b530f4a918f7b156efb2c259ff0db
-
-// ext.oauth = "a54f9f87121b530f4a918f7b156efb2c259ff0db"
-
 apply from: 'github.gradle', to: project
 
 void add(item, value) {
@@ -21,17 +12,18 @@ void add(item, value) {
     }
 }
 
-// java 6 compat
-compileJava.sourceCompatibility = '1.6'
-compileJava.targetCompatibility = '1.6'
-compileJava.options.bootClasspath = getJDK6RT()
-
 apply plugin: 'eclipse'
 
+// java 8 compat
+ext.eclipse18='org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
+eclipse.classpath.containers.clear()
+eclipse.classpath.containers eclipse18
+compileJava.sourceCompatibility = '1.8'
+compileJava.targetCompatibility = '1.8'
 eclipse {
     jdt {
-        sourceCompatibility = 1.6
-        targetCompatibility = 1.6
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
     }
 }
 
