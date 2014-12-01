@@ -8,10 +8,12 @@ import java.io.Writer;
 import java.nio.file.Files;
 
 import com.techshroom.slitheringlatte.Options;
+import com.techshroom.slitheringlatte.codeobjects.SavableCodeContainer;
 
 final class FilePythonCodeContainer
-        extends StreamPythonCodeContainer {
+        extends StreamPythonCodeContainer implements SavableCodeContainer {
     private final File file;
+    private boolean closed;
 
     FilePythonCodeContainer(String file) throws FileNotFoundException {
         super(new FileReader(file));
@@ -20,6 +22,9 @@ final class FilePythonCodeContainer
 
     @Override
     public boolean save() {
+        if (closed) {
+            throw new IllegalStateException("closed");
+        }
         try (Writer writer = Files.newBufferedWriter(file.toPath())) {
             writer.write(getAllCode());
             return true;
@@ -28,6 +33,15 @@ final class FilePythonCodeContainer
                 e.printStackTrace();
             }
             return false;
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            super.close();
+        } finally {
+            closed = true;
         }
     }
 }

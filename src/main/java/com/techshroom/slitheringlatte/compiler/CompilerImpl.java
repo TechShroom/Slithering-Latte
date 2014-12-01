@@ -2,6 +2,7 @@ package com.techshroom.slitheringlatte.compiler;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.techshroom.slitheringlatte.EmptyArray;
 import com.techshroom.slitheringlatte.codeobjects.JavaCodeContainer;
 import com.techshroom.slitheringlatte.codeobjects.PythonCodeContainer;
 import com.techshroom.slitheringlatte.codeobjects.generators.PythonCodeFactory;
@@ -35,6 +36,9 @@ public class CompilerImpl implements Compiler {
 
     @Override
     public JavaCodeContainer[] generateJavaCode() {
-        return null;
+        if (python.isLoadable()) {
+            python.asLoadable().get().load();
+        }
+        return EmptyArray.of(JavaCodeContainer.class).get();
     }
 }

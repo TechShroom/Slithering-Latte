@@ -1,6 +1,8 @@
 package com.techshroom.slitheringlatte.codeobjects;
 
+import java.io.Closeable;
 import java.util.Collection;
+import java.util.Optional;
 
 import com.techshroom.slitheringlatte.EmptyArray;
 
@@ -9,7 +11,7 @@ import com.techshroom.slitheringlatte.EmptyArray;
  * 
  * @author Kenzie Togami
  */
-public interface CodeContainer {
+public interface CodeContainer extends Closeable {
     /**
      * Get the language this code is.
      * 
@@ -18,16 +20,44 @@ public interface CodeContainer {
     Language language();
 
     /**
-     * Load the code into the container.
+     * Check if this container has a loading source.
+     * 
+     * @return {@code this instanceof }{@link LoadableCodeContainer}
      */
-    void load();
+    default boolean isLoadable() {
+        return this instanceof LoadableCodeContainer;
+    }
 
     /**
-     * Save the code currently contained.
+     * Try to get this container as a loadable container.
      * 
-     * @return {@code true} if the code was saved, {@code false} otherwise.
+     * @return an Optional of this container if it is loadable,
+     *         {@link Optional#empty()} otherwise.
      */
-    boolean save();
+    default Optional<LoadableCodeContainer> asLoadable() {
+        return isLoadable() ? Optional.of((LoadableCodeContainer) this)
+                          : Optional.empty();
+    }
+
+    /**
+     * Check if this container has a saving target.
+     * 
+     * @return {@code this instanceof }{@link SavableCodeContainer}
+     */
+    default boolean isSavable() {
+        return this instanceof SavableCodeContainer;
+    }
+
+    /**
+     * Try to get this container as a savable container.
+     * 
+     * @return an Optional of this container if it is savable,
+     *         {@link Optional#empty()} otherwise.
+     */
+    default Optional<SavableCodeContainer> asSavable() {
+        return isSavable() ? Optional.of((SavableCodeContainer) this)
+                          : Optional.empty();
+    }
 
     /**
      * Get all the lines of code in this container.
@@ -42,7 +72,7 @@ public interface CodeContainer {
      * @return the lines of code as a array of Strings
      */
     default String[] getLinesArray() {
-        return getLines().toArray(EmptyArray.STRING);
+        return getLines().toArray(EmptyArray.STRING.get());
     }
 
     /**

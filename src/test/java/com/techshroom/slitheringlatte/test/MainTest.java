@@ -1,5 +1,7 @@
 package com.techshroom.slitheringlatte.test;
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import com.techshroom.slitheringlatte.Main;
