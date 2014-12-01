@@ -1,9 +1,10 @@
 package com.techshroom.slitheringlatte.test;
 
-import static org.junit.Assert.*;
+import java.io.InputStream;
 
 import org.junit.Test;
 
+import com.google.common.io.ByteSource;
 import com.techshroom.slitheringlatte.Main;
 
 /**
@@ -20,6 +21,10 @@ public class MainTest {
      */
     @Test
     public void compilesPython() throws Exception {
+        InputStream restore = System.in;
+        System.setIn(ByteSource.wrap("".getBytes()).openBufferedStream());
         Main.main("-", "-");
+        System.in.close();
+        System.setIn(restore);
     }
 }
