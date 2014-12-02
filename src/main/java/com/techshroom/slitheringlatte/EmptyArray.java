@@ -2,6 +2,7 @@ package com.techshroom.slitheringlatte;
 
 import java.lang.reflect.Array;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -31,9 +32,8 @@ public final class EmptyArray<T> {
                                 Iterable<? extends Class<?>> keys) {
                             return StreamSupport
                                     .stream(keys.spliterator(), false)
-                                    .collect(Collectors
-                                                     .<Class<?>, Class<?>, EmptyArray<?>> toMap(x -> x,
-                                                                                                this::load));
+                                    .collect(Collectors.toMap(Function.<Class<?>> identity(),
+                                                              this::load));
                         }
                     });
     /**
