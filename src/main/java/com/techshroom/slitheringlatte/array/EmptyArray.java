@@ -12,7 +12,10 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 /**
- * Empty array storage.
+ * Empty array storage. Preferred to storing a
+ * {@code private static final T[] T_EMPTY_ARRAY} because the array can be
+ * shared across classes (provided the cache is not filling up) and are easily
+ * passed around with resorting to weird generics.
  * 
  * @author Kenzie Togami
  * @param <T>
