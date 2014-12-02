@@ -1,8 +1,10 @@
 package com.techshroom.slitheringlatte.compiler;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.techshroom.slitheringlatte.EmptyArray;
+import com.techshroom.slitheringlatte.array.EmptyArray;
 import com.techshroom.slitheringlatte.codeobjects.JavaCodeContainer;
 import com.techshroom.slitheringlatte.codeobjects.PythonCodeContainer;
 import com.techshroom.slitheringlatte.codeobjects.generators.PythonCodeFactory;
@@ -37,6 +39,7 @@ public class CompilerImpl implements Compiler {
     @Override
     public JavaCodeContainer[] generateJavaCode() {
         for (PythonCodeContainer python : pythonContainers) {
+            checkNotNull(python);
             if (python.isLoadable()) {
                 python.asLoadable().get().load();
             }

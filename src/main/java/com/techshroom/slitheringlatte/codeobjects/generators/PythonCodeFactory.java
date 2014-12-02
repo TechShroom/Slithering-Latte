@@ -3,6 +3,7 @@ package com.techshroom.slitheringlatte.codeobjects.generators;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.techshroom.slitheringlatte.Options;
+import com.techshroom.slitheringlatte.array.SingleArray;
 import com.techshroom.slitheringlatte.codeobjects.PythonCodeContainer;
 
 import java.io.File;
@@ -25,7 +26,7 @@ public interface PythonCodeFactory {
     default PythonCodeContainer[] fromStringDescriptor(String descriptor) {
         checkNotNull(descriptor);
         if (descriptor.equals(Options.STREAM)) {
-            return new PythonCodeContainer[] { fromStream() };
+            return SingleArray.of(fromStream(), PythonCodeContainer.class);
         } else {
             return fromStringDescriptors(descriptor.split(Pattern
                     .quote(File.pathSeparator)));

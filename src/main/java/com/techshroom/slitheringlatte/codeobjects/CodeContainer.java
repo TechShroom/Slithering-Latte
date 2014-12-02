@@ -4,7 +4,7 @@ import java.io.Closeable;
 import java.util.Collection;
 import java.util.Optional;
 
-import com.techshroom.slitheringlatte.EmptyArray;
+import com.techshroom.slitheringlatte.array.EmptyArray;
 
 /**
  * A container for code.

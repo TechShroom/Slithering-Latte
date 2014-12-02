@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-import com.techshroom.slitheringlatte.EmptyArray;
+import com.techshroom.slitheringlatte.array.EmptyArray;
 import com.techshroom.slitheringlatte.codeobjects.PythonCodeContainer;
 
 /**

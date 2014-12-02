@@ -42,17 +42,12 @@ ext.assetArchiveDir = ".build/lib-base"
 ext.assetArchiveDestDir = ".build/lib-all"
 ext.aName = 'upload-' + project.version + '.zip'
 
-def mvalist = []
-
-subprojects {
-    task moveAssets (type: Copy, dependsOn: ["build"]) {
-        from 'build/libs'
-        into project.getParent().file(project.getParent().assetArchiveDir)
-    }
-    mvalist.add(project.moveAssets)
+task moveAssets (type: Copy, dependsOn: ["build"]) {
+    from 'build/libs'
+    into project.file(project.assetArchiveDir)
 }
 
-task _zipassets(type: Zip, dependsOn: mvalist) {
+task _zipassets(type: Zip, dependsOn: 'moveAssets') {
     from project.assetArchiveDir
     archiveName = project.aName
     destinationDir = project.file(project.assetArchiveDestDir)
