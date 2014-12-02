@@ -14,7 +14,7 @@ import com.techshroom.slitheringlatte.codeobjects.generators.PythonCodeFactory;
  */
 public class CompilerImpl implements Compiler {
     private final String inSrc, outTarget;
-    private final PythonCodeContainer python;
+    private final PythonCodeContainer[] pythonContainers;
 
     /**
      * Create a new compiler implementation.
@@ -31,13 +31,15 @@ public class CompilerImpl implements Compiler {
             @Named("outputTarget") String out, PythonCodeFactory factory) {
         inSrc = in;
         outTarget = out;
-        python = factory.fromStringDescriptor(in);
+        pythonContainers = factory.fromStringDescriptor(in);
     }
 
     @Override
     public JavaCodeContainer[] generateJavaCode() {
-        if (python.isLoadable()) {
-            python.asLoadable().get().load();
+        for (PythonCodeContainer python : pythonContainers) {
+            if (python.isLoadable()) {
+                python.asLoadable().get().load();
+            }
         }
         return EmptyArray.of(JavaCodeContainer.class).get();
     }

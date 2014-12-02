@@ -1,7 +1,12 @@
 package com.techshroom.slitheringlatte.codeobjects.generators;
 
-import com.techshroom.slitheringlatte.codeobjects.PythonCodeContainer;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.techshroom.slitheringlatte.Options;
+import com.techshroom.slitheringlatte.codeobjects.PythonCodeContainer;
+
+import java.io.File;
+import java.util.regex.Pattern;
 
 /**
  * Factory for generating a PythonCodeContainer.
@@ -10,11 +15,36 @@ import com.techshroom.slitheringlatte.Options;
  */
 public interface PythonCodeFactory {
     /**
-     * Creates a new container from the given string.
+     * Creates a new array of containers from the given string.
      * 
-     * @param s
-     *            - a descriptor, either {@link Options#STREAM} or a file
-     * @return a new PythonCodeContainer
+     * @param descriptor
+     *            - a descriptor, either {@link Options#STREAM} or a
+     *            file/directory list separated by {@link File#pathSeparator}.
+     * @return the new code containers
      */
-    PythonCodeContainer fromStringDescriptor(String s);
+    default PythonCodeContainer[] fromStringDescriptor(String descriptor) {
+        checkNotNull(descriptor);
+        if (descriptor.equals(Options.STREAM)) {
+            return new PythonCodeContainer[] { fromStream() };
+        } else {
+            return fromStringDescriptors(descriptor.split(Pattern
+                    .quote(File.pathSeparator)));
+        }
+    }
+
+    /**
+     * Creates a new code container from the standard input stream.
+     * 
+     * @return the new code container
+     */
+    PythonCodeContainer fromStream();
+
+    /**
+     * Creates a new array of containers from the given strings.
+     * 
+     * @param descriptors
+     *            - a list of files and directories
+     * @return the new code containers
+     */
+    PythonCodeContainer[] fromStringDescriptors(String... descriptors);
 }
