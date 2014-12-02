@@ -29,10 +29,11 @@ public final class EmptyArray<T> {
                         @Override
                         public Map<Class<?>, EmptyArray<?>> loadAll(
                                 Iterable<? extends Class<?>> keys) {
-                            return StreamSupport.stream(keys.spliterator(),
-                                                        false)
-                                    .collect(Collectors.toMap(x -> x,
-                                                              this::load));
+                            return StreamSupport
+                                    .stream(keys.spliterator(), false)
+                                    .collect(Collectors
+                                                     .<Class<?>, Class<?>, EmptyArray<?>> toMap(x -> x,
+                                                                                                this::load));
                         }
                     });
     /**
