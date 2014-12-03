@@ -44,7 +44,7 @@ repositories {
      failOnVersionConflict()
 
      // force certain versions of dependencies (including transitive)
-     force 'com.google.auto.service:auto-service:1.0-SNAPSHOT', 'com.google.guava:guava:18.0', 'com.squareup:javawriter:2.5.0'
+     force 'com.google.auto.service:auto-service:1.0-rc2', 'com.google.guava:guava:18.0', 'com.squareup:javawriter:2.5.0'
 
      cacheDynamicVersionsFor 10, 'minutes'
      // don't cache changing modules at all
@@ -61,8 +61,8 @@ dependencies {
     addAPTReqWComp group: 'com.google.guava', name: 'guava', version: '18.0'
     addAPTReqWComp group: 'com.squareup', name: 'javawriter', version: '2.5.0'
     addAPT group: 'com.google.auto.factory', name: 'auto-factory', version: '1.0-SNAPSHOT'
-    addAPT group: 'com.google.auto.service', name: 'auto-service', version: '1.0-SNAPSHOT'
-    addAPT group: 'com.google.auto.value', name: 'auto-value', version: '1.0-SNAPSHOT'
+    addAPT group: 'com.google.auto.service', name: 'auto-service', version: '1.0-rc2'
+    addAPT group: 'com.google.auto.value', name: 'auto-value', version: '1.0-rc2'
     addAPTReq name: 'aopalliance'
     addAPTReq name: 'asm'
     addAPTReq name: 'auto-value'
