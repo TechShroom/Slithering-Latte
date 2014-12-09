@@ -9,6 +9,8 @@ import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
 import com.techshroom.slitheringlatte.codeobjects.JavaCodeContainer;
+import com.techshroom.slitheringlatte.codeobjects.generators.CodeFactory;
+import com.techshroom.slitheringlatte.codeobjects.generators.CodeFactoryImpl;
 import com.techshroom.slitheringlatte.codeobjects.generators.PythonCodeFactory;
 import com.techshroom.slitheringlatte.codeobjects.generators.PythonCodeFactoryImpl;
 import com.techshroom.slitheringlatte.compiler.Compiler;
@@ -32,6 +34,7 @@ public class Main {
         @Override
         protected void configure() {
             bind(PythonCodeFactory.class).to(PythonCodeFactoryImpl.class);
+            bind(CodeFactory.class).to(CodeFactoryImpl.class);
             bind(Compiler.class).to(CompilerImpl.class);
         }
 
