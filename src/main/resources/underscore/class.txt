@@ -1,0 +1,3 @@
+Interface marker for __%s__'s Java equivalent, {@link #%s()}.
+
+@author Kenzie Togami

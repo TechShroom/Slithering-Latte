@@ -100,7 +100,7 @@ public class Main {
     public static void main(String[] args) {
         Options opt = Options.INSTANCE;
         OptionSet options = opt.parse(args);
-        main(options.valueOf(opt.inputOpt()), options.valueOf(opt.outputOpt()));
+        main(opt.inputOpt().value(options), opt.outputOpt().value(options));
     }
 
     /**

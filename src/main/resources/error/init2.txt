@@ -1,0 +1,5 @@
+Creates a new $L with the given arguments.
+
+@param message
+           - the message. The arguments are also set to a tuple of the
+           message

@@ -1,35 +1,36 @@
 ext.FTP_USER="ket1999"
 version = ext.version = "1.0.0"
 
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+        maven {
+            url "http://techshroom.github.io/downloads/maven"
+        }
+    }
+    
+    configurations.all {
+        resolutionStrategy {
+            cacheChangingModulesFor 0, 'seconds'
+        }
+    }
+    dependencies {
+        classpath group: 'com.techshroom', name: 'Aversion', version: '1.0.1-SNAPSHOT'
+    }
+}
+
 apply plugin: 'java'
-apply from: 'util.gradle', to: project
-
-apply from: 'github.gradle', to: project
-
-void add(item, value) {
-    if (item.key != value) {
-        item.value.add(value)
-    }
-}
-
 apply plugin: 'eclipse'
+apply plugin: 'aversion-util'
+apply plugin: 'aversion-maven'
+apply plugin: 'aversion-apt'
 
-// java 8 compat
-ext.eclipse18='org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
-eclipse.classpath.containers.clear()
-eclipse.classpath.containers eclipse18
-compileJava.sourceCompatibility = '1.8'
-compileJava.targetCompatibility = '1.8'
-eclipse {
-    jdt {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
-    }
+util {
+    javaVersion = '1.8'
 }
-
-// eclipse bug workaround
-task reeclipse(dependsOn: ['cleanEclipseClasspath', 'eclipse'])
-apply plugin: 'apt2'
 
 repositories {
     mavenCentral()
@@ -37,32 +38,34 @@ repositories {
         url "https://oss.sonatype.org/content/repositories/snapshots/"
     }
 }
- configurations.all {
+configurations.all {
    resolutionStrategy {
      // fail eagerly on version conflict (includes transitive dependencies)
      // e.g. multiple different versions of the same dependency (group and name are equal)
      failOnVersionConflict()
 
      // force certain versions of dependencies (including transitive)
-     force 'com.google.auto.service:auto-service:1.0-rc2', 'com.google.guava:guava:18.0', 'com.squareup:javawriter:2.5.0'
+     force 'com.google.auto.service:auto-service:1.0-rc2', 'com.google.guava:guava:18.0'
 
      cacheDynamicVersionsFor 10, 'minutes'
      // don't cache changing modules at all
      cacheChangingModulesFor 0, 'seconds'
    }
- }
+}
  
 dependencies {
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.0.2'
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.0.2'
     compile group: 'net.sf.jopt-simple', name: 'jopt-simple', version: '4.7'
     compile group: 'com.google.code.gson', name: 'gson', version: '2.3'
-    compile 'com.google.inject:guice:3.0'
+    compile group: 'com.google.inject', name: 'guice', version: '3.0'
+    compile group: 'com.squareup', name: 'javapoet', version: '1.1.0-SNAPSHOT'
+    compile group: 'com.squareup.okio', name: 'okio', version: '1.3.0-SNAPSHOT'
+    compile group: 'org.jsoup', name: 'jsoup', version: '1.8.1'
     addAPTReqWComp group: 'com.google.guava', name: 'guava', version: '18.0'
-    addAPTReqWComp group: 'com.squareup', name: 'javawriter', version: '2.5.0'
     addAPT group: 'com.google.auto.factory', name: 'auto-factory', version: '1.0-SNAPSHOT'
     addAPT group: 'com.google.auto.service', name: 'auto-service', version: '1.0-rc2'
-    addAPT group: 'com.google.auto.value', name: 'auto-value', version: '1.0-rc2'
+    addAPT group: 'com.google.auto.value', name: 'auto-value', version: '1.1-SNAPSHOT'
     addAPTReq name: 'aopalliance'
     addAPTReq name: 'asm'
     addAPTReq name: 'auto-value'
@@ -71,12 +74,9 @@ dependencies {
     addAPTReq name: 'commons-collections'
     addAPTReq name: 'commons-lang'
     addAPTReq name: 'dagger'
+    addAPTReq name: 'javawriter'
     addAPTReq name: 'javax.inject'
     addAPTReq name: 'velocity'
 
     testCompile group: 'junit', name: 'junit', version: '4.+'
-}
-
-if (_hasProperty("TRAVIS") && _property("TRAVIS").toBoolean()) {
-    apply from: 'travis.gradle', to: project
 }
