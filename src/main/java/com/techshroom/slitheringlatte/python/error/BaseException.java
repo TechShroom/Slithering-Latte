@@ -3,10 +3,6 @@ package com.techshroom.slitheringlatte.python.error;
 import java.util.regex.Pattern;
 
 import com.techshroom.slitheringlatte.python.Tuple;
-import com.techshroom.slitheringlatte.python.string.PythonLikeString;
-import com.techshroom.slitheringlatte.python.string.PythonString;
-import com.techshroom.slitheringlatte.python.underscore.ReprSupported;
-import com.techshroom.slitheringlatte.python.underscore.StrSupported;
 
 /**
  * The base class for all built-in exceptions. It is not meant to be directly
@@ -18,7 +14,7 @@ import com.techshroom.slitheringlatte.python.underscore.StrSupported;
  * @author Kenzie Togami
  */
 public class BaseException
-        extends RuntimeException implements StrSupported, ReprSupported {
+        extends RuntimeException {
     private static final long serialVersionUID = 1131936802208300547L;
     private static final Pattern DOT = Pattern.compile(".", Pattern.LITERAL);
 
@@ -43,9 +39,9 @@ public class BaseException
     public BaseException(Object... args) {
         this.args = Tuple.create(args);
         if (this.args.size() == 1
-                && this.args.get(0) instanceof PythonLikeString) {
+                && this.args.get(0) instanceof String) {
             // message
-            message = StrSupported.str(this.args.get(0)).toString();
+            message = this.args.get(0).toString();
         } else {
             message = null;
         }
@@ -76,12 +72,12 @@ public class BaseException
         return this;
     }
 
-    @Override
-    public PythonLikeString repr() {
-        return PythonString.wrapString(DOT.splitAsStream(getClass().getName())
+    @SuppressWarnings("javadoc")
+    public String repr() {
+        return DOT.splitAsStream(getClass().getName())
                 .reduce((id, current) -> current)
                 .orElseThrow(() -> new IllegalStateException("no class name?"))
-                + args);
+                + args;    
     }
 
     @Override
@@ -92,7 +88,7 @@ public class BaseException
             case 1:
                 return String.valueOf(args.get(0));
             default:
-                return StrSupported.str(args).toString();
+                return args.toString();
         }
     }
     

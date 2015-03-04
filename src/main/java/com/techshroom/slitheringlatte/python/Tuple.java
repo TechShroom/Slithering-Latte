@@ -3,17 +3,13 @@ package com.techshroom.slitheringlatte.python;
 import java.util.AbstractList;
 import java.util.stream.Collectors;
 
-import com.techshroom.slitheringlatte.python.underscore.LenSupported;
-import com.techshroom.slitheringlatte.python.underscore.ReprSupported;
-
 /**
  * Tuple implementation in Java.
  * 
  * @author Kenzie Togami
  */
 public final class Tuple
-        extends AbstractList<Object> implements ReprSupported.ReprStrSupported,
-        LenSupported {
+        extends AbstractList<Object> {
     final Object[] contents;
 
     /**
@@ -32,7 +28,7 @@ public final class Tuple
         contents = from;
     }
 
-    @Override
+    @SuppressWarnings("javadoc")
     public int len() {
         return size();
     }
@@ -53,9 +49,9 @@ public final class Tuple
             case 0:
                 return "()";
             case 1:
-                return "(" + ReprSupported.repr(get(0)) + ",)";
+                return "(" + get(0) + ",)";
             default:
-                return stream().map(ReprSupported::repr)
+                return stream().map(String::valueOf)
                         .collect(Collectors.joining(", ", "(", ")"));
         }
     }
