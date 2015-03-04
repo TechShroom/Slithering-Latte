@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 
-import com.techshroom.slitheringlatte.Options;
 import com.techshroom.slitheringlatte.codeobjects.SavableCodeContainer;
 
 final class FilePythonCodeContainer
@@ -29,9 +28,6 @@ final class FilePythonCodeContainer
             writer.write(getAllCode());
             return true;
         } catch (IOException e) {
-            if (Options.DEBUG) {
-                e.printStackTrace();
-            }
             return false;
         }
     }

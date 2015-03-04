@@ -1,10 +1,10 @@
 package com.techshroom.slitheringlatte.codeobjects.generators;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
-import com.techshroom.slitheringlatte.NotCloseable;
 import com.techshroom.slitheringlatte.codeobjects.JavaCodeContainer;
 
 /**
@@ -13,8 +13,7 @@ import com.techshroom.slitheringlatte.codeobjects.JavaCodeContainer;
  * @author Kenzie Togami
  */
 @AutoValue
-public abstract class StringJavaCodeContainer implements JavaCodeContainer,
-        NotCloseable {
+public abstract class StringJavaCodeContainer implements JavaCodeContainer {
     /**
      * Wrap the given lines in a code container. Please use
      * {@link CodeFactory#wrap(Collection, com.techshroom.slitheringlatte.codeobjects.Language)}
@@ -30,5 +29,9 @@ public abstract class StringJavaCodeContainer implements JavaCodeContainer,
     }
 
     StringJavaCodeContainer() {
+    }
+    
+    @Override
+    public void close() throws IOException {
     }
 }

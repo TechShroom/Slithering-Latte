@@ -6,8 +6,6 @@ import java.util.Collection;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.CharStreams;
-import com.techshroom.slitheringlatte.Options;
-import com.techshroom.slitheringlatte.array.GenerateArray;
 import com.techshroom.slitheringlatte.codeobjects.LoadableCodeContainer;
 import com.techshroom.slitheringlatte.codeobjects.PythonCodeContainer;
 
@@ -27,14 +25,13 @@ class StreamPythonCodeContainer implements PythonCodeContainer,
             data = CharStreams.toString(source);
         } catch (IOException e) {
             System.err.println("Couldn't load " + source);
-            if (Options.DEBUG) {
-                e.printStackTrace();
-            }
             data = "raise Error('Not compiled')";
             dataAsColl = ImmutableList.of(data);
             return false;
         }
-        dataAsColl = ImmutableList.copyOf(GenerateArray.ofLinesInString(data));
+        // disabled as irrelevant
+        // dataAsColl =
+        // ImmutableList.copyOf(GenerateArray.ofLinesInString(data));
         return true;
     }
 

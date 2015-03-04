@@ -4,8 +4,6 @@ import java.io.Closeable;
 import java.util.Collection;
 import java.util.Optional;
 
-import com.techshroom.slitheringlatte.array.EmptyArray;
-
 /**
  * A container for code.
  * 
@@ -72,7 +70,7 @@ public interface CodeContainer extends Closeable {
      * @return the lines of code as a array of Strings
      */
     default String[] getLinesArray() {
-        return getLines().toArray(EmptyArray.STRING.get());
+        return getLines().toArray(new String[0]);
     }
 
     /**
