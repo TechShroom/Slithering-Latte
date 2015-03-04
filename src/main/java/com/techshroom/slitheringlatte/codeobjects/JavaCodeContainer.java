@@ -7,7 +7,7 @@ package com.techshroom.slitheringlatte.codeobjects;
  */
 public interface JavaCodeContainer extends CodeContainer {
     @Override
-    default public Language language() {
+    default public Language<JavaCodeContainer> language() {
         return Language.JAVA;
     }
 }
