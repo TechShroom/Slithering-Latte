@@ -70,6 +70,6 @@ public class CompilerImpl implements Compiler {
 
     private JavaCodeContainer generateJavaCode(PythonCodeContainer python) {
         String java = "";
-        return (JavaCodeContainer) factory.wrap(java, Language.JAVA);
+        return factory.wrap(java, Language.JAVA);
     }
 }

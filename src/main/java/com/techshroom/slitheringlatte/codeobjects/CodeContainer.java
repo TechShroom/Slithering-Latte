@@ -17,7 +17,7 @@ public interface CodeContainer extends Closeable {
      * 
      * @return a Language object represent this codes type.
      */
-    Language language();
+    Language<? extends CodeContainer> language();
 
     /**
      * Check if this container has a loading source.

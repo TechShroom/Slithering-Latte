@@ -14,26 +14,26 @@ import com.techshroom.slitheringlatte.codeobjects.Language;
  */
 public class CodeFactoryImpl implements CodeFactory {
     @Override
-    public CodeContainer wrap(String code, Language language) {
+    public <CType extends CodeContainer> CType wrap(String code,
+            Language<CType> language) {
         return wrap(GenerateArray.ofLinesInString(code), language);
     }
 
     @Override
-    public CodeContainer wrap(String[] code, Language language) {
+    public <CType extends CodeContainer> CType wrap(String[] code,
+            Language<CType> language) {
         return wrap(ImmutableList.copyOf(code), language);
     }
 
     @Override
-    public CodeContainer wrap(Collection<String> code, Language language) {
-        switch (language) {
-            case JAVA:
-                return StringJavaCodeContainer.wrap(code);
-            case PYTHON:
-                return StringPythonCodeContainer.wrap(code);
-            default:
-                throw new UnsupportedOperationException("unhandled language "
-                        + language);
+    public <CType extends CodeContainer> CType wrap(Collection<String> code,
+            Language<CType> language) {
+        CType container = language.getConstructorFunction().apply(code);
+        if (container == null) {
+            throw new UnsupportedOperationException("Uknown language "
+                    + language.getName() + ".");
         }
+        return container;
     }
 
 }

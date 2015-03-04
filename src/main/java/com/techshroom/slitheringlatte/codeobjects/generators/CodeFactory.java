@@ -20,7 +20,8 @@ public interface CodeFactory {
      *            - the language of the code
      * @return a new code container wrapping the given values.
      */
-    CodeContainer wrap(String code, Language language);
+    <CType extends CodeContainer> CType wrap(String code,
+            Language<CType> language);
 
     /**
      * Creates a new code container wrapping the given values.
@@ -32,7 +33,8 @@ public interface CodeFactory {
      *            - the language of the code
      * @return a new code container wrapping the given values.
      */
-    CodeContainer wrap(String[] code, Language language);
+    <CType extends CodeContainer> CType wrap(String[] code,
+            Language<CType> language);
 
     /**
      * Creates a new code container wrapping the given values.
@@ -44,5 +46,6 @@ public interface CodeFactory {
      *            - the language of the code
      * @return a new code container wrapping the given values.
      */
-    CodeContainer wrap(Collection<String> code, Language language);
+    <CType extends CodeContainer> CType wrap(Collection<String> code,
+            Language<CType> language);
 }
