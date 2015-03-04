@@ -7,7 +7,7 @@ package com.techshroom.slitheringlatte.codeobjects;
  */
 public interface PythonCodeContainer extends CodeContainer {
     @Override
-    default public Language language() {
+    default public Language<? extends PythonCodeContainer> language() {
         return Language.PYTHON;
     }
 }
