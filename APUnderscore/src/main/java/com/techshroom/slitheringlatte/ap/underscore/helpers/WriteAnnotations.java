@@ -24,7 +24,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import com.techshroom.slitheringlatte.ap.underscore.annotations.UnderscoreAnnotation;
+import com.techshroom.slitheringlatte.ap.underscore.annotations.UnderscoreAttribute;
 import com.techshroom.slitheringlatte.ap.underscore.annotations.Writable;
 
 /**
@@ -47,7 +47,8 @@ public final class WriteAnnotations {
             return;
         }
         try (Stream<String> lines = Files.lines(annotationData)) {
-            lines.filter(x -> !x.startsWith("#"))
+            lines.map(String::trim)
+                    .filter(x -> !(x.startsWith("#") || x.isEmpty()))
                     .forEach(WriteAnnotations::writeAnnotation);
         } catch (IOException e) {
             e.printStackTrace();
@@ -73,6 +74,8 @@ public final class WriteAnnotations {
                                .build()).build();
     private static final AnnotationSpec WRITABLE_ANNOTATION = AnnotationSpec
             .builder(Writable.class).build();
+    private static final AnnotationSpec UNDERSCORE_ANNOTATION = AnnotationSpec
+            .builder(UnderscoreAttribute.class).build();
     private static final String PACKAGE =
             "com.techshroom.slitheringlatte.ap.underscore.annotations";
 
@@ -107,8 +110,7 @@ public final class WriteAnnotations {
                 TypeSpec.annotationBuilder(name).addModifiers(Modifier.PUBLIC);
         annot.addAnnotation(TARGET_ANNOTATION);
         annot.addAnnotation(RETENTION_ANNOTATION);
-        AnnotationSpec.Builder underscore =
-                AnnotationSpec.builder(UnderscoreAnnotation.class);
+        AnnotationSpec.Builder underscore = UNDERSCORE_ANNOTATION.toBuilder();
         if (lineOpts.has(PYTHON_NAME)) {
             underscore.addMember("pythonName", "$S",
                                  PYTHON_NAME.value(lineOpts));
