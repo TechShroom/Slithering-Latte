@@ -8,6 +8,9 @@ import java.lang.annotation.Target;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -24,6 +27,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
+import com.techshroom.slitheringlatte.ap.underscore.annotations.PseudoType;
 import com.techshroom.slitheringlatte.ap.underscore.annotations.UnderscoreAttribute;
 import com.techshroom.slitheringlatte.ap.underscore.annotations.Writable;
 
@@ -47,9 +51,35 @@ public final class WriteAnnotations {
             return;
         }
         try (Stream<String> lines = Files.lines(annotationData)) {
-            lines.map(String::trim)
-                    .filter(x -> !(x.startsWith("#") || x.isEmpty()))
-                    .forEach(WriteAnnotations::writeAnnotation);
+            List<String> uncollapsed =
+                    lines.map(String::trim)
+                            .filter(x -> !(x.startsWith("#") || x.isEmpty()))
+                            .collect(Collectors.toList());
+            for (int i = 0; i < uncollapsed.size(); i++) {
+                String current = uncollapsed.get(i);
+                int startLine = i + 1;
+                while (!current.endsWith(";")) {
+                    i++;
+                    if (i >= uncollapsed.size()) {
+                        IllegalStateException throwing =
+                                new IllegalStateException(
+                                        "Missing semi-colon starting at line "
+                                                + startLine);
+                        throwing.setStackTrace(Stream
+                                .concat(Arrays.asList(new StackTraceElement(
+                                                              "config",
+                                                              "annotations",
+                                                              "annotations.txt",
+                                                              startLine))
+                                                .stream(),
+                                        Arrays.stream(throwing.getStackTrace()))
+                                .toArray(StackTraceElement[]::new));
+                        throw throwing;
+                    }
+                    current += uncollapsed.get(i);
+                }
+                writeAnnotation(current.substring(0, current.length() - 1));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,6 +106,8 @@ public final class WriteAnnotations {
             .builder(Writable.class).build();
     private static final AnnotationSpec UNDERSCORE_ANNOTATION = AnnotationSpec
             .builder(UnderscoreAttribute.class).build();
+    private static final AnnotationSpec PSEUDOTYPE_ANNOTATION = AnnotationSpec
+            .builder(PseudoType.class).build();
     private static final String PACKAGE =
             "com.techshroom.slitheringlatte.ap.underscore.annotations";
 
@@ -83,7 +115,14 @@ public final class WriteAnnotations {
     private static final OptionParser PARSER = new OptionParser();
     private static final ArgumentAcceptingOptionSpec<String> JAVA_NAME = PARSER
             .acceptsAll(ImmutableList.of("n", "name"),
-                        "Name of the Java annotation.").withRequiredArg();
+                        "Name of the Java annotation.").withRequiredArg()
+            .required();
+    private static final ArgumentAcceptingOptionSpec<String> SUPERTYPES =
+            PARSER.acceptsAll(ImmutableList.of("s", "supertype"),
+                              "'Supertypes' of annotation, "
+                                      + "actually just applied meta-annotations.")
+                    .withRequiredArg().withValuesSeparatedBy(',')
+                    .defaultsTo(new String[0]);
     private static final ArgumentAcceptingOptionSpec<String> PYTHON_NAME =
             PARSER.acceptsAll(ImmutableList.of("p", "python-name"),
                               "Name of the Java annotation.").withRequiredArg();
@@ -91,12 +130,6 @@ public final class WriteAnnotations {
             .acceptsAll(ImmutableList.of("w", "writable"),
                         "Boolean value for writing.").withOptionalArg()
             .ofType(Boolean.class).defaultsTo(true);
-    private static final ArgumentAcceptingOptionSpec<String> SUPERTYPES =
-            PARSER.acceptsAll(ImmutableList.of("s", "supertype"),
-                              "'Supertypes' of annotation, "
-                                      + "actually just applied meta-annotations.")
-                    .withRequiredArg().withValuesSeparatedBy(',')
-                    .defaultsTo(new String[0]);
 
     private static void writeAnnotation(String line) {
         OptionSet lineOpts =
@@ -106,21 +139,33 @@ public final class WriteAnnotations {
         String name = JAVA_NAME.value(lineOpts);
         boolean isWritable =
                 lineOpts.has(WRITABLE) ? WRITABLE.value(lineOpts) : false;
+        boolean isPseudoType = lineOpts.has(SUPERTYPES);
         TypeSpec.Builder annot =
                 TypeSpec.annotationBuilder(name).addModifiers(Modifier.PUBLIC);
         annot.addAnnotation(TARGET_ANNOTATION);
         annot.addAnnotation(RETENTION_ANNOTATION);
-        AnnotationSpec.Builder underscore = UNDERSCORE_ANNOTATION.toBuilder();
-        if (lineOpts.has(PYTHON_NAME)) {
-            underscore.addMember("pythonName", "$S",
-                                 PYTHON_NAME.value(lineOpts));
-        }
-        annot.addAnnotation(underscore.build());
-        if (isWritable) {
-            annot.addAnnotation(WRITABLE_ANNOTATION);
-        }
-        for (String superAnnotation : SUPERTYPES.values(lineOpts)) {
-            annot.addAnnotation(ClassName.get(PACKAGE, superAnnotation));
+        if (!isPseudoType) {
+            AnnotationSpec.Builder underscore =
+                    UNDERSCORE_ANNOTATION.toBuilder();
+            if (lineOpts.has(PYTHON_NAME)) {
+                underscore.addMember("pythonName", "$S",
+                                     PYTHON_NAME.value(lineOpts));
+            }
+            annot.addAnnotation(underscore.build());
+            if (isWritable) {
+                annot.addAnnotation(WRITABLE_ANNOTATION);
+            }
+        } else {
+            if (lineOpts.has(WRITABLE)) {
+                System.err.println("Ignoring writable for name " + name);
+            }
+            if (lineOpts.has(PYTHON_NAME)) {
+                System.err.println("Ignoring python name for name " + name);
+            }
+            annot.addAnnotation(PSEUDOTYPE_ANNOTATION);
+            for (String superAnnotation : SUPERTYPES.values(lineOpts)) {
+                annot.addAnnotation(ClassName.get(PACKAGE, superAnnotation));
+            }
         }
         JavaFile out =
                 JavaFile.builder(PACKAGE, annot.build()).indent("    ")
