@@ -1,10 +1,6 @@
 package com.techshroom.slitheringlatte.ap.underscore.helpers;
 
 import java.io.IOException;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,12 +20,12 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import com.techshroom.slitheringlatte.ap.underscore.annotations.PseudoType;
-import com.techshroom.slitheringlatte.ap.underscore.annotations.UnderscoreAttribute;
-import com.techshroom.slitheringlatte.ap.underscore.annotations.Writable;
+import com.techshroom.slitheringlatte.ap.underscore.annotations.PythonName;
+import com.techshroom.slitheringlatte.ap.underscore.interfaces.DunderAttribute;
+import com.techshroom.slitheringlatte.ap.underscore.interfaces.Writable;
 
 /**
  * Writes all annotations defined in the main resource,s
@@ -37,13 +33,12 @@ import com.techshroom.slitheringlatte.ap.underscore.annotations.Writable;
  * 
  * @author Kenzie Togami
  */
-public final class WriteAnnotations {
+final class WriteAnnotations {
     private static final Path BASE = Paths.get("src", "main");
     private static final Path RESOURCES = BASE.resolve("resources");
     private static final Path CODE = BASE.resolve("java");
     private static final Splitter SPACE = Splitter.on(' ');
 
-    @SuppressWarnings("javadoc")
     public static void main(String[] args) {
         Path annotationData =
                 RESOURCES.resolve(Paths.get("config", "annotations.txt"));
@@ -85,31 +80,11 @@ public final class WriteAnnotations {
         }
     }
 
-    private static final AnnotationSpec TARGET_ANNOTATION = AnnotationSpec
-            .builder(Target.class)
-            .addMember("value",
-                       "$T.$N",
-                       ElementType.class,
-                       FieldSpec.builder(ElementType.class, "ANNOTATION_TYPE")
-                               .build())
-            .addMember("value", "$T.$N", ElementType.class,
-                       FieldSpec.builder(ElementType.class, "METHOD").build())
-            .build();
-    private static final AnnotationSpec RETENTION_ANNOTATION = AnnotationSpec
-            .builder(Retention.class)
-            .addMember("value",
-                       "$T.$N",
-                       RetentionPolicy.class,
-                       FieldSpec.builder(RetentionPolicy.class, "SOURCE")
-                               .build()).build();
-    private static final AnnotationSpec WRITABLE_ANNOTATION = AnnotationSpec
-            .builder(Writable.class).build();
-    private static final AnnotationSpec UNDERSCORE_ANNOTATION = AnnotationSpec
-            .builder(UnderscoreAttribute.class).build();
-    private static final AnnotationSpec PSEUDOTYPE_ANNOTATION = AnnotationSpec
-            .builder(PseudoType.class).build();
+    private static final TypeName WRITABLE_TYPE = ClassName.get(Writable.class);
+    private static final TypeName UNDERSCORE_TYPE = ClassName
+            .get(DunderAttribute.class);
     private static final String PACKAGE =
-            "com.techshroom.slitheringlatte.ap.underscore.annotations";
+            "com.techshroom.slitheringlatte.ap.underscore.interfaces";
 
     // some parsing info...
     private static final OptionParser PARSER = new OptionParser();
@@ -141,19 +116,16 @@ public final class WriteAnnotations {
                 lineOpts.has(WRITABLE) ? WRITABLE.value(lineOpts) : false;
         boolean isPseudoType = lineOpts.has(SUPERTYPES);
         TypeSpec.Builder annot =
-                TypeSpec.annotationBuilder(name).addModifiers(Modifier.PUBLIC);
-        annot.addAnnotation(TARGET_ANNOTATION);
-        annot.addAnnotation(RETENTION_ANNOTATION);
+                TypeSpec.interfaceBuilder(name).addModifiers(Modifier.PUBLIC);
         if (!isPseudoType) {
-            AnnotationSpec.Builder underscore =
-                    UNDERSCORE_ANNOTATION.toBuilder();
             if (lineOpts.has(PYTHON_NAME)) {
-                underscore.addMember("pythonName", "$S",
-                                     PYTHON_NAME.value(lineOpts));
+                annot.addAnnotation(AnnotationSpec.builder(PythonName.class)
+                        .addMember("value", "$S", PYTHON_NAME.value(lineOpts))
+                        .build());
             }
-            annot.addAnnotation(underscore.build());
+            annot.addSuperinterface(UNDERSCORE_TYPE);
             if (isWritable) {
-                annot.addAnnotation(WRITABLE_ANNOTATION);
+                annot.addSuperinterface(WRITABLE_TYPE);
             }
         } else {
             if (lineOpts.has(WRITABLE)) {
@@ -162,9 +134,8 @@ public final class WriteAnnotations {
             if (lineOpts.has(PYTHON_NAME)) {
                 System.err.println("Ignoring python name for name " + name);
             }
-            annot.addAnnotation(PSEUDOTYPE_ANNOTATION);
             for (String superAnnotation : SUPERTYPES.values(lineOpts)) {
-                annot.addAnnotation(ClassName.get(PACKAGE, superAnnotation));
+                annot.addSuperinterface(ClassName.get(PACKAGE, superAnnotation));
             }
         }
         JavaFile out =
