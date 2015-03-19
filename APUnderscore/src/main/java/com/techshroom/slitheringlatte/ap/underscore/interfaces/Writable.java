@@ -5,5 +5,5 @@ package com.techshroom.slitheringlatte.ap.underscore.interfaces;
  * 
  * @author Kenzie Togami
  */
-public interface Writable {
+public interface Writable extends DunderAttribute {
 }

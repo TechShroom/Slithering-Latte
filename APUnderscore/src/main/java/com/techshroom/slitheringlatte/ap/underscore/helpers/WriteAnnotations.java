@@ -123,9 +123,10 @@ final class WriteAnnotations {
                         .addMember("value", "$S", PYTHON_NAME.value(lineOpts))
                         .build());
             }
-            annot.addSuperinterface(UNDERSCORE_TYPE);
             if (isWritable) {
                 annot.addSuperinterface(WRITABLE_TYPE);
+            } else {
+                annot.addSuperinterface(UNDERSCORE_TYPE);
             }
         } else {
             if (lineOpts.has(WRITABLE)) {
