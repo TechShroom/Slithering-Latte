@@ -1,5 +1,4 @@
 version = '1.0.0'
-project(':APUnderscore').version = '1.0.0'
 buildscript {
     repositories {
         mavenCentral()
@@ -20,8 +19,9 @@ buildscript {
         classpath group: 'com.techshroom', name: 'Aversion', version: '1.0.1-SNAPSHOT'
     }
 }
-allprojects {
+subprojects {
     ext.FTP_USER="ket1999"
+    version = rootProject.version
 
     apply plugin: 'java'
     apply plugin: 'eclipse'
@@ -83,7 +83,14 @@ allprojects {
     }
 }
 
-// only for SL root project
-dependencies {
-    addAPTProject project(':APUnderscore')
+project('Compiler') {
+    dependencies {
+        addAPTProject project(':APUnderscore')
+    }
 }
+
+['Compiler', 'APUnderscore'].each { project(it) {
+    dependencies {
+        compile project(':PythonImpl')
+    }
+}}

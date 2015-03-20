@@ -1,11 +1,14 @@
 package com.techshroom.slitheringlatte.ap.underscore.helpers;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -15,6 +18,8 @@ import javax.lang.model.element.Modifier;
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
+import joptsimple.ValueConverter;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -37,22 +42,36 @@ final class WriteAnnotations {
     private static final Path BASE = Paths.get("src", "main");
     private static final Path RESOURCES = BASE.resolve("resources");
     private static final Path CODE = BASE.resolve("java");
+    private static final Path ANNOTATION_SRC = RESOURCES.resolve(Paths
+            .get("config", "annotations.txt"));
     private static final Splitter SPACE = Splitter.on(' ');
 
+    private static void modExceptionTraceWithLine(Exception e, int line) {
+        StackTraceElement[] original = e.getStackTrace();
+        StackTraceElement[] expanded =
+                new StackTraceElement[original.length + 1];
+        System.arraycopy(original, 0, expanded, 1, original.length);
+        expanded[0] =
+                new StackTraceElement("config/annotations", "txt",
+                        ANNOTATION_SRC.toString().replace(File.separatorChar,
+                                                          '/'), line);
+        e.setStackTrace(expanded);
+    }
+
     public static void main(String[] args) {
-        Path annotationData =
-                RESOURCES.resolve(Paths.get("config", "annotations.txt"));
-        if (!Files.exists(annotationData)) {
+        if (!Files.exists(ANNOTATION_SRC)) {
             return;
         }
-        try (Stream<String> lines = Files.lines(annotationData)) {
+        try (Stream<String> lines = Files.lines(ANNOTATION_SRC)) {
+            List<String> unfiltered = lines.collect(Collectors.toList());
             List<String> uncollapsed =
-                    lines.map(String::trim)
+                    unfiltered.stream().map(String::trim)
                             .filter(x -> !(x.startsWith("#") || x.isEmpty()))
                             .collect(Collectors.toList());
             for (int i = 0; i < uncollapsed.size(); i++) {
                 String current = uncollapsed.get(i);
-                int startLine = i + 1;
+                // we don't preserve the # stuff
+                int startLine = unfiltered.indexOf(current) + 1;
                 while (!current.endsWith(";")) {
                     i++;
                     if (i >= uncollapsed.size()) {
@@ -60,20 +79,13 @@ final class WriteAnnotations {
                                 new IllegalStateException(
                                         "Missing semi-colon starting at line "
                                                 + startLine);
-                        throwing.setStackTrace(Stream
-                                .concat(Arrays.asList(new StackTraceElement(
-                                                              "config",
-                                                              "annotations",
-                                                              "annotations.txt",
-                                                              startLine))
-                                                .stream(),
-                                        Arrays.stream(throwing.getStackTrace()))
-                                .toArray(StackTraceElement[]::new));
+                        modExceptionTraceWithLine(throwing, startLine);
                         throw throwing;
                     }
                     current += uncollapsed.get(i);
                 }
-                writeAnnotation(current.substring(0, current.length() - 1));
+                writeAnnotation(current.substring(0, current.length() - 1),
+                                startLine);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -85,6 +97,56 @@ final class WriteAnnotations {
             .get(DunderAttribute.class);
     private static final String PACKAGE =
             "com.techshroom.slitheringlatte.ap.underscore.interfaces";
+
+    // parser converters
+    private static final ValueConverter<Class<?>> TO_CLASS =
+            new ClassConverter();
+
+    private static final class ClassConverter implements
+            ValueConverter<Class<?>> {
+        private final List<String> importedPackages = ImmutableList
+                .of("java.lang", "com.techshroom.slitheringlatte.python");
+
+        @Override
+        public Class<?> convert(String value) {
+            try {
+                return Class.forName(value);
+            } catch (ClassNotFoundException e) {
+                // try again with java.lang
+                Supplier<RuntimeException> exec =
+                        () -> new IllegalArgumentException(value, e);
+                if (value.indexOf('.') < 0) {
+                    return importedPackages.stream()
+                            .map(pack -> pack + '.' + value)
+                            .map(this::errorFreeConvert)
+                            .filter(Objects::nonNull).findFirst()
+                            .orElseThrow(exec);
+                } else {
+                    throw exec.get();
+                }
+            }
+        }
+
+        private final Class<?> errorFreeConvert(String value) {
+            try {
+                return Class.forName(value);
+            } catch (ClassNotFoundException ignored) {
+                return null;
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Class<? extends Class<?>> valueType() {
+            // sigh
+            return (Class<? extends Class<?>>) (Object) Class.class;
+        }
+
+        @Override
+        public String valuePattern() {
+            return "fully_qualifed_name";
+        }
+    };
 
     // some parsing info...
     private static final OptionParser PARSER = new OptionParser();
@@ -105,48 +167,84 @@ final class WriteAnnotations {
             .acceptsAll(ImmutableList.of("w", "writable"),
                         "Boolean value for writing.").withOptionalArg()
             .ofType(Boolean.class).defaultsTo(true);
+    private static final ArgumentAcceptingOptionSpec<String> ATTR_METHOD_NAME =
+            PARSER.acceptsAll(ImmutableList.of("a", "attribute-func-name"),
+                              "Name for the getter/setter function")
+                    .requiredUnless(PYTHON_NAME, SUPERTYPES).withRequiredArg();
+    private static final ArgumentAcceptingOptionSpec<Class<?>> ATTR_TYPE =
+            PARSER.acceptsAll(ImmutableList.of("t", "attribute-type"),
+                              "The type of the attribute").withRequiredArg()
+                    .withValuesConvertedBy(TO_CLASS).required();
+    private static final ArgumentAcceptingOptionSpec<String> ATTR_TYPE_GENERIC =
+            PARSER.acceptsAll(ImmutableList.of("g", "attribute-generic"),
+                              "The generic for the type of the attribute")
+                    .withRequiredArg().defaultsTo(null);
+    private static final ArgumentAcceptingOptionSpec<String> DEFAULT_VALUE_LITERAL =
+            PARSER.acceptsAll(ImmutableList.of("d", "default-value"),
+                              "The default value of the attribute")
+                    .withRequiredArg().required();
 
-    private static void writeAnnotation(String line) {
-        OptionSet lineOpts =
-                PARSER.parse(StreamSupport
-                        .stream(SPACE.split(line).spliterator(), false)
-                        .toArray(String[]::new));
-        String name = JAVA_NAME.value(lineOpts);
-        boolean isWritable =
-                lineOpts.has(WRITABLE) ? WRITABLE.value(lineOpts) : false;
-        boolean isPseudoType = lineOpts.has(SUPERTYPES);
-        TypeSpec.Builder annot =
-                TypeSpec.interfaceBuilder(name).addModifiers(Modifier.PUBLIC);
-        if (!isPseudoType) {
-            if (lineOpts.has(PYTHON_NAME)) {
-                annot.addAnnotation(AnnotationSpec.builder(PythonName.class)
-                        .addMember("value", "$S", PYTHON_NAME.value(lineOpts))
-                        .build());
-            }
-            if (isWritable) {
-                annot.addSuperinterface(WRITABLE_TYPE);
-            } else {
-                annot.addSuperinterface(UNDERSCORE_TYPE);
-            }
-        } else {
-            if (lineOpts.has(WRITABLE)) {
-                System.err.println("Ignoring writable for name " + name);
-            }
-            if (lineOpts.has(PYTHON_NAME)) {
-                System.err.println("Ignoring python name for name " + name);
-            }
-            for (String superAnnotation : SUPERTYPES.values(lineOpts)) {
-                annot.addSuperinterface(ClassName.get(PACKAGE, superAnnotation));
-            }
-        }
-        JavaFile out =
-                JavaFile.builder(PACKAGE, annot.build()).indent("    ")
-                        .skipJavaLangImports(true).addFileComment("").build();
+    private static void writeAnnotation(String line, int lineNumber) {
         try {
-            out.writeTo(CODE);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Failed on " + line);
+            OptionSet lineOpts =
+                    PARSER.parse(StreamSupport.stream(SPACE.split(line)
+                                                              .spliterator(),
+                                                      false)
+                            .toArray(String[]::new));
+            System.err.println(lineOpts.asMap());
+            String name = JAVA_NAME.value(lineOpts);
+            boolean isWritable =
+                    lineOpts.has(WRITABLE) ? WRITABLE.value(lineOpts) : false;
+            boolean isPseudoType = lineOpts.has(SUPERTYPES);
+            TypeSpec.Builder iface =
+                    TypeSpec.interfaceBuilder(name)
+                            .addModifiers(Modifier.PUBLIC);
+            if (!isPseudoType) {
+                if (lineOpts.has(PYTHON_NAME)) {
+                    iface.addAnnotation(AnnotationSpec
+                            .builder(PythonName.class)
+                            .addMember("value",
+                                       "$S",
+                                       PYTHON_NAME.value(lineOpts)).build());
+                }
+                if (isWritable) {
+                    iface.addSuperinterface(WRITABLE_TYPE);
+                } else {
+                    iface.addSuperinterface(UNDERSCORE_TYPE);
+                }
+
+            } else {
+                Stream<Entry<OptionSpec<?>, List<?>>> optStream =
+                        lineOpts.asMap()
+                                .entrySet()
+                                .stream()
+                                .filter(e -> e.getKey() != SUPERTYPES
+                                        && e.getKey() != JAVA_NAME
+                                        && lineOpts.has(e.getKey()))
+                                .onClose(() -> System.err.println("==Processing "
+                                        + name + "=="));
+                optStream.forEach(e -> System.err.println("Ignoring "
+                        + e.getKey() + "=" + e.getValue()));
+                optStream.close();
+                for (String superAnnotation : SUPERTYPES.values(lineOpts)) {
+                    iface.addSuperinterface(ClassName.get(PACKAGE,
+                                                          superAnnotation));
+                }
+            }
+            JavaFile out =
+                    JavaFile.builder(PACKAGE, iface.build()).indent("    ")
+                            .skipJavaLangImports(true).addFileComment("")
+                            .build();
+            try {
+                out.writeTo(CODE);
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("Failed on " + line + ":" + lineNumber);
+            }
+        } catch (Exception e) {
+            // failure to parse, try to insert line
+            modExceptionTraceWithLine(e, lineNumber);
+            throw e;
         }
     }
 

@@ -6,11 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Classes annotated with this annotation have a different name in Python.
+ * Targets annotated with this annotation have a different name in Python.
  * 
  * @author Kenzie Togami
  */
-@Target(ElementType.TYPE)
+@Target({ ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PythonName {
 
