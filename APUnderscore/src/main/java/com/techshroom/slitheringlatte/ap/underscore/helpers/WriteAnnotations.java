@@ -2,12 +2,14 @@ package com.techshroom.slitheringlatte.ap.underscore.helpers;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,6 +28,8 @@ import com.google.common.collect.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.techshroom.slitheringlatte.ap.underscore.annotations.PythonName;
@@ -65,7 +69,14 @@ final class WriteAnnotations {
         try (Stream<String> lines = Files.lines(ANNOTATION_SRC)) {
             List<String> unfiltered = lines.collect(Collectors.toList());
             List<String> uncollapsed =
-                    unfiltered.stream().map(String::trim)
+                    unfiltered.stream().map(x -> {
+                        int index = x.indexOf('#');
+                        if (index > -1) {
+                            return x.substring(0, index);
+                        } else {
+                            return x;
+                        }
+                    }).map(String::trim)
                             .filter(x -> !(x.startsWith("#") || x.isEmpty()))
                             .collect(Collectors.toList());
             for (int i = 0; i < uncollapsed.size(); i++) {
@@ -173,16 +184,17 @@ final class WriteAnnotations {
                     .requiredUnless(PYTHON_NAME, SUPERTYPES).withRequiredArg();
     private static final ArgumentAcceptingOptionSpec<Class<?>> ATTR_TYPE =
             PARSER.acceptsAll(ImmutableList.of("t", "attribute-type"),
-                              "The type of the attribute").withRequiredArg()
-                    .withValuesConvertedBy(TO_CLASS).required();
+                              "The type of the attribute")
+                    .requiredUnless(SUPERTYPES).withRequiredArg()
+                    .withValuesConvertedBy(TO_CLASS);
     private static final ArgumentAcceptingOptionSpec<String> ATTR_TYPE_GENERIC =
             PARSER.acceptsAll(ImmutableList.of("g", "attribute-generic"),
                               "The generic for the type of the attribute")
-                    .withRequiredArg().defaultsTo(null);
-    private static final ArgumentAcceptingOptionSpec<String> DEFAULT_VALUE_LITERAL =
-            PARSER.acceptsAll(ImmutableList.of("d", "default-value"),
-                              "The default value of the attribute")
-                    .withRequiredArg().required();
+                    .withRequiredArg().defaultsTo(new String[] {});
+
+    private static <T> Optional<T> argOpt(OptionSpec<T> opt, OptionSet opts) {
+        return Optional.ofNullable(opts.valueOf(opt));
+    }
 
     private static void writeAnnotation(String line, int lineNumber) {
         try {
@@ -191,7 +203,6 @@ final class WriteAnnotations {
                                                               .spliterator(),
                                                       false)
                             .toArray(String[]::new));
-            System.err.println(lineOpts.asMap());
             String name = JAVA_NAME.value(lineOpts);
             boolean isWritable =
                     lineOpts.has(WRITABLE) ? WRITABLE.value(lineOpts) : false;
@@ -207,12 +218,32 @@ final class WriteAnnotations {
                                        "$S",
                                        PYTHON_NAME.value(lineOpts)).build());
                 }
+
+                String methodName =
+                        argOpt(ATTR_METHOD_NAME, lineOpts)
+                                .orElseGet(argOpt(PYTHON_NAME, lineOpts)::get);
+                Supplier<MethodSpec.Builder> base =
+                        () -> MethodSpec
+                                .methodBuilder(methodName)
+                                .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT);
+                TypeName attributeType = generateTypeName(lineOpts);
                 if (isWritable) {
                     iface.addSuperinterface(WRITABLE_TYPE);
+                    MethodSpec setter =
+                            base.get()
+                                    .addParameter(attributeType, methodName)
+                                    .addCode("throw new $T($S);\n",
+                                             UnsupportedOperationException.class,
+                                             methodName + " not implemented")
+                                    .build();
+                    iface.addMethod(setter);
                 } else {
                     iface.addSuperinterface(UNDERSCORE_TYPE);
                 }
-
+                MethodSpec getter =
+                        base.get().returns(attributeType)
+                                .addCode("return null;\n").build();
+                iface.addMethod(getter);
             } else {
                 Stream<Entry<OptionSpec<?>, List<?>>> optStream =
                         lineOpts.asMap()
@@ -246,6 +277,18 @@ final class WriteAnnotations {
             modExceptionTraceWithLine(e, lineNumber);
             throw e;
         }
+    }
+
+    private static TypeName generateTypeName(OptionSet lineOpts) {
+        Class<?> attrType = ATTR_TYPE.value(lineOpts);
+        if (!lineOpts.has(ATTR_TYPE_GENERIC)) {
+            return ClassName.get(attrType);
+        }
+        List<String> generic = ATTR_TYPE_GENERIC.values(lineOpts);
+        return ParameterizedTypeName.get(attrType,
+                                         generic.stream()
+                                                 .map(TO_CLASS::convert)
+                                                 .toArray(Type[]::new));
     }
 
     private WriteAnnotations() {

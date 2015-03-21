@@ -1,0 +1,24 @@
+# callable objects
+-n DocumentationAttribute -p __doc__ -w -t String;
+-n NameAttribute -p __name__ -w -t String;
+-n QualifiedNameAttribute -p __qualname__ -w -t String;
+-n ModuleNameAttribute -p __module__ -w -t String;
+-n DefaultArgsAttribute -p __defualts__ -w -t Tuple;
+-n CompiledCodeAttribute -p __code__ -w -t String;
+-n GlobalsAttribute -p __global__ -t java.util.Map;
+-n AttributeDictionaryAttribute -p __dict__ -w -t java.util.Map;
+-n ClosureVariablesAttribute -p __closure__ -t Tuple;
+-n ParameterAnnotationsAttribute -p __annotations__ -w -t java.util.Map;
+-n KeywordDefaultsAttribute -p __kwdefaults__ -w -t java.util.Map;
+-n CallableType -s DocumentationAttribute,NameAttribute,QualifiedNameAttribute,
+                ModuleNameAttribute,DefaultArgsAttribute,CompiledCodeAttribute,
+                GlobalsAttribute,AttributeDictionaryAttribute,
+                ClosureVariablesAttribute,ParameterAnnotationsAttribute,KeywordDefaultsAttribute;
+
+# instance methods, or bound methods (really bound callables)
+-n BoundSelfParameterAttribute -p __self__ -t Object;
+-n BoundFunctionAttribute -p __func__ -t Object; # actually Function
+# DocumentationAttribute defined above
+# ModuleNameAttribute defined above
+-n BoundCallableType -s BoundSelfParameterAttribute,BoundFunctionAttribute,
+                        DocumentationAttribute,ModuleNameAttribute;
