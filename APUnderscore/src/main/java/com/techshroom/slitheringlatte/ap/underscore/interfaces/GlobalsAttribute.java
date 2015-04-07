@@ -4,8 +4,8 @@ import com.techshroom.slitheringlatte.ap.underscore.annotations.PythonName;
 import java.util.Map;
 
 @PythonName("__global__")
-public interface GlobalsAttribute extends DunderAttribute {
-    default Map __global__() {
+public interface GlobalsAttribute<K, V> extends DunderAttribute {
+    default Map<K, V> global() {
         return null;
     }
 }

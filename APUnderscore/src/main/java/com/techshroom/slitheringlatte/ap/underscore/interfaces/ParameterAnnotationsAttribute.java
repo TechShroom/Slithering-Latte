@@ -4,12 +4,12 @@ import com.techshroom.slitheringlatte.ap.underscore.annotations.PythonName;
 import java.util.Map;
 
 @PythonName("__annotations__")
-public interface ParameterAnnotationsAttribute extends Writable {
-    default void __annotations__(Map __annotations__) {
-        throw new UnsupportedOperationException("__annotations__ not implemented");
+public interface ParameterAnnotationsAttribute<K, V> extends Writable {
+    default void annotations(Map<K, V> annotations) {
+        throw new UnsupportedOperationException("annotations not implemented");
     }
 
-    default Map __annotations__() {
+    default Map<K, V> annotations() {
         return null;
     }
 }

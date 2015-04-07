@@ -4,7 +4,7 @@ import com.techshroom.slitheringlatte.ap.underscore.annotations.PythonName;
 
 @PythonName("__func__")
 public interface BoundFunctionAttribute extends DunderAttribute {
-    default Object __func__() {
+    default Object func() {
         return null;
     }
 }

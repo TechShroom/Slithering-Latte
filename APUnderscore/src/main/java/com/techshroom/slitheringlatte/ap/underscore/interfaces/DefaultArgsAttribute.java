@@ -5,11 +5,11 @@ import com.techshroom.slitheringlatte.python.Tuple;
 
 @PythonName("__defualts__")
 public interface DefaultArgsAttribute extends Writable {
-    default void __defualts__(Tuple __defualts__) {
-        throw new UnsupportedOperationException("__defualts__ not implemented");
+    default void defualts(Tuple defualts) {
+        throw new UnsupportedOperationException("defualts not implemented");
     }
 
-    default Tuple __defualts__() {
+    default Tuple defualts() {
         return null;
     }
 }

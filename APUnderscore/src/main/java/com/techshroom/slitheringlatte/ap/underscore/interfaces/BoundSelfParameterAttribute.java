@@ -4,7 +4,7 @@ import com.techshroom.slitheringlatte.ap.underscore.annotations.PythonName;
 
 @PythonName("__self__")
 public interface BoundSelfParameterAttribute extends DunderAttribute {
-    default Object __self__() {
+    default Object self() {
         return null;
     }
 }

@@ -4,11 +4,11 @@ import com.techshroom.slitheringlatte.ap.underscore.annotations.PythonName;
 
 @PythonName("__name__")
 public interface NameAttribute extends Writable {
-    default void __name__(String __name__) {
-        throw new UnsupportedOperationException("__name__ not implemented");
+    default void name(String name) {
+        throw new UnsupportedOperationException("name not implemented");
     }
 
-    default String __name__() {
+    default String name() {
         return null;
     }
 }

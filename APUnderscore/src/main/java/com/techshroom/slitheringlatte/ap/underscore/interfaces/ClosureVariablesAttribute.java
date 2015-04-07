@@ -5,7 +5,7 @@ import com.techshroom.slitheringlatte.python.Tuple;
 
 @PythonName("__closure__")
 public interface ClosureVariablesAttribute extends DunderAttribute {
-    default Tuple __closure__() {
+    default Tuple closure() {
         return null;
     }
 }
