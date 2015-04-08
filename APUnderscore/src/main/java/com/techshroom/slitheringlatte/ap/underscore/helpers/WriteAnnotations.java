@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -52,9 +53,8 @@ final class WriteAnnotations {
 
 	private static void modExceptionTraceWithLine(Exception e, int line) {
 		StackTraceElement[] original = e.getStackTrace();
-		StackTraceElement[] expanded = new StackTraceElement[original.length + 1];
-		System.arraycopy(original, 0, expanded, 1, original.length);
-		expanded[0] = new StackTraceElement("config/annotations", "txt",
+		StackTraceElement[] expanded =  Arrays.copyOf(original, original.length + 1);
+		expanded[original.length] = new StackTraceElement("config/annotations", "txt",
 				ANNOTATION_SRC.toString().replace(File.separatorChar, '/'),
 				line);
 		e.setStackTrace(expanded);
@@ -220,23 +220,18 @@ final class WriteAnnotations {
 								() -> argOpt(PYTHON_NAME, lineOpts).map(
 										s -> s.replace("__", "")).get());
 				Supplier<MethodSpec.Builder> base = () -> MethodSpec
-						.methodBuilder(methodName).addModifiers(
-								Modifier.PUBLIC, Modifier.DEFAULT);
+						.methodBuilder(methodName)
+						.addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT);
 				TypeName attributeType = generateTypeName(lineOpts);
 				if (isWritable) {
 					iface.addSuperinterface(WRITABLE_TYPE);
-					MethodSpec setter = base
-							.get()
-							.addParameter(attributeType, methodName)
-							.addCode("throw new $T($S);\n",
-									UnsupportedOperationException.class,
-									methodName + " not implemented").build();
+					MethodSpec setter = base.get()
+							.addParameter(attributeType, methodName).build();
 					iface.addMethod(setter);
 				} else {
 					iface.addSuperinterface(UNDERSCORE_TYPE);
 				}
-				MethodSpec getter = base.get().returns(attributeType)
-						.addCode("return null;\n").build();
+				MethodSpec getter = base.get().returns(attributeType).build();
 				iface.addMethod(getter);
 			} else {
 				Stream<Entry<OptionSpec<?>, List<?>>> optStream = lineOpts

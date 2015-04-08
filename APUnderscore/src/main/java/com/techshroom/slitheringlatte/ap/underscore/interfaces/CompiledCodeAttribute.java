@@ -4,11 +4,7 @@ import com.techshroom.slitheringlatte.ap.underscore.annotations.PythonName;
 
 @PythonName("__code__")
 public interface CompiledCodeAttribute extends Writable {
-    default void code(String code) {
-        throw new UnsupportedOperationException("code not implemented");
-    }
+    void code(String code);
 
-    default String code() {
-        return null;
-    }
+    String code();
 }

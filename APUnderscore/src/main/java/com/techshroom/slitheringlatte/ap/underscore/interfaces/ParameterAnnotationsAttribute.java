@@ -5,11 +5,7 @@ import java.util.Map;
 
 @PythonName("__annotations__")
 public interface ParameterAnnotationsAttribute<K, V> extends Writable {
-    default void annotations(Map<K, V> annotations) {
-        throw new UnsupportedOperationException("annotations not implemented");
-    }
+    void annotations(Map<K, V> annotations);
 
-    default Map<K, V> annotations() {
-        return null;
-    }
+    Map<K, V> annotations();
 }

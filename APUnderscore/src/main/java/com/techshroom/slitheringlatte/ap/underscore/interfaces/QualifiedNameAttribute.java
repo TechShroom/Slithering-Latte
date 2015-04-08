@@ -4,11 +4,7 @@ import com.techshroom.slitheringlatte.ap.underscore.annotations.PythonName;
 
 @PythonName("__qualname__")
 public interface QualifiedNameAttribute extends Writable {
-    default void qualname(String qualname) {
-        throw new UnsupportedOperationException("qualname not implemented");
-    }
+    void qualname(String qualname);
 
-    default String qualname() {
-        return null;
-    }
+    String qualname();
 }

@@ -11,9 +11,10 @@
 -n ParameterAnnotationsAttribute -p __annotations__ -w -t java.util.Map -g K,V;
 -n KeywordDefaultsAttribute -p __kwdefaults__ -w -t java.util.Map -g K,V;
 -n CallableType -s DocumentationAttribute,NameAttribute,QualifiedNameAttribute,
-                ModuleNameAttribute,DefaultArgsAttribute,CompiledCodeAttribute,
-                GlobalsAttribute,AttributeDictionaryAttribute,
-                ClosureVariablesAttribute,ParameterAnnotationsAttribute,KeywordDefaultsAttribute;
+                   ModuleNameAttribute,DefaultArgsAttribute,CompiledCodeAttribute,
+                   GlobalsAttribute,AttributeDictionaryAttribute,
+                   ClosureVariablesAttribute,ParameterAnnotationsAttribute,
+                   KeywordDefaultsAttribute;
 
 # instance methods, or bound methods (really bound callables)
 -n BoundSelfParameterAttribute -p __self__ -t Object;
@@ -22,3 +23,17 @@
 # ModuleNameAttribute defined above
 -n BoundCallableType -s BoundSelfParameterAttribute,BoundFunctionAttribute,
                         DocumentationAttribute,ModuleNameAttribute;
+
+# builtins
+# DocumentationAttribute defined above
+# NameAttribute defined above
+# ModuleNameAttribute defined above
+-n BuiltinMethodType -s DocumentationAttribute,NameAttribute,ModuleNameAttribute;
+
+# bound builtins
+# DocumentationAttribute defined above
+# NameAttribute defined above
+# BoundSelfParameterAttribute defined above
+# ModuleNameAttribute defined above
+-n BuiltinMethodType -s DocumentationAttribute,NameAttribute,BoundSelfParameterAttribute,
+                        ModuleNameAttribute;

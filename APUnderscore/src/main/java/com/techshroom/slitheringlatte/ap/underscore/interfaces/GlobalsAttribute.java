@@ -5,7 +5,5 @@ import java.util.Map;
 
 @PythonName("__global__")
 public interface GlobalsAttribute<K, V> extends DunderAttribute {
-    default Map<K, V> global() {
-        return null;
-    }
+    Map<K, V> global();
 }

@@ -5,11 +5,7 @@ import java.util.Map;
 
 @PythonName("__dict__")
 public interface AttributeDictionaryAttribute<K, V> extends Writable {
-    default void dict(Map<K, V> dict) {
-        throw new UnsupportedOperationException("dict not implemented");
-    }
+    void dict(Map<K, V> dict);
 
-    default Map<K, V> dict() {
-        return null;
-    }
+    Map<K, V> dict();
 }
