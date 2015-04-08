@@ -199,6 +199,10 @@ final class WriteIntefaces {
 					"The generic for the type of the attribute")
 			.withRequiredArg().withValuesSeparatedBy(',')
 			.defaultsTo(new String[] {});
+	private static final ArgumentAcceptingOptionSpec<Boolean> GENERIC_SHARED = PARSER
+			.acceptsAll(ImmutableList.of("share-generic"),
+					"Boolean value for sharing the generic of the type.")
+			.withOptionalArg().ofType(Boolean.class).defaultsTo(true);
 
 	private static <T> Optional<T> argOpt(OptionSpec<T> opt, OptionSet opts) {
 		return Optional.ofNullable(opts.valueOf(opt));
@@ -224,17 +228,19 @@ final class WriteIntefaces {
 									PYTHON_NAME.value(lineOpts)).build());
 				}
 
-				iface.addTypeVariables(generics.stream()
-						.map(TypeVariableName::get)
-						.collect(Collectors.toList()));
+				if (GENERIC_SHARED.value(lineOpts)) {
+					iface.addTypeVariables(generics.stream()
+							.map(TypeVariableName::get)
+							.collect(Collectors.toList()));
+				}
 
 				String methodName = argOpt(ATTR_METHOD_NAME, lineOpts)
 						.orElseGet(
 								() -> argOpt(PYTHON_NAME, lineOpts).map(
 										s -> s.replace("__", "")).get());
 				Supplier<MethodSpec.Builder> base = () -> {
-					MethodSpec.Builder b = MethodSpec.methodBuilder(methodName).addModifiers(
-							Modifier.PUBLIC, Modifier.ABSTRACT);
+					MethodSpec.Builder b = MethodSpec.methodBuilder(methodName)
+							.addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT);
 					if (lineOpts.has(OVERRIDES) && OVERRIDES.value(lineOpts)) {
 						b.addAnnotation(Override.class);
 					}
