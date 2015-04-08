@@ -25,6 +25,7 @@ import joptsimple.ValueConverter;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
+import com.google.common.primitives.Primitives;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
@@ -53,10 +54,11 @@ final class WriteIntefaces {
 
 	private static void modExceptionTraceWithLine(Exception e, int line) {
 		StackTraceElement[] original = e.getStackTrace();
-		StackTraceElement[] expanded =  Arrays.copyOf(original, original.length + 1);
-		expanded[original.length] = new StackTraceElement("config/interfaces", "txt",
-				INTERFACE_SRC.toString().replace(File.separatorChar, '/'),
-				line);
+		StackTraceElement[] expanded = Arrays.copyOf(original,
+				original.length + 1);
+		expanded[original.length] = new StackTraceElement("config/interfaces",
+				"txt", INTERFACE_SRC.toString()
+						.replace(File.separatorChar, '/'), line);
 		e.setStackTrace(expanded);
 	}
 
@@ -114,12 +116,19 @@ final class WriteIntefaces {
 
 		@Override
 		public Class<?> convert(String value) {
+			Supplier<RuntimeException> exec = () -> new IllegalArgumentException(
+					value + " is not a class");
+			if (Primitives.allPrimitiveTypes().stream().map(Class::getName)
+					.anyMatch(s -> s.equals(value))) {
+				// primitive type!
+				return Primitives.allPrimitiveTypes().stream()
+						.filter(c -> c.getName().equals(value)).findFirst()
+						.orElseThrow(exec);
+			}
 			try {
 				return Class.forName(value);
 			} catch (ClassNotFoundException e) {
 				// try again with java.lang
-				Supplier<RuntimeException> exec = () -> new IllegalArgumentException(
-						value, e);
 				if (value.indexOf('.') < 0) {
 					return importedPackages.stream()
 							.map(pack -> pack + '.' + value)
@@ -173,6 +182,10 @@ final class WriteIntefaces {
 			.acceptsAll(ImmutableList.of("w", "writable"),
 					"Boolean value for writing.").withOptionalArg()
 			.ofType(Boolean.class).defaultsTo(true);
+	private static final ArgumentAcceptingOptionSpec<Boolean> OVERRIDES = PARSER
+			.acceptsAll(ImmutableList.of("o", "overrides"),
+					"Boolean value for overriding.").withOptionalArg()
+			.ofType(Boolean.class).defaultsTo(true);
 	private static final ArgumentAcceptingOptionSpec<String> ATTR_METHOD_NAME = PARSER
 			.acceptsAll(ImmutableList.of("a", "attribute-func-name"),
 					"Name for the getter/setter function")
@@ -219,9 +232,14 @@ final class WriteIntefaces {
 						.orElseGet(
 								() -> argOpt(PYTHON_NAME, lineOpts).map(
 										s -> s.replace("__", "")).get());
-				Supplier<MethodSpec.Builder> base = () -> MethodSpec
-						.methodBuilder(methodName)
-						.addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT);
+				Supplier<MethodSpec.Builder> base = () -> {
+					MethodSpec.Builder b = MethodSpec.methodBuilder(methodName).addModifiers(
+							Modifier.PUBLIC, Modifier.ABSTRACT);
+					if (lineOpts.has(OVERRIDES) && OVERRIDES.value(lineOpts)) {
+						b.addAnnotation(Override.class);
+					}
+					return b;
+				};
 				TypeName attributeType = generateTypeName(lineOpts);
 				if (isWritable) {
 					iface.addSuperinterface(WRITABLE_TYPE);
@@ -270,6 +288,9 @@ final class WriteIntefaces {
 
 	private static TypeName generateTypeName(OptionSet lineOpts) {
 		Class<?> attrType = ATTR_TYPE.value(lineOpts);
+		if (attrType.isPrimitive()) {
+			return TypeName.get(attrType);
+		}
 		ClassName cls = ClassName.get(attrType);
 		if (!lineOpts.has(ATTR_TYPE_GENERIC)) {
 			return ClassName.get(attrType);
