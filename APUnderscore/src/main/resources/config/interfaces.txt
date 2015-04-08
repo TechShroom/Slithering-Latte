@@ -1,3 +1,6 @@
+# all objects
+-n Identifiable -p id -a hashCode -t int -o;
+
 # callable objects
 -n DocumentationAttribute -p __doc__ -w -t String;
 -n NameAttribute -p __name__ -w -t String;
