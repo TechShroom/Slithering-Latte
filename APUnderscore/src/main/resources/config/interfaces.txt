@@ -1,5 +1,6 @@
 # all objects
--n Identifiable -p id -a hashCode -t int -o;
+# id is mapped to hashCode
+# type is matched to getClass
 
 # callable objects
 -n DocumentationAttribute -p __doc__ -w -t String;
@@ -8,11 +9,11 @@
 -n ModuleNameAttribute -p __module__ -w -t String;
 -n DefaultArgsAttribute -p __defualts__ -w -t Tuple;
 -n CompiledCodeAttribute -p __code__ -w -t String;
--n GlobalsAttribute -p __global__ -t java.util.Map -g K,V;
--n AttributeDictionaryAttribute -p __dict__ -w -t java.util.Map -g K,V;
+-n GlobalsAttribute -p __global__ -t java.util.Map -g K,V --share-generic;
+-n AttributeDictionaryAttribute -p __dict__ -w -t java.util.Map -g K,V --share-generic;
 -n ClosureVariablesAttribute -p __closure__ -t Tuple;
--n ParameterAnnotationsAttribute -p __annotations__ -w -t java.util.Map -g K,V;
--n KeywordDefaultsAttribute -p __kwdefaults__ -w -t java.util.Map -g K,V;
+-n ParameterAnnotationsAttribute -p __annotations__ -w -t java.util.Map -g K,V --share-generic;
+-n KeywordDefaultsAttribute -p __kwdefaults__ -w -t java.util.Map -g K,V --share-generic;
 -n CallableType -s DocumentationAttribute,NameAttribute,QualifiedNameAttribute,
                    ModuleNameAttribute,DefaultArgsAttribute,CompiledCodeAttribute,
                    GlobalsAttribute,AttributeDictionaryAttribute,
