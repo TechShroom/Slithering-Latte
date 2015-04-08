@@ -8,6 +8,9 @@
 .settings/
 bin/
 
+# (no) idea
+.idea
+
 # gradle
 .gradle/
 build/
@@ -15,6 +18,6 @@ build/
 # custom
 .build/
 *.log*
-/.apt_generated/
+.apt_generated
 
 *.factorypath
