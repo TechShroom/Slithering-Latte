@@ -43,28 +43,28 @@ import com.techshroom.slitheringlatte.ap.underscore.interfaces.Writable;
  * 
  * @author Kenzie Togami
  */
-final class WriteAnnotations {
+final class WriteIntefaces {
 	private static final Path BASE = Paths.get("src", "main");
 	private static final Path RESOURCES = BASE.resolve("resources");
 	private static final Path CODE = BASE.resolve("java");
-	private static final Path ANNOTATION_SRC = RESOURCES.resolve(Paths.get(
-			"config", "annotations.txt"));
+	private static final Path INTERFACE_SRC = RESOURCES.resolve(Paths.get(
+			"config", "interfaces.txt"));
 	private static final Splitter SPACE = Splitter.on(' ');
 
 	private static void modExceptionTraceWithLine(Exception e, int line) {
 		StackTraceElement[] original = e.getStackTrace();
 		StackTraceElement[] expanded =  Arrays.copyOf(original, original.length + 1);
-		expanded[original.length] = new StackTraceElement("config/annotations", "txt",
-				ANNOTATION_SRC.toString().replace(File.separatorChar, '/'),
+		expanded[original.length] = new StackTraceElement("config/interfaces", "txt",
+				INTERFACE_SRC.toString().replace(File.separatorChar, '/'),
 				line);
 		e.setStackTrace(expanded);
 	}
 
 	public static void main(String[] args) {
-		if (!Files.exists(ANNOTATION_SRC)) {
+		if (!Files.exists(INTERFACE_SRC)) {
 			return;
 		}
-		try (Stream<String> lines = Files.lines(ANNOTATION_SRC)) {
+		try (Stream<String> lines = Files.lines(INTERFACE_SRC)) {
 			List<String> unfiltered = lines.collect(Collectors.toList());
 			List<String> uncollapsed = unfiltered.stream().map(x -> {
 				int index = x.indexOf('#');
@@ -91,7 +91,7 @@ final class WriteAnnotations {
 					}
 					current += uncollapsed.get(i);
 				}
-				writeAnnotation(current.substring(0, current.length() - 1),
+				writeInterface(current.substring(0, current.length() - 1),
 						startLine);
 			}
 		} catch (IOException e) {
@@ -191,7 +191,7 @@ final class WriteAnnotations {
 		return Optional.ofNullable(opts.valueOf(opt));
 	}
 
-	private static void writeAnnotation(String line, int lineNumber) {
+	private static void writeInterface(String line, int lineNumber) {
 		try {
 			OptionSet lineOpts = PARSER.parse(StreamSupport.stream(
 					SPACE.split(line).spliterator(), false).toArray(
@@ -280,7 +280,7 @@ final class WriteAnnotations {
 		return ParameterizedTypeName.get(cls, generics);
 	}
 
-	private WriteAnnotations() {
+	private WriteIntefaces() {
 	}
 
 }
