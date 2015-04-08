@@ -1,6 +1,10 @@
+# based off of https://docs.python.org/3/reference/datamodel.html
+
+
 # all objects
 # id is mapped to hashCode
 # type is matched to getClass
+-n Deletable -p __del__ -t void;
 
 # callable objects
 -n DocumentationAttribute -p __doc__ -w -t String;
@@ -23,21 +27,21 @@
 # instance methods, or bound methods (really bound callables)
 -n BoundSelfParameterAttribute -p __self__ -t Object;
 -n BoundFunctionAttribute -p __func__ -t Object; # actually Function
-# DocumentationAttribute defined above
-# ModuleNameAttribute defined above
--n BoundCallableType -s BoundSelfParameterAttribute,BoundFunctionAttribute,
-                        DocumentationAttribute,ModuleNameAttribute;
+-n BoundCallableType -s BoundSelfParameterAttribute,BoundFunctionAttribute,CallableType;
 
 # builtins
-# DocumentationAttribute defined above
-# NameAttribute defined above
-# ModuleNameAttribute defined above
 -n BuiltinMethodType -s DocumentationAttribute,NameAttribute,ModuleNameAttribute;
 
 # bound builtins
-# DocumentationAttribute defined above
-# NameAttribute defined above
-# BoundSelfParameterAttribute defined above
-# ModuleNameAttribute defined above
--n BuiltinMethodType -s DocumentationAttribute,NameAttribute,BoundSelfParameterAttribute,
-                        ModuleNameAttribute;
+-n BoundBuiltinMethodType -s BuiltinMethodType,BoundSelfParameterAttribute;
+
+# classes...sorta?
+# __new__ is static
+# __init__ is mapped to the constructor
+
+# callable classes
+# covered by methods...probably?
+
+# modules
+-n FileSource -p __file__ -t String;
+-n Module -s AttributeDictionaryAttribute,NameAttribute,DocumentationAttribute,FileSource;
