@@ -2,9 +2,23 @@
 
 
 # all objects
-# id is mapped to hashCode
-# type is matched to getClass
+# id is special cased to a static lookup
+# type is mapped to getClass
 -n Deletable -p __del__ -t void;
+# str is mapped to toString
+-n Representable -p __repr__ -t String;
+-n ConvertableToBytes -p __bytes__ -t byte[];
+-n Formattable -p __format__ -t String;
+-n ComparableLT -p __lt__ -t boolean;
+-n ComparableLE -p __le__ -t boolean;
+# eq is mapped to equals
+-n ComparableNE -p __ne__ -t boolean;
+-n ComparableGT -p __gt__ -t boolean;
+-n ComparableGE -p __ge__ -t boolean;
+# hash is mapped to hashCode
+-n ConvertableToBool -p __bool__ -t boolean;
+-n PythonObject -p object -s Deletable,Representable,ConvertableToBytes,
+                             ComparableMixin<T>,ConvertableToBool -g T;
 
 # callable objects
 -n DocumentationAttribute -p __doc__ -w -t String;

@@ -27,6 +27,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Primitives;
 import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
@@ -37,6 +38,7 @@ import com.squareup.javapoet.TypeVariableName;
 import com.techshroom.slitheringlatte.ap.underscore.annotations.PythonName;
 import com.techshroom.slitheringlatte.ap.underscore.interfaces.DunderAttribute;
 import com.techshroom.slitheringlatte.ap.underscore.interfaces.Writable;
+import com.techshroom.slitheringlatte.array.EmptyArray;
 
 /**
  * Writes all annotations defined in the main resource,s
@@ -118,6 +120,11 @@ final class WriteIntefaces {
         public Class<?> convert(String value) {
             Supplier<RuntimeException> exec = () -> new IllegalArgumentException(
                     value + " is not a class");
+            if (value.endsWith("[]")) {
+                Class<?> converted = convert(value.substring(0,
+                        value.length() - 2));
+                return EmptyArray.of(converted).getUnsafe().getClass();
+            }
             if (Primitives.allPrimitiveTypes().stream().map(Class::getName)
                     .anyMatch(s -> s.equals(value))) {
                 // primitive type!
@@ -220,20 +227,17 @@ final class WriteIntefaces {
             boolean isPseudoType = lineOpts.has(SUPERTYPES);
             TypeSpec.Builder iface = TypeSpec.interfaceBuilder(name)
                     .addModifiers(Modifier.PUBLIC);
+            if (lineOpts.has(PYTHON_NAME)) {
+                iface.addAnnotation(AnnotationSpec.builder(PythonName.class)
+                        .addMember("value", "$S", PYTHON_NAME.value(lineOpts))
+                        .build());
+            }
+            if (GENERIC_SHARED.value(lineOpts)) {
+                iface.addTypeVariables(generics.stream()
+                        .map(TypeVariableName::get)
+                        .collect(Collectors.toList()));
+            }
             if (!isPseudoType) {
-                if (lineOpts.has(PYTHON_NAME)) {
-                    iface.addAnnotation(AnnotationSpec
-                            .builder(PythonName.class)
-                            .addMember("value", "$S",
-                                    PYTHON_NAME.value(lineOpts)).build());
-                }
-
-                if (GENERIC_SHARED.value(lineOpts)) {
-                    iface.addTypeVariables(generics.stream()
-                            .map(TypeVariableName::get)
-                            .collect(Collectors.toList()));
-                }
-
                 String methodName = argOpt(ATTR_METHOD_NAME, lineOpts)
                         .orElseGet(
                                 () -> argOpt(PYTHON_NAME, lineOpts).map(
@@ -264,6 +268,7 @@ final class WriteIntefaces {
                         .stream()
                         .filter(e -> e.getKey() != SUPERTYPES
                                 && e.getKey() != JAVA_NAME
+                                && e.getKey() != PYTHON_NAME
                                 && lineOpts.has(e.getKey()))
                         .onClose(
                                 () -> System.err.println("==Processing " + name
@@ -271,9 +276,9 @@ final class WriteIntefaces {
                 optStream.forEach(e -> System.err.println("Ignoring "
                         + e.getKey() + "=" + e.getValue()));
                 optStream.close();
-                for (String superAnnotation : SUPERTYPES.values(lineOpts)) {
-                    iface.addSuperinterface(ClassName.get(PACKAGE,
-                            superAnnotation));
+                for (String superType : SUPERTYPES.values(lineOpts)) {
+                    // process SUPERTYPE things
+                    iface.addSuperinterface(generateSuperTypeName(superType));
                 }
             }
             JavaFile out = JavaFile.builder(PACKAGE, iface.build())
@@ -292,19 +297,37 @@ final class WriteIntefaces {
         }
     }
 
+    private static TypeName generateSuperTypeName(String superType) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     private static TypeName generateTypeName(OptionSet lineOpts) {
         Class<?> attrType = ATTR_TYPE.value(lineOpts);
+        int arrayLevel = 0;
+        while (attrType.isArray()) {
+            arrayLevel++;
+            attrType = attrType.getComponentType();
+        }
+        TypeName res = null;
         if (attrType.isPrimitive()) {
-            return TypeName.get(attrType);
+            res = TypeName.get(attrType);
+        } else {
+            ClassName cls = ClassName.get(attrType);
+            if (!lineOpts.has(ATTR_TYPE_GENERIC)) {
+                res = ClassName.get(attrType);
+            } else {
+                TypeVariableName[] generics = ATTR_TYPE_GENERIC
+                        .values(lineOpts).stream().map(TypeVariableName::get)
+                        .toArray(TypeVariableName[]::new);
+                res = ParameterizedTypeName.get(cls, generics);
+            }
         }
-        ClassName cls = ClassName.get(attrType);
-        if (!lineOpts.has(ATTR_TYPE_GENERIC)) {
-            return ClassName.get(attrType);
+        while (arrayLevel > 0) {
+            res = ArrayTypeName.of(res);
+            arrayLevel--;
         }
-        TypeVariableName[] generics = ATTR_TYPE_GENERIC.values(lineOpts)
-                .stream().map(TypeVariableName::get)
-                .toArray(TypeVariableName[]::new);
-        return ParameterizedTypeName.get(cls, generics);
+        return res;
     }
 
     private WriteIntefaces() {

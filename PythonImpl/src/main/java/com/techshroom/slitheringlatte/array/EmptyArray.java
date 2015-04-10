@@ -22,25 +22,24 @@ import com.google.common.cache.LoadingCache;
  *            - type for the array
  */
 public final class EmptyArray<T> {
-    private static final LoadingCache<Class<?>, EmptyArray<?>> cache =
-            CacheBuilder.newBuilder().concurrencyLevel(1).maximumSize(100)
-                    .removalListener(notify -> {
-                    }).build(new CacheLoader<Class<?>, EmptyArray<?>>() {
-                        @Override
-                        public EmptyArray<?> load(Class<?> key) {
-                            return new EmptyArray<>(key);
-                        }
+    private static final LoadingCache<Class<?>, EmptyArray<?>> cache = CacheBuilder
+            .newBuilder().concurrencyLevel(1).maximumSize(100)
+            .removalListener(notify -> {
+            }).build(new CacheLoader<Class<?>, EmptyArray<?>>() {
+                @Override
+                public EmptyArray<?> load(Class<?> key) {
+                    return new EmptyArray<>(key);
+                }
 
-                        @Override
-                        public Map<Class<?>, EmptyArray<?>> loadAll(
-                                Iterable<? extends Class<?>> keys) {
-                            Collector<Class<?>, ?, Map<Class<?>, EmptyArray<?>>> toMap =
-                                    Collectors.toMap(Function.identity(),
-                                                     this::load);
-                            return StreamSupport.stream(keys.spliterator(),
-                                                        false).collect(toMap);
-                        }
-                    });
+                @Override
+                public Map<Class<?>, EmptyArray<?>> loadAll(
+                        Iterable<? extends Class<?>> keys) {
+                    Collector<Class<?>, ?, Map<Class<?>, EmptyArray<?>>> toMap = Collectors
+                            .toMap(Function.identity(), this::load);
+                    return StreamSupport.stream(keys.spliterator(), false)
+                            .collect(toMap);
+                }
+            });
     /**
      * String shortcut.
      */
@@ -59,12 +58,11 @@ public final class EmptyArray<T> {
     }
 
     private final Class<T> arrayType;
-    private final T[] array;
+    private final Object array;
 
-    @SuppressWarnings("unchecked")
     private EmptyArray(Class<T> type) {
         arrayType = type;
-        array = (T[]) Array.newInstance(arrayType, 0);
+        array = Array.newInstance(arrayType, 0);
     }
 
     /**
@@ -72,7 +70,18 @@ public final class EmptyArray<T> {
      * 
      * @return an empty array of type T.
      */
+    @SuppressWarnings("unchecked")
     public T[] get() {
+        return (T[]) array;
+    }
+
+    /**
+     * Returns the same as {@link #get()}, except un-cast so that primitive
+     * arrays are allowed.
+     * 
+     * @return
+     */
+    public Object getUnsafe() {
         return array;
     }
 }
