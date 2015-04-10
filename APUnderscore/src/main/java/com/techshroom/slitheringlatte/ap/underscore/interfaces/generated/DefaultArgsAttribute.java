@@ -6,9 +6,9 @@ import com.techshroom.slitheringlatte.ap.underscore.interfaces.Writable;
 import com.techshroom.slitheringlatte.python.Tuple;
 
 @InterfaceType(InterfaceType.Value.ATTRIBUTE)
-@PythonName("__defualts__")
+@PythonName("__defaults__")
 public interface DefaultArgsAttribute extends Writable {
-    void defualts(Tuple defualts);
+    void defaults(Tuple defaults);
 
-    Tuple defualts();
+    Tuple defaults();
 }

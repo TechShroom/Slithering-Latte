@@ -34,7 +34,7 @@
 -i ATTRIBUTE -n NameAttribute -p __name__ -w -t String;
 -i ATTRIBUTE -n QualifiedNameAttribute -p __qualname__ -w -t String;
 -i ATTRIBUTE -n ModuleNameAttribute -p __module__ -w -t String;
--i ATTRIBUTE -n DefaultArgsAttribute -p __defualts__ -w -t Tuple;
+-i ATTRIBUTE -n DefaultArgsAttribute -p __defaults__ -w -t Tuple;
 -i ATTRIBUTE -n CompiledCodeAttribute -p __code__ -w -t String;
 -i ATTRIBUTE -n GlobalsAttribute -p __global__ -t java.util.Map -g String,Object;
 -i ATTRIBUTE -n AttributeDictionaryAttribute -p __dict__ -w -t java.util.Map -g String,Object;
