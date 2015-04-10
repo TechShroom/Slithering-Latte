@@ -114,8 +114,16 @@ final class WriteIntefaces {
     private static final Function<String, Class<?>> TO_CLASS_COMMON =
             TO_CLASS::convert;
 
-    private static final Function<String, ClassName> TO_CLASSNAME =
-            x -> ClassName.get(TO_CLASS_COMMON.apply(x));
+    private static final Function<String, ClassName> TO_CLASSNAME = x -> {
+        try {
+            return ClassName.get(TO_CLASS_COMMON.apply(x));
+        } catch (IllegalArgumentException ignored) {
+            if (x.indexOf('.') < 0) {
+                return ClassName.get(PACKAGE, x);
+            }
+            return ClassName.bestGuess(x);
+        }
+    };
 
     private static final class ClassConverter implements
             ValueConverter<Class<?>> {
@@ -145,7 +153,8 @@ final class WriteIntefaces {
                         .orElseThrow(exec);
             }
             try {
-                return Class.forName(value);
+                return Class.forName(value, false, Thread.currentThread()
+                        .getContextClassLoader());
             } catch (ClassNotFoundException e) {
                 // try again with java.lang
                 if (value.indexOf('.') < 0) {
@@ -162,7 +171,8 @@ final class WriteIntefaces {
 
         private final Class<?> errorFreeConvert(String value) {
             try {
-                return Class.forName(value);
+                return Class.forName(value, false, Thread.currentThread()
+                        .getContextClassLoader());
             } catch (ClassNotFoundException ignored) {
                 return null;
             }
