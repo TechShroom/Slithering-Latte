@@ -27,23 +27,21 @@
 -n ModuleNameAttribute -p __module__ -w -t String;
 -n DefaultArgsAttribute -p __defualts__ -w -t Tuple;
 -n CompiledCodeAttribute -p __code__ -w -t String;
--n GlobalsAttribute -p __global__ -t java.util.Map -g K,V --share-generic;
--n AttributeDictionaryAttribute -p __dict__ -w -t java.util.Map -g K,V --share-generic;
+-n GlobalsAttribute -p __global__ -t java.util.Map -g String,Object;
+-n AttributeDictionaryAttribute -p __dict__ -w -t java.util.Map -g String,Object;
 -n ClosureVariablesAttribute -p __closure__ -t Tuple;
--n ParameterAnnotationsAttribute -p __annotations__ -w -t java.util.Map -g K,V --share-generic;
--n KeywordDefaultsAttribute -p __kwdefaults__ -w -t java.util.Map -g K,V --share-generic;
+-n ParameterAnnotationsAttribute -p __annotations__ -w -t java.util.Map -g String,Object;
+-n KeywordDefaultsAttribute -p __kwdefaults__ -w -t java.util.Map -g String,Object;
 -n CallableType -s DocumentationAttribute,NameAttribute,QualifiedNameAttribute,
                    ModuleNameAttribute,DefaultArgsAttribute,CompiledCodeAttribute,
-                   GlobalsAttribute<K1|V1>,AttributeDictionaryAttribute<K2|V2>,
-                   ClosureVariablesAttribute,ParameterAnnotationsAttribute<K3|V3>,
-                   KeywordDefaultsAttribute<K4|V4> -g K1,K2,K3,K4,V1,V2,V3,V4 --share-generic;
+                   GlobalsAttribute,AttributeDictionaryAttribute,
+                   ClosureVariablesAttribute,ParameterAnnotationsAttribute,
+                   KeywordDefaultsAttribute;
 
 # instance methods, or bound methods (really bound callables)
 -n BoundSelfParameterAttribute -p __self__ -t Object;
 -n BoundFunctionAttribute -p __func__ -t Object; # actually Function
--n BoundCallableType -s BoundSelfParameterAttribute,BoundFunctionAttribute,
-                        CallableType<K1|K2|K3|K4|V1|V2|V3|V4> -g
-                        K1,K2,K3,K4,V1,V2,V3,V4 --share-generic;
+-n BoundCallableType -s BoundSelfParameterAttribute,BoundFunctionAttribute,CallableType;
 
 # builtins
 -n BuiltinMethodType -s DocumentationAttribute,NameAttribute,ModuleNameAttribute;
@@ -60,5 +58,4 @@
 
 # modules
 -n FileSource -p __file__ -t String;
--n Module -s AttributeDictionaryAttribute<K|V>,NameAttribute,DocumentationAttribute,FileSource -g
-          K,V --share-generic;
+-n Module -s AttributeDictionaryAttribute,NameAttribute,DocumentationAttribute,FileSource;

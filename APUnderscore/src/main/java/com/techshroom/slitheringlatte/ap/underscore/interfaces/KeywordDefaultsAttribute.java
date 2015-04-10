@@ -4,8 +4,8 @@ import com.techshroom.slitheringlatte.ap.underscore.annotations.PythonName;
 import java.util.Map;
 
 @PythonName("__kwdefaults__")
-public interface KeywordDefaultsAttribute<K, V> extends Writable {
-    void kwdefaults(Map<K, V> kwdefaults);
+public interface KeywordDefaultsAttribute extends Writable {
+    void kwdefaults(Map<String, Object> kwdefaults);
 
-    Map<K, V> kwdefaults();
+    Map<String, Object> kwdefaults();
 }

@@ -257,7 +257,7 @@ final class WriteIntefaces {
                         .addMember("value", "$S", PYTHON_NAME.value(lineOpts))
                         .build());
             }
-            if (GENERIC_SHARED.value(lineOpts)) {
+            if (lineOpts.has(GENERIC_SHARED) && GENERIC_SHARED.value(lineOpts)) {
                 iface.addTypeVariables(generics.stream()
                         .map(TypeVariableName::get)
                         .collect(Collectors.toList()));

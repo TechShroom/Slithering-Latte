@@ -4,8 +4,8 @@ import com.techshroom.slitheringlatte.ap.underscore.annotations.PythonName;
 import java.util.Map;
 
 @PythonName("__dict__")
-public interface AttributeDictionaryAttribute<K, V> extends Writable {
-    void dict(Map<K, V> dict);
+public interface AttributeDictionaryAttribute extends Writable {
+    void dict(Map<String, Object> dict);
 
-    Map<K, V> dict();
+    Map<String, Object> dict();
 }
