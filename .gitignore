@@ -10,6 +10,7 @@ bin/
 
 # (no) idea
 .idea
+*.iml
 
 # gradle
 .gradle/
