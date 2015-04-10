@@ -25,9 +25,13 @@
 -i METHOD -n ConvertableToBool -p __bool__ -t boolean;
 -i METHOD -n MissingAttributeProvider -p __getattr__ -t Object -m String:name;
 -i METHOD -n RegularAttributeProvider -p __getattribute__ -t Object -m String:name;
+-i METHOD -n AttributeStorage -p __setattr__ -t Object -m String:name,String:value;
+-i METHOD -n AttributeDestructor -p __delattr__ -t Object -m String:name;
+-i METHOD -n AttributeSequenceProvider -p __dir__ -t Iterable -g String;
 -i MIX -n PythonObject -p object -s Deletable,Representable,ConvertableToBytes,
                              ComparableMixin<T>,ConvertableToBool,MissingAttributeProvider
-                             ,RegularAttributeProvider -g T;
+                             ,RegularAttributeProvider,AttributeStorage,AttributeDestructor,
+                             AttributeSequenceProvider -g T;
 
 # callable objects
 -i ATTRIBUTE -n DocumentationAttribute -p __doc__ -w -t String;
