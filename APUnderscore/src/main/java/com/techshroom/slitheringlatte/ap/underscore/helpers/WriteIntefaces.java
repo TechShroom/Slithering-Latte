@@ -28,6 +28,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Primitives;
 import com.squareup.javapoet.*;
 import com.techshroom.slitheringlatte.ap.underscore.annotations.InterfaceType.Value;
+import com.techshroom.slitheringlatte.ap.underscore.annotations.InterfaceType;
 import com.techshroom.slitheringlatte.ap.underscore.annotations.PythonName;
 import com.techshroom.slitheringlatte.ap.underscore.interfaces.DunderAttribute;
 import com.techshroom.slitheringlatte.ap.underscore.interfaces.Writable;
@@ -179,7 +180,7 @@ final class WriteIntefaces {
         }
     };
 
-    public static enum InterfaceType {
+    public static enum IType {
 
         ATTRIBUTE(Value.ATTRIBUTE, SUPERTYPES, PARAMETERS), METHOD(
                 Value.METHOD, SUPERTYPES), MIX(Value.MIX, ATTR_METHOD_NAME,
@@ -187,19 +188,27 @@ final class WriteIntefaces {
 
         public final Value linkedValue;
         public final List<OptionSpec<?>> unusedOptions;
+        public final AnnotationSpec spec;
 
-        private InterfaceType(Value linked, OptionSpec<?>... options) {
+        private IType(Value linked, OptionSpec<?>... options) {
             this.linkedValue = linked;
             this.unusedOptions = ImmutableList.copyOf(options);
+            this.spec =
+                    AnnotationSpec
+                            .builder(InterfaceType.class)
+                            .addMember("value",
+                                       "$T.$L",
+                                       Value.class,
+                                       linked.name()).build();
         }
     }
 
     // some parsing info...
     private static final OptionParser PARSER = new OptionParser();
-    private static final ArgumentAcceptingOptionSpec<InterfaceType> TYPE =
-            PARSER.acceptsAll(ImmutableList.of("i", "interface-type"),
-                              "The type of the interface (ATTRIBUTE, MIX, METHOD)")
-                    .withRequiredArg().ofType(InterfaceType.class).required();
+    private static final ArgumentAcceptingOptionSpec<IType> TYPE = PARSER
+            .acceptsAll(ImmutableList.of("i", "interface-type"),
+                        "The type of the interface (ATTRIBUTE, MIX, METHOD)")
+            .withRequiredArg().ofType(IType.class).required();
     private static final ArgumentAcceptingOptionSpec<String> JAVA_NAME = PARSER
             .acceptsAll(ImmutableList.of("n", "name"),
                         "Name of the Java annotation.").withRequiredArg()
@@ -258,7 +267,7 @@ final class WriteIntefaces {
                             .toArray(String[]::new));
             String name = JAVA_NAME.value(lineOpts);
             List<String> generics = GENERIC.values(lineOpts);
-            InterfaceType type = TYPE.value(lineOpts);
+            IType type = TYPE.value(lineOpts);
             type.unusedOptions
                     .stream()
                     .filter(lineOpts::has)
@@ -266,20 +275,21 @@ final class WriteIntefaces {
                             + " on line " + lineNumber));
             TypeSpec.Builder iface =
                     TypeSpec.interfaceBuilder(name)
-                            .addModifiers(Modifier.PUBLIC);
+                            .addModifiers(Modifier.PUBLIC)
+                            .addAnnotation(type.spec);
             if (lineOpts.has(PYTHON_NAME)) {
                 iface.addAnnotation(AnnotationSpec.builder(PythonName.class)
                         .addMember("value", "$S", PYTHON_NAME.value(lineOpts))
                         .build());
             }
-            if (type == InterfaceType.MIX
+            if (type == IType.MIX
                     || (lineOpts.has(GENERIC_SHARED) && GENERIC_SHARED
                             .value(lineOpts))) {
                 iface.addTypeVariables(generics.stream()
                         .map(TypeVariableName::get)
                         .collect(Collectors.toList()));
             }
-            if (type == InterfaceType.ATTRIBUTE || type == InterfaceType.METHOD) {
+            if (type == IType.ATTRIBUTE || type == IType.METHOD) {
                 String methodName =
                         argOpt(ATTR_METHOD_NAME, lineOpts)
                                 .orElseGet(() -> argOpt(PYTHON_NAME, lineOpts)
@@ -314,7 +324,7 @@ final class WriteIntefaces {
                 }
                 MethodSpec getter =
                         methodBase.get().returns(returnType).build();
-                if (type == InterfaceType.METHOD) {
+                if (type == IType.METHOD) {
                     getter =
                             getter.toBuilder()
                                     .addParameters(PARAMETERS
@@ -340,7 +350,7 @@ final class WriteIntefaces {
                                     .build();
                 }
                 iface.addMethod(getter);
-            } else if (type == InterfaceType.MIX) {
+            } else if (type == IType.MIX) {
                 for (String superType : SUPERTYPES.values(lineOpts)) {
                     // process SUPERTYPE things
                     iface.addSuperinterface(generateSuperTypeName(superType));
