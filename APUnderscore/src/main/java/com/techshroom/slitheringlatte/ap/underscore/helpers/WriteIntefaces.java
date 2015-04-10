@@ -35,7 +35,7 @@ import com.techshroom.slitheringlatte.ap.underscore.interfaces.Writable;
 import com.techshroom.slitheringlatte.array.EmptyArray;
 
 /**
- * Writes all annotations defined in the main resource,s
+ * Writes all annotations defined in the main resources
  * {@code config/annotations.txt}.
  * 
  * @author Kenzie Togami
