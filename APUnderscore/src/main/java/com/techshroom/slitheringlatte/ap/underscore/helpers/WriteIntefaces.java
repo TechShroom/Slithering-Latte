@@ -26,15 +26,8 @@ import joptsimple.ValueConverter;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Primitives;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ArrayTypeName;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.TypeVariableName;
+import com.squareup.javapoet.*;
+import com.techshroom.slitheringlatte.ap.underscore.annotations.InterfaceType.Value;
 import com.techshroom.slitheringlatte.ap.underscore.annotations.PythonName;
 import com.techshroom.slitheringlatte.ap.underscore.interfaces.DunderAttribute;
 import com.techshroom.slitheringlatte.ap.underscore.interfaces.Writable;
@@ -47,6 +40,7 @@ import com.techshroom.slitheringlatte.array.EmptyArray;
  * @author Kenzie Togami
  */
 final class WriteIntefaces {
+
     private static final Path BASE = Paths.get("src", "main");
     private static final Path RESOURCES = BASE.resolve("resources");
     private static final Path CODE = BASE.resolve("java");
@@ -185,8 +179,27 @@ final class WriteIntefaces {
         }
     };
 
+    public static enum InterfaceType {
+
+        ATTRIBUTE(Value.ATTRIBUTE, SUPERTYPES, PARAMETERS), METHOD(
+                Value.METHOD, SUPERTYPES), MIX(Value.MIX, ATTR_METHOD_NAME,
+                ATTR_TYPE, GENERIC_SHARED);
+
+        public final Value linkedValue;
+        public final List<OptionSpec<?>> unusedOptions;
+
+        private InterfaceType(Value linked, OptionSpec<?>... options) {
+            this.linkedValue = linked;
+            this.unusedOptions = ImmutableList.copyOf(options);
+        }
+    }
+
     // some parsing info...
     private static final OptionParser PARSER = new OptionParser();
+    private static final ArgumentAcceptingOptionSpec<InterfaceType> TYPE =
+            PARSER.acceptsAll(ImmutableList.of("i", "interface-type"),
+                              "The type of the interface (ATTRIBUTE, MIX, METHOD)")
+                    .withRequiredArg().ofType(InterfaceType.class).required();
     private static final ArgumentAcceptingOptionSpec<String> JAVA_NAME = PARSER
             .acceptsAll(ImmutableList.of("n", "name"),
                         "Name of the Java annotation.").withRequiredArg()
@@ -217,21 +230,20 @@ final class WriteIntefaces {
                               "The type of the attribute")
                     .requiredUnless(SUPERTYPES).withRequiredArg()
                     .withValuesConvertedBy(TO_CLASS);
-    private static final ArgumentAcceptingOptionSpec<String> ATTR_TYPE_GENERIC =
-            PARSER.acceptsAll(ImmutableList.of("g", "attribute-generic"),
-                              "The generic for the type of the attribute")
-                    .withRequiredArg().withValuesSeparatedBy(',')
-                    .defaultsTo(new String[] {});
+    private static final ArgumentAcceptingOptionSpec<String> GENERIC = PARSER
+            .acceptsAll(ImmutableList.of("g", "attribute-generic"),
+                        "The generic for the type of the attribute")
+            .withRequiredArg().withValuesSeparatedBy(',')
+            .defaultsTo(new String[] {});
     private static final ArgumentAcceptingOptionSpec<Boolean> GENERIC_SHARED =
             PARSER.acceptsAll(ImmutableList.of("share-generic"),
                               "Boolean value for sharing the generic of the type.")
                     .withOptionalArg().ofType(Boolean.class).defaultsTo(true);
-    private static final List<OptionSpec<?>> MIX_TYPE_USED_OPTIONS =
-            ImmutableList.of(SUPERTYPES,
-                             JAVA_NAME,
-                             PYTHON_NAME,
-                             GENERIC_SHARED,
-                             ATTR_TYPE_GENERIC);
+    private static final ArgumentAcceptingOptionSpec<String> PARAMETERS =
+            PARSER.acceptsAll(ImmutableList.of("m", "parameters"),
+                              "The parameters for the method")
+                    .withRequiredArg().withValuesSeparatedBy(',')
+                    .defaultsTo(new String[] {});
 
     private static <T> Optional<T> argOpt(OptionSpec<T> opt, OptionSet opts) {
         return Optional.ofNullable(opts.valueOf(opt));
@@ -245,10 +257,13 @@ final class WriteIntefaces {
                                                       false)
                             .toArray(String[]::new));
             String name = JAVA_NAME.value(lineOpts);
-            List<String> generics = ATTR_TYPE_GENERIC.values(lineOpts);
-            boolean isWritable =
-                    lineOpts.has(WRITABLE) ? WRITABLE.value(lineOpts) : false;
-            boolean isPseudoType = lineOpts.has(SUPERTYPES);
+            List<String> generics = GENERIC.values(lineOpts);
+            InterfaceType type = TYPE.value(lineOpts);
+            type.unusedOptions
+                    .stream()
+                    .filter(lineOpts::has)
+                    .forEach(opt -> System.err.println("Ignoring " + opt
+                            + " on line " + lineNumber));
             TypeSpec.Builder iface =
                     TypeSpec.interfaceBuilder(name)
                             .addModifiers(Modifier.PUBLIC);
@@ -257,17 +272,21 @@ final class WriteIntefaces {
                         .addMember("value", "$S", PYTHON_NAME.value(lineOpts))
                         .build());
             }
-            if (lineOpts.has(GENERIC_SHARED) && GENERIC_SHARED.value(lineOpts)) {
+            if (type == InterfaceType.MIX
+                    || (lineOpts.has(GENERIC_SHARED) && GENERIC_SHARED
+                            .value(lineOpts))) {
                 iface.addTypeVariables(generics.stream()
                         .map(TypeVariableName::get)
                         .collect(Collectors.toList()));
             }
-            if (!isPseudoType) {
+            if (type == InterfaceType.ATTRIBUTE || type == InterfaceType.METHOD) {
                 String methodName =
                         argOpt(ATTR_METHOD_NAME, lineOpts)
                                 .orElseGet(() -> argOpt(PYTHON_NAME, lineOpts)
-                                        .map(s -> s.replace("__", "")).get());
-                Supplier<MethodSpec.Builder> base =
+                                        .map(s -> s.replace("__", ""))
+                                        .orElseThrow(() -> new IllegalStateException(
+                                                "no name")));
+                Supplier<MethodSpec.Builder> methodBase =
                         () -> {
                             MethodSpec.Builder b =
                                     MethodSpec.methodBuilder(methodName)
@@ -279,26 +298,49 @@ final class WriteIntefaces {
                             }
                             return b;
                         };
-                TypeName attributeType = generateTypeName(lineOpts);
+                TypeName returnType = generateTypeName(lineOpts);
+                boolean isWritable =
+                        lineOpts.has(WRITABLE) ? WRITABLE.value(lineOpts)
+                                              : false;
                 if (isWritable) {
                     iface.addSuperinterface(WRITABLE_TYPE);
                     MethodSpec setter =
-                            base.get().addParameter(attributeType, methodName)
+                            methodBase.get()
+                                    .addParameter(returnType, methodName)
                                     .build();
                     iface.addMethod(setter);
                 } else {
                     iface.addSuperinterface(UNDERSCORE_TYPE);
                 }
-                MethodSpec getter = base.get().returns(attributeType).build();
+                MethodSpec getter =
+                        methodBase.get().returns(returnType).build();
+                if (type == InterfaceType.METHOD) {
+                    getter =
+                            getter.toBuilder()
+                                    .addParameters(PARAMETERS
+                                            .values(lineOpts)
+                                            .stream()
+                                            .map(param -> {
+                                                String[] data =
+                                                        param.split(":");
+                                                TypeName typeName = null;
+                                                try {
+                                                    typeName =
+                                                            TO_CLASSNAME.apply(data[0]);
+                                                } catch (IllegalArgumentException ignore) {
+                                                    typeName =
+                                                            TypeVariableName
+                                                                    .get(data[0]);
+                                                }
+                                                return ParameterSpec
+                                                        .builder(typeName,
+                                                                 data[1])
+                                                        .build();
+                                            }).collect(Collectors.toList()))
+                                    .build();
+                }
                 iface.addMethod(getter);
-            } else {
-                lineOpts.asMap()
-                        .entrySet()
-                        .stream()
-                        .filter(e -> !MIX_TYPE_USED_OPTIONS.contains(e.getKey())
-                                && lineOpts.has(e.getKey()))
-                        .forEach(e -> System.err.println("Ignoring "
-                                + e.getKey() + "=" + e.getValue()));
+            } else if (type == InterfaceType.MIX) {
                 for (String superType : SUPERTYPES.values(lineOpts)) {
                     // process SUPERTYPE things
                     iface.addSuperinterface(generateSuperTypeName(superType));
@@ -358,11 +400,11 @@ final class WriteIntefaces {
             res = TypeName.get(attrType);
         } else {
             ClassName cls = ClassName.get(attrType);
-            if (!lineOpts.has(ATTR_TYPE_GENERIC)) {
+            if (!lineOpts.has(GENERIC)) {
                 res = ClassName.get(attrType);
             } else {
                 TypeVariableName[] generics =
-                        ATTR_TYPE_GENERIC.values(lineOpts).stream()
+                        GENERIC.values(lineOpts).stream()
                                 .map(TypeVariableName::get)
                                 .toArray(TypeVariableName[]::new);
                 res = ParameterizedTypeName.get(cls, generics);
