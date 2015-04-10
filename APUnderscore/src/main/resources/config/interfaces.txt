@@ -18,7 +18,7 @@
 # hash is mapped to hashCode
 -n ConvertableToBool -p __bool__ -t boolean;
 -n PythonObject -p object -s Deletable,Representable,ConvertableToBytes,
-                             ComparableMixin<T>,ConvertableToBool -g T;
+                             ComparableMixin<T>,ConvertableToBool -g T --share-generic;
 
 # callable objects
 -n DocumentationAttribute -p __doc__ -w -t String;
@@ -34,14 +34,16 @@
 -n KeywordDefaultsAttribute -p __kwdefaults__ -w -t java.util.Map -g K,V --share-generic;
 -n CallableType -s DocumentationAttribute,NameAttribute,QualifiedNameAttribute,
                    ModuleNameAttribute,DefaultArgsAttribute,CompiledCodeAttribute,
-                   GlobalsAttribute,AttributeDictionaryAttribute,
-                   ClosureVariablesAttribute,ParameterAnnotationsAttribute,
-                   KeywordDefaultsAttribute;
+                   GlobalsAttribute<K1|V1>,AttributeDictionaryAttribute<K2|V2>,
+                   ClosureVariablesAttribute,ParameterAnnotationsAttribute<K3|V3>,
+                   KeywordDefaultsAttribute<K4|V4> -g K1,K2,K3,K4,V1,V2,V3,V4 --share-generic;
 
 # instance methods, or bound methods (really bound callables)
 -n BoundSelfParameterAttribute -p __self__ -t Object;
 -n BoundFunctionAttribute -p __func__ -t Object; # actually Function
--n BoundCallableType -s BoundSelfParameterAttribute,BoundFunctionAttribute,CallableType;
+-n BoundCallableType -s BoundSelfParameterAttribute,BoundFunctionAttribute,
+                        CallableType<K1|K2|K3|K4|V1|V2|V3|V4> -g
+                        K1,K2,K3,K4,V1,V2,V3,V4 --share-generic;
 
 # builtins
 -n BuiltinMethodType -s DocumentationAttribute,NameAttribute,ModuleNameAttribute;
@@ -58,4 +60,5 @@
 
 # modules
 -n FileSource -p __file__ -t String;
--n Module -s AttributeDictionaryAttribute,NameAttribute,DocumentationAttribute,FileSource;
+-n Module -s AttributeDictionaryAttribute<K|V>,NameAttribute,DocumentationAttribute,FileSource -g
+          K,V --share-generic;
