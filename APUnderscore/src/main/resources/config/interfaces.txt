@@ -24,8 +24,10 @@
 # hash is mapped to hashCode
 -i METHOD -n ConvertableToBool -p __bool__ -t boolean;
 -i METHOD -n MissingAttributeProvider -p __getattr__ -t Object -m String:name;
+-i METHOD -n RegularAttributeProvider -p __getattribute__ -t Object -m String:name;
 -i MIX -n PythonObject -p object -s Deletable,Representable,ConvertableToBytes,
-                             ComparableMixin<T>,ConvertableToBool -g T;
+                             ComparableMixin<T>,ConvertableToBool,MissingAttributeProvider
+                             ,RegularAttributeProvider -g T;
 
 # callable objects
 -i ATTRIBUTE -n DocumentationAttribute -p __doc__ -w -t String;
