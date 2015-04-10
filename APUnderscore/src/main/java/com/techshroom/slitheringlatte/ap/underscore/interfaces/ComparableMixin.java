@@ -1,5 +1,12 @@
 package com.techshroom.slitheringlatte.ap.underscore.interfaces;
 
+import com.techshroom.slitheringlatte.ap.underscore.interfaces.generated.ComparableEQ;
+import com.techshroom.slitheringlatte.ap.underscore.interfaces.generated.ComparableGE;
+import com.techshroom.slitheringlatte.ap.underscore.interfaces.generated.ComparableGT;
+import com.techshroom.slitheringlatte.ap.underscore.interfaces.generated.ComparableLE;
+import com.techshroom.slitheringlatte.ap.underscore.interfaces.generated.ComparableLT;
+import com.techshroom.slitheringlatte.ap.underscore.interfaces.generated.ComparableNE;
+
 /**
  * Mixin for comparisons that uses the Comparable interface.
  * 
