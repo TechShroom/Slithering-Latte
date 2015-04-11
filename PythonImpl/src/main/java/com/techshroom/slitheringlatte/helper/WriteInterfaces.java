@@ -110,22 +110,65 @@ final class WriteInterfaces {
             "com.techshroom.slitheringlatte.python.interfaces.generated";
 
     // parser converters
-    private static final ValueConverter<Class<?>> TO_CLASS =
+    private static final ValueConverter<Class<?>> CLASS_CONVERTER =
             new ClassConverter();
 
-    private static final Function<String, Class<?>> TO_CLASS_COMMON =
-            TO_CLASS::convert;
+    private static final Function<String, Class<?>> TO_CLASS =
+            CLASS_CONVERTER::convert;
 
-    private static final Function<String, ClassName> TO_CLASSNAME = x -> {
-        try {
-            return ClassName.get(TO_CLASS_COMMON.apply(x));
-        } catch (IllegalArgumentException ignored) {
-            if (x.indexOf('.') < 0) {
-                return ClassName.get(PACKAGE, x);
+    private static final ValueConverter<TypeName> TYPENAME_CONVERTER =
+            new TypeNameConverter();
+
+    private static final Function<String, TypeName> TO_TYPENAME =
+            TYPENAME_CONVERTER::convert;
+
+    private static final class TypeNameConverter implements
+            ValueConverter<TypeName> {
+
+        @Override
+        public TypeName convert(String value) {
+            String className = value;
+            String genericToParse = null;
+            // 1. Extract generic value
+            int genericIndex = value.indexOf('<');
+            if (genericIndex >= 0) {
+                className = value.substring(0, genericIndex);
+                genericToParse =
+                        value.substring(genericIndex + 1, value.length() - 1);
             }
-            return ClassName.bestGuess(x);
+            // 2. Return if only generic
+            if (genericIndex == 0) {
+                return TypeVariableName.get(genericToParse);
+            }
+            // 3. Translate to Class<?>
+            Class<?> javaClassRepr = TO_CLASS.apply(className);
+            // 4. Save via TypeName to match primitives
+            TypeName result = TypeName.get(javaClassRepr);
+            // 5. Apply generic if there
+            if (genericToParse != null) {
+                TypeName[] generic =
+                        StreamSupport
+                                .stream(PIPE.split(genericToParse)
+                                                .spliterator(),
+                                        false).map(this::convert)
+                                .toArray(TypeName[]::new);
+                result = ParameterizedTypeName.get((ClassName) result, generic);
+            }
+            // 6. Return result
+            return result;
         }
-    };
+
+        @Override
+        public Class<? extends TypeName> valueType() {
+            return TypeName.class;
+        }
+
+        @Override
+        public String valuePattern() {
+            return null;
+        }
+
+    }
 
     private static final class ClassConverter implements
             ValueConverter<Class<?>> {
@@ -199,7 +242,7 @@ final class WriteInterfaces {
 
         ATTRIBUTE(Value.ATTRIBUTE, SUPERTYPES, PARAMETERS), METHOD(
                 Value.METHOD, SUPERTYPES), MIX(Value.MIX, ATTR_METHOD_NAME,
-                ATTR_TYPE, GENERIC_SHARED);
+                ATTR_TYPE);
 
         public final Value linkedValue;
         public final List<OptionSpec<?>> unusedOptions;
@@ -249,20 +292,11 @@ final class WriteInterfaces {
             PARSER.acceptsAll(ImmutableList.of("a", "attribute-func-name"),
                               "Name for the getter/setter function")
                     .requiredUnless(PYTHON_NAME, SUPERTYPES).withRequiredArg();
-    private static final ArgumentAcceptingOptionSpec<Class<?>> ATTR_TYPE =
+    private static final ArgumentAcceptingOptionSpec<TypeName> ATTR_TYPE =
             PARSER.acceptsAll(ImmutableList.of("t", "attribute-type"),
                               "The type of the attribute")
                     .requiredUnless(SUPERTYPES).withRequiredArg()
-                    .withValuesConvertedBy(TO_CLASS);
-    private static final ArgumentAcceptingOptionSpec<String> GENERIC = PARSER
-            .acceptsAll(ImmutableList.of("g", "attribute-generic"),
-                        "The generic for the type of the attribute")
-            .withRequiredArg().withValuesSeparatedBy(',')
-            .defaultsTo(new String[] {});
-    private static final ArgumentAcceptingOptionSpec<Boolean> GENERIC_SHARED =
-            PARSER.acceptsAll(ImmutableList.of("share-generic"),
-                              "Boolean value for sharing the generic of the type.")
-                    .withOptionalArg().ofType(Boolean.class).defaultsTo(true);
+                    .withValuesConvertedBy(TYPENAME_CONVERTER);
     private static final ArgumentAcceptingOptionSpec<String> PARAMETERS =
             PARSER.acceptsAll(ImmutableList.of("m", "parameters"),
                               "The parameters for the method")
@@ -290,8 +324,17 @@ final class WriteInterfaces {
                                                               .spliterator(),
                                                       false)
                             .toArray(String[]::new));
-            String name = JAVA_NAME.value(lineOpts);
-            List<String> generics = GENERIC.values(lineOpts);
+            String classDetails = JAVA_NAME.value(lineOpts);
+            int genericIndex = classDetails.indexOf('<');
+            String name = classDetails;
+            List<String> generics = ImmutableList.of();
+            if (genericIndex > 0) {
+                name = name.substring(0, genericIndex);
+                generics =
+                        PIPE.splitToList(classDetails
+                                .substring(genericIndex + 1,
+                                           classDetails.length() - 1));
+            }
             IType type = TYPE.value(lineOpts);
             type.unusedOptions
                     .stream()
@@ -307,13 +350,8 @@ final class WriteInterfaces {
                         .addMember("value", "$S", PYTHON_NAME.value(lineOpts))
                         .build());
             }
-            if (type == IType.MIX
-                    || (lineOpts.has(GENERIC_SHARED) && GENERIC_SHARED
-                            .value(lineOpts))) {
-                iface.addTypeVariables(generics.stream()
-                        .map(TypeVariableName::get)
-                        .collect(Collectors.toList()));
-            }
+            iface.addTypeVariables(generics.stream().map(TypeVariableName::get)
+                    .collect(Collectors.toList()));
             if (type == IType.ATTRIBUTE || type == IType.METHOD) {
                 String methodName =
                         argOpt(ATTR_METHOD_NAME, lineOpts)
@@ -345,7 +383,7 @@ final class WriteInterfaces {
                             }
                             return b;
                         };
-                TypeName returnType = generateTypeName(lineOpts);
+                TypeName returnType = ATTR_TYPE.value(lineOpts);
                 boolean isWritable =
                         lineOpts.has(WRITABLE) ? WRITABLE.value(lineOpts)
                                               : false;
@@ -410,14 +448,15 @@ final class WriteInterfaces {
         }
         ParameterSpec.Builder builder =
                 ParameterSpec.builder(typeName, data.group(2));
-        annot.map(TO_CLASSNAME).ifPresent(builder::addAnnotation);
+        annot.map(TO_TYPENAME).map(ClassName.class::cast)
+                .ifPresent(builder::addAnnotation);
         return builder.build();
     }
 
     private static TypeName generateSuperTypeName(String superType) {
         int idx = superType.indexOf('<');
         if (idx < 0) {
-            return TO_CLASSNAME.apply(superType);
+            return TO_TYPENAME.apply(superType);
         }
         String baseClass = superType.substring(0, idx);
         // to alleviate parsing issues, we split generics by | (pipe)
@@ -435,37 +474,8 @@ final class WriteInterfaces {
                             }
                             return generateSuperTypeName(x);
                         }).toArray(TypeName[]::new);
-        return ParameterizedTypeName.get(TO_CLASSNAME.apply(baseClass),
-                                         generics);
-    }
-
-    private static TypeName generateTypeName(OptionSet lineOpts) {
-        Class<?> attrType = ATTR_TYPE.value(lineOpts);
-        int arrayLevel = 0;
-        while (attrType.isArray()) {
-            arrayLevel++;
-            attrType = attrType.getComponentType();
-        }
-        TypeName res = null;
-        if (attrType.isPrimitive()) {
-            res = TypeName.get(attrType);
-        } else {
-            ClassName cls = ClassName.get(attrType);
-            if (!lineOpts.has(GENERIC)) {
-                res = ClassName.get(attrType);
-            } else {
-                TypeVariableName[] generics =
-                        GENERIC.values(lineOpts).stream()
-                                .map(TypeVariableName::get)
-                                .toArray(TypeVariableName[]::new);
-                res = ParameterizedTypeName.get(cls, generics);
-            }
-        }
-        while (arrayLevel > 0) {
-            res = ArrayTypeName.of(res);
-            arrayLevel--;
-        }
-        return res;
+        return ParameterizedTypeName.get((ClassName) TO_TYPENAME
+                .apply(baseClass), generics);
     }
 
     private WriteInterfaces() {
