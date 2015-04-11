@@ -107,7 +107,7 @@ final class WriteIntefaces {
     private static final TypeName UNDERSCORE_TYPE = ClassName
             .get(DunderAttribute.class);
     private static final String PACKAGE =
-            "com.techshroom.slitheringlatte.ap.underscore.interfaces.generated";
+            "com.techshroom.slitheringlatte.python.interfaces.generated";
 
     // parser converters
     private static final ValueConverter<Class<?>> TO_CLASS =
@@ -133,8 +133,8 @@ final class WriteIntefaces {
                 .of("java.lang",
                     "java.util",
                     "com.techshroom.slitheringlatte.python",
-                    "com.techshroom.slitheringlatte.ap.underscore.annotations",
-                    "com.techshroom.slitheringlatte.ap.underscore.interfaces",
+                    "com.techshroom.slitheringlatte.python.annotations",
+                    "com.techshroom.slitheringlatte.python.interfaces",
                     PACKAGE);
 
         @Override
