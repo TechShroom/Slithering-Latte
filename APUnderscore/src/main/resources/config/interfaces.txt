@@ -28,10 +28,24 @@
 -i METHOD -n AttributeStorage -p __setattr__ -t Object -m String:name,String:value;
 -i METHOD -n AttributeDestructor -p __delattr__ -t Object -m String:name;
 -i METHOD -n AttributeSequenceProvider -p __dir__ -t Iterable -g String;
+-i ATTRIBUTE -n AttributeSlots -p __slots__ -t List -g String;
+-i ATTRIBUTE -n AttributeDictionaryAttribute -p __dict__ -w -t java.util.Map -g String,Object;
 -i MIX -n PythonObject -p object -s Deletable,Representable,ConvertableToBytes,
                              ComparableMixin<T>,ConvertableToBool,MissingAttributeProvider
                              ,RegularAttributeProvider,AttributeStorage,AttributeDestructor,
-                             AttributeSequenceProvider -g T;
+                             AttributeSequenceProvider,AttributeSlots,
+                             AttributeDictionaryAttribute -g T;
+
+# metaclass
+-i METHOD -n NamespacePreparer -p __prepare__ -t Map -g String,Object -m String:
+                                                           name,List<String>:bases,
+                                                           Map<String|Object>:
+                                                           kwargs@KeywordArgs -c return%20
+                                                           new%20java.util.HashMap<>();
+-i MIX -n Metaclass -s NamespacePreparer;
+
+# descriptors are fun for the whole family
+# but hard-coded since they're simple
 
 # callable objects
 -i ATTRIBUTE -n DocumentationAttribute -p __doc__ -w -t String;
@@ -41,9 +55,9 @@
 -i ATTRIBUTE -n DefaultArgsAttribute -p __defaults__ -w -t Tuple;
 -i ATTRIBUTE -n CompiledCodeAttribute -p __code__ -w -t String;
 -i ATTRIBUTE -n GlobalsAttribute -p __global__ -t java.util.Map -g String,Object;
--i ATTRIBUTE -n AttributeDictionaryAttribute -p __dict__ -w -t java.util.Map -g String,Object;
 -i ATTRIBUTE -n ClosureVariablesAttribute -p __closure__ -t Tuple;
--i ATTRIBUTE -n ParameterAnnotationsAttribute -p __annotations__ -w -t java.util.Map -g String,Object;
+-i ATTRIBUTE -n ParameterAnnotationsAttribute -p __annotations__ -w -t java.util.Map -g String,
+                                                                                        Object;
 -i ATTRIBUTE -n KeywordDefaultsAttribute -p __kwdefaults__ -w -t java.util.Map -g String,Object;
 -i MIX -n CallableType -s DocumentationAttribute,NameAttribute,QualifiedNameAttribute,
                    ModuleNameAttribute,DefaultArgsAttribute,CompiledCodeAttribute,

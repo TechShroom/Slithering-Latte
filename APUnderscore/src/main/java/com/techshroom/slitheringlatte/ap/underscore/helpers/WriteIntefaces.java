@@ -11,6 +11,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -129,7 +131,9 @@ final class WriteIntefaces {
             ValueConverter<Class<?>> {
         private final List<String> importedPackages = ImmutableList
                 .of("java.lang",
+                    "java.util",
                     "com.techshroom.slitheringlatte.python",
+                    "com.techshroom.slitheringlatte.ap.underscore.annotations",
                     "com.techshroom.slitheringlatte.ap.underscore.interfaces",
                     PACKAGE);
 
@@ -264,9 +268,19 @@ final class WriteIntefaces {
                               "The parameters for the method")
                     .withRequiredArg().withValuesSeparatedBy(',')
                     .defaultsTo(new String[] {});
+    private static final ArgumentAcceptingOptionSpec<String> CODEBLOCK = PARSER
+            .acceptsAll(ImmutableList.of("c", "codeblock"),
+                        "The codeblock for the method").withRequiredArg();
+    private static final Pattern PARAMETER_SPEC_REGEX = Pattern
+            .compile("(.+):(.+?)(?:@(.+))?");
 
     private static <T> Optional<T> argOpt(OptionSpec<T> opt, OptionSet opts) {
         return Optional.ofNullable(opts.valueOf(opt));
+    }
+
+    private static Optional<String> regexGroupOpt(Matcher m, int group) {
+        return m.groupCount() <= group ? Optional.ofNullable(m.group(group))
+                                     : Optional.empty();
     }
 
     private static void writeInterface(String line, int lineNumber) {
@@ -310,12 +324,24 @@ final class WriteIntefaces {
                 Supplier<MethodSpec.Builder> methodBase =
                         () -> {
                             MethodSpec.Builder b =
-                                    MethodSpec.methodBuilder(methodName)
-                                            .addModifiers(Modifier.PUBLIC,
-                                                          Modifier.ABSTRACT);
+                                    MethodSpec.methodBuilder(methodName);
                             if (lineOpts.has(OVERRIDES)
                                     && OVERRIDES.value(lineOpts)) {
                                 b.addAnnotation(Override.class);
+                            }
+                            if (lineOpts.has(CODEBLOCK)) {
+                                b.addModifiers(Modifier.PUBLIC,
+                                               Modifier.DEFAULT)
+                                        .addCode(CodeBlock
+                                                .builder()
+                                                .addStatement(CODEBLOCK
+                                                        .value(lineOpts)
+                                                        .replace("$", "$$")
+                                                        .replace("%20", " "))
+                                                .build());
+                            } else {
+                                b.addModifiers(Modifier.PUBLIC,
+                                               Modifier.ABSTRACT);
                             }
                             return b;
                         };
@@ -341,23 +367,8 @@ final class WriteIntefaces {
                                     .addParameters(PARAMETERS
                                             .values(lineOpts)
                                             .stream()
-                                            .map(param -> {
-                                                String[] data =
-                                                        param.split(":");
-                                                TypeName typeName = null;
-                                                try {
-                                                    typeName =
-                                                            TO_CLASSNAME.apply(data[0]);
-                                                } catch (IllegalArgumentException ignore) {
-                                                    typeName =
-                                                            TypeVariableName
-                                                                    .get(data[0]);
-                                                }
-                                                return ParameterSpec
-                                                        .builder(typeName,
-                                                                 data[1])
-                                                        .build();
-                                            }).collect(Collectors.toList()))
+                                            .map(WriteIntefaces::generateParameterSpec)
+                                            .collect(Collectors.toList()))
                                     .build();
                 }
                 iface.addMethod(getter);
@@ -384,6 +395,25 @@ final class WriteIntefaces {
         }
     }
 
+    private static ParameterSpec generateParameterSpec(String param) {
+        Matcher data = PARAMETER_SPEC_REGEX.matcher(param);
+        if (!data.matches()) {
+            throw new IllegalArgumentException(param
+                    + " is not a parameter string (<type>:<name>@<annotation>)");
+        }
+        Optional<String> annot = regexGroupOpt(data, 3);
+        TypeName typeName = null;
+        try {
+            typeName = generateSuperTypeName(data.group(1));
+        } catch (IllegalArgumentException ignore) {
+            typeName = TypeVariableName.get(data.group(1));
+        }
+        ParameterSpec.Builder builder =
+                ParameterSpec.builder(typeName, data.group(2));
+        annot.map(TO_CLASSNAME).ifPresent(builder::addAnnotation);
+        return builder.build();
+    }
+
     private static TypeName generateSuperTypeName(String superType) {
         int idx = superType.indexOf('<');
         if (idx < 0) {
@@ -403,7 +433,7 @@ final class WriteIntefaces {
                                 // e.g. T
                                 return TypeVariableName.get(x);
                             }
-                            return TO_CLASSNAME.apply(x);
+                            return generateSuperTypeName(x);
                         }).toArray(TypeName[]::new);
         return ParameterizedTypeName.get(TO_CLASSNAME.apply(baseClass),
                                          generics);

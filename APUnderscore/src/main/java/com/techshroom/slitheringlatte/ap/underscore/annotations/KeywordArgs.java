@@ -6,17 +6,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Targets annotated with this annotation have a different name in Python.
+ * Parameters annotated with this annotation are a map of the variable keyword
+ * arguments passed to the function.
  * 
  * @author Kenzie Togami
  */
-@Target({ ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.TYPE })
+@Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PythonName {
-
-    /**
-     * The Python name.
-     */
-    String value();
+public @interface KeywordArgs {
 
 }

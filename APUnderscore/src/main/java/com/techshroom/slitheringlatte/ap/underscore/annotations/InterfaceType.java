@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * 
  * @author Kenzie Togami
  */
-@Target({ ElementType.TYPE })
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface InterfaceType {
 
