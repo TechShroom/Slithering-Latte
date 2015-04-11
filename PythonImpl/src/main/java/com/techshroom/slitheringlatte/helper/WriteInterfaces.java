@@ -42,7 +42,7 @@ import com.techshroom.slitheringlatte.python.interfaces.Writable;
  * 
  * @author Kenzie Togami
  */
-final class WriteIntefaces {
+final class WriteInterfaces {
 
     private static final Path BASE = Paths.get("src", "main");
     private static final Path RESOURCES = BASE.resolve("resources");
@@ -367,7 +367,7 @@ final class WriteIntefaces {
                                     .addParameters(PARAMETERS
                                             .values(lineOpts)
                                             .stream()
-                                            .map(WriteIntefaces::generateParameterSpec)
+                                            .map(WriteInterfaces::generateParameterSpec)
                                             .collect(Collectors.toList()))
                                     .build();
                 }
@@ -468,7 +468,7 @@ final class WriteIntefaces {
         return res;
     }
 
-    private WriteIntefaces() {
+    private WriteInterfaces() {
     }
 
 }
