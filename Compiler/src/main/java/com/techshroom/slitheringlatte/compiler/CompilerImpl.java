@@ -3,10 +3,10 @@ package com.techshroom.slitheringlatte.compiler;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.techshroom.slitheringlatte.array.EmptyArray;
@@ -48,7 +48,7 @@ public class CompilerImpl implements Compiler {
         inSrc = in;
         outTarget = out;
         pythonContainers = factory.fromStringDescriptor(in);
-        contList = Arrays.asList(pythonContainers);
+        contList = ImmutableList.copyOf(pythonContainers);
         this.factory = genericFactory;
     }
 

@@ -1,12 +1,13 @@
 package com.techshroom.slitheringlatte;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * Options keeper.
@@ -39,11 +40,11 @@ public enum Options {
 
     private void doParserSetup() {
         input =
-                parser.acceptsAll(Arrays.asList("i", "input"),
+                parser.acceptsAll(ImmutableList.of("i", "input"),
                                   "Input file (.py usually)").withRequiredArg()
                         .defaultsTo(STREAM);
         output =
-                parser.acceptsAll(Arrays.asList("o", "output"),
+                parser.acceptsAll(ImmutableList.of("o", "output"),
                                   "Output file (.class usually)")
                         .withRequiredArg().defaultsTo(STREAM);
         debug = parser.accepts("debug", "Turns on debug output");
