@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
-import com.techshroom.slitheringlatte.NotCloseable;
+import com.techshroom.slitheringlatte.VoidCloseable;
 import com.techshroom.slitheringlatte.codeobjects.PythonCodeContainer;
 
 /**
@@ -14,7 +14,7 @@ import com.techshroom.slitheringlatte.codeobjects.PythonCodeContainer;
  */
 @AutoValue
 public abstract class StringPythonCodeContainer implements PythonCodeContainer,
-        NotCloseable {
+        VoidCloseable {
     /**
      * Wrap the given lines in a code container. Please use
      * {@link CodeFactory#wrap(Collection, com.techshroom.slitheringlatte.codeobjects.Language)}

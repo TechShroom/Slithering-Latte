@@ -7,8 +7,10 @@ import java.io.Closeable;
  * 
  * @author Kenzie Togami
  */
-public interface NotCloseable extends Closeable {
+public interface VoidCloseable extends Closeable {
+
     @Override
     default void close() {
     }
+
 }
