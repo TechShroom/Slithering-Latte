@@ -36,7 +36,7 @@ public interface CodeContainer extends Closeable {
      */
     default Optional<LoadableCodeContainer> asLoadable() {
         return isLoadable() ? Optional.of((LoadableCodeContainer) this)
-                          : Optional.empty();
+                           : Optional.empty();
     }
 
     /**
@@ -72,7 +72,7 @@ public interface CodeContainer extends Closeable {
      * @return the lines of code as a array of Strings
      */
     default String[] getLinesArray() {
-        return getLines().toArray(EmptyArray.STRING.get());
+        return getLines().toArray(EmptyArray.STRING.getRegular().get());
     }
 
     /**

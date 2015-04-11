@@ -2,6 +2,7 @@ package com.techshroom.slitheringlatte.array;
 
 import java.lang.reflect.Array;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -60,27 +61,31 @@ public final class EmptyArray<T> {
 
     private final Class<T> arrayType;
     private final Object array;
+    private transient Optional<T[]> arrayCast = Optional.empty();
 
+    @SuppressWarnings("unchecked")
     private EmptyArray(Class<T> type) {
         arrayType = type;
         array = Array.newInstance(arrayType, 0);
+        if (!arrayType.isPrimitive()) {
+            arrayCast = Optional.of((T[]) array);
+        }
     }
 
     /**
      * Get the empty array instance.
      * 
-     * @return an empty array of type T.
+     * @return an empty array of type T
      */
-    @SuppressWarnings("unchecked")
-    public T[] get() {
-        return (T[]) array;
+    public Optional<T[]> getRegular() {
+        return arrayCast;
     }
 
     /**
-     * Returns the same as {@link #get()}, except un-cast so that primitive
-     * arrays are allowed.
+     * Returns the same as {@link #getRegular()}, except un-cast so that
+     * primitive arrays are allowed.
      * 
-     * @return
+     * @return an empty array
      */
     public Object getUnsafe() {
         return array;

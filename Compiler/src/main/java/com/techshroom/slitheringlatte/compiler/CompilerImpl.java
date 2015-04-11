@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -21,8 +22,8 @@ import com.techshroom.slitheringlatte.codeobjects.generators.PythonCodeFactory;
  * @author Kenzie Togami
  */
 public class CompilerImpl implements Compiler {
-    private static final EmptyArray<JavaCodeContainer> JCC_EMPTY_ARRAY =
-            EmptyArray.of(JavaCodeContainer.class);
+    private static final Optional<JavaCodeContainer[]> JCC_EMPTY_ARRAY =
+            EmptyArray.of(JavaCodeContainer.class).getRegular();
     private final String inSrc, outTarget;
     private final PythonCodeContainer[] pythonContainers;
     private final transient List<PythonCodeContainer> contList;

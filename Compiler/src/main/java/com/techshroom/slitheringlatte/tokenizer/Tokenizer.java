@@ -26,7 +26,8 @@ public abstract class Tokenizer {
         }
 
         private static String[] convToString(Object... objs) {
-            return partialConvToString(objs).toArray(EmptyArray.STRING.get());
+            return partialConvToString(objs).toArray(EmptyArray.STRING
+                    .getRegular().get());
         }
 
         private static List<String> partialConvToString(Object... objs) {
@@ -95,8 +96,10 @@ public abstract class Tokenizer {
     private static final Pattern Octnumber = builder._compile("0[oO][0-7]+");
     private static final Pattern Decnumber = builder
             ._compile("(?:0+|[1-9][0-9]*)");
-    private static final Pattern Intnumber = builder
-            .group(Hexnumber, Binnumber, Octnumber, Decnumber);
+    private static final Pattern Intnumber = builder.group(Hexnumber,
+                                                           Binnumber,
+                                                           Octnumber,
+                                                           Decnumber);
     private static final Pattern Exponent = builder._compile("[eE][-+]?[0-9]+");
     private static final Pattern Pointfloat = builder.concat(builder
             .group("[0-9]+\\.[0-9]*", "\\.[0-9]+"), builder.maybe(Exponent));
@@ -106,7 +109,8 @@ public abstract class Tokenizer {
     private static final Pattern Imagnumber = builder
             .group("[0-9]+[jJ]", builder.concat(Floatnumber, "[jJ]"));
     private static final Pattern Number = builder.group(Imagnumber,
-                                                        Floatnumber, Intnumber);
+                                                        Floatnumber,
+                                                        Intnumber);
     private static final String StringPrefix = "(?:[bB][rR]?|[rR][bB]?|[uU])?";
     /**
      * Tail end of single quote (') string.
@@ -138,18 +142,25 @@ public abstract class Tokenizer {
     private static final Pattern String_ = builder.group(StringPrefix
             + "'[^\\n'\\\\]*(?:\\\\.[^\\n'\\\\]*)*'", StringPrefix
             + "\"[^\\n\"\\\\]*(?:\\\\.[^\\n\"\\\\]*)*\"");
-    private static final Pattern Operator = builder.group("\\*\\*=?", ">>=?",
-                                                          "<<=?", "!=", "//=?",
+    private static final Pattern Operator = builder.group("\\*\\*=?",
+                                                          ">>=?",
+                                                          "<<=?",
+                                                          "!=",
+                                                          "//=?",
                                                           "->",
                                                           "[+\\-*/%&@|^=<>]=?",
                                                           "~");
     private static final String Bracket = "[\\[\\](){}]";
-    private static final Pattern Special = builder
-            .group("\\r?\\n", "\\.\\.\\.", "[:;.,@]");
-    private static final Pattern Funny = builder.group(Operator, Bracket,
+    private static final Pattern Special = builder.group("\\r?\\n",
+                                                         "\\.\\.\\.",
+                                                         "[:;.,@]");
+    private static final Pattern Funny = builder.group(Operator,
+                                                       Bracket,
                                                        Special);
-    private static final Pattern PlainToken = builder.group(Number, Funny,
-                                                            String_, Name);
+    private static final Pattern PlainToken = builder.group(Number,
+                                                            Funny,
+                                                            String_,
+                                                            Name);
     private static final Pattern Token = builder.concat(Ignore, PlainToken);
     /**
      * First (or only) line of ' or " string.
@@ -157,7 +168,8 @@ public abstract class Tokenizer {
     private static final Pattern ContStr = builder.group(builder
             .concat(StringPrefix, "'[^\\n'\\\\]*(?:\\\\.[^\\n'\\\\]*)*"
                     + builder.group("'", "\\\\\\r?\\n")), builder
-            .concat(StringPrefix, "\"[^\\n\"\\\\]*(?:\\\\.[^\\n\"\\\\]*)*",
+            .concat(StringPrefix,
+                    "\"[^\\n\"\\\\]*(?:\\\\.[^\\n\"\\\\]*)*",
                     builder.group('"', "\\\\\\r?\\n")));
     private static final Pattern PseudoExtras = builder
             .group("\\\\\\r?\\n|\\Z", Comment, Triple);

@@ -68,7 +68,8 @@ public class ArrayTest {
      */
     @Test
     public void checkEmptyArray() throws Exception {
-        assertArrayEquals(new Object[0], EmptyArray.of(Object.class).get());
-        assertArrayEquals(new String[0], EmptyArray.STRING.get());
+        assertArrayEquals(new Object[0], EmptyArray.of(Object.class)
+                .getRegular().get());
+        assertArrayEquals(new String[0], EmptyArray.STRING.getRegular().get());
     }
 }

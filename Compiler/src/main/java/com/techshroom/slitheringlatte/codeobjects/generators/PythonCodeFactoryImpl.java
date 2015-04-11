@@ -3,6 +3,7 @@ package com.techshroom.slitheringlatte.codeobjects.generators;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Optional;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
@@ -15,8 +16,8 @@ import com.techshroom.slitheringlatte.codeobjects.PythonCodeContainer;
  * @author Kenzie Togami
  */
 public class PythonCodeFactoryImpl implements PythonCodeFactory {
-    private static final EmptyArray<PythonCodeContainer> PCC_EMPTY_ARRAY =
-            EmptyArray.of(PythonCodeContainer.class);
+    private static final Optional<PythonCodeContainer[]> PCC_EMPTY_ARRAY =
+            EmptyArray.of(PythonCodeContainer.class).getRegular();
 
     @Override
     public PythonCodeContainer fromStream() {
