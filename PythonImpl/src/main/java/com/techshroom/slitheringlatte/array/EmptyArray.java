@@ -22,24 +22,25 @@ import com.google.common.cache.LoadingCache;
  *            - type for the array
  */
 public final class EmptyArray<T> {
-    private static final LoadingCache<Class<?>, EmptyArray<?>> cache = CacheBuilder
-            .newBuilder().concurrencyLevel(1).maximumSize(100)
-            .removalListener(notify -> {
-            }).build(new CacheLoader<Class<?>, EmptyArray<?>>() {
-                @Override
-                public EmptyArray<?> load(Class<?> key) {
-                    return new EmptyArray<>(key);
-                }
+    private static final LoadingCache<Class<?>, EmptyArray<?>> cache =
+            CacheBuilder.newBuilder().concurrencyLevel(1).maximumSize(100)
+                    .removalListener(notify -> {
+                    }).build(new CacheLoader<Class<?>, EmptyArray<?>>() {
+                        @Override
+                        public EmptyArray<?> load(Class<?> key) {
+                            return new EmptyArray<>(key);
+                        }
 
-                @Override
-                public Map<Class<?>, EmptyArray<?>> loadAll(
-                        Iterable<? extends Class<?>> keys) {
-                    Collector<Class<?>, ?, Map<Class<?>, EmptyArray<?>>> toMap = Collectors
-                            .toMap(Function.identity(), this::load);
-                    return StreamSupport.stream(keys.spliterator(), false)
-                            .collect(toMap);
-                }
-            });
+                        @Override
+                        public Map<Class<?>, EmptyArray<?>> loadAll(
+                                Iterable<? extends Class<?>> keys) {
+                            Collector<Class<?>, ?, Map<Class<?>, EmptyArray<?>>> toMap =
+                                    Collectors.toMap(Function.identity(),
+                                                     this::load);
+                            return StreamSupport.stream(keys.spliterator(),
+                                                        false).collect(toMap);
+                        }
+                    });
     /**
      * String shortcut.
      */

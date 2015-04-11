@@ -31,8 +31,8 @@ import com.google.common.primitives.Primitives;
 import com.squareup.javapoet.*;
 import com.techshroom.slitheringlatte.array.EmptyArray;
 import com.techshroom.slitheringlatte.python.annotations.InterfaceType;
-import com.techshroom.slitheringlatte.python.annotations.PythonName;
 import com.techshroom.slitheringlatte.python.annotations.InterfaceType.Value;
+import com.techshroom.slitheringlatte.python.annotations.PythonName;
 import com.techshroom.slitheringlatte.python.interfaces.DunderAttribute;
 import com.techshroom.slitheringlatte.python.interfaces.Writable;
 
@@ -280,7 +280,7 @@ final class WriteIntefaces {
 
     private static Optional<String> regexGroupOpt(Matcher m, int group) {
         return m.groupCount() <= group ? Optional.ofNullable(m.group(group))
-                                     : Optional.empty();
+                                      : Optional.empty();
     }
 
     private static void writeInterface(String line, int lineNumber) {
