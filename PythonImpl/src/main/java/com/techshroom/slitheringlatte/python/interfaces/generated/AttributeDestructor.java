@@ -7,5 +7,5 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderAttribute;
 @InterfaceType(InterfaceType.Value.METHOD)
 @PythonName("__delattr__")
 public interface AttributeDestructor extends DunderAttribute {
-    Object delattr(String name);
+    void delattr(String name);
 }

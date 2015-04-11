@@ -3,18 +3,19 @@ package com.techshroom.slitheringlatte.python.error;
 import java.util.regex.Pattern;
 
 import com.techshroom.slitheringlatte.python.Tuple;
+import com.techshroom.slitheringlatte.python.interfaces.BasicPythonObject;
 
 /**
  * The base class for all built-in exceptions. It is not meant to be directly
  * inherited by user-defined classes (for that, use Exception). If
- * {@link #str()} is called on an instance of this class, the representation of
- * the argument(s) to the instance are returned, or the empty string when there
- * were no arguments.
+ * {@link #toString()} is called on an instance of this class, the
+ * representation of the argument(s) to the instance are returned, or the empty
+ * string when there were no arguments.
  * 
  * @author Kenzie Togami
  */
 public class BaseException
-        extends RuntimeException {
+        extends RuntimeException implements BasicPythonObject {
     private static final long serialVersionUID = 1131936802208300547L;
     private static final Pattern DOT = Pattern.compile(".", Pattern.LITERAL);
 
@@ -22,12 +23,12 @@ public class BaseException
      * Arguments, visible to more closely replicate Python.<br>
      * <br>
      * The tuple of arguments given to the exception constructor. Some built-in
-     * exceptions (like {@link OSError}) expect a certain number of arguments and assign
-     * a special meaning to the elements of this tuple, while others are usually
-     * called only with a single string giving an error message.
+     * exceptions (like {@link OSError}) expect a certain number of arguments
+     * and assign a special meaning to the elements of this tuple, while others
+     * are usually called only with a single string giving an error message.
      */
     public final Tuple args;
-    
+
     private final String message;
 
     /**
@@ -38,8 +39,7 @@ public class BaseException
      */
     public BaseException(Object... args) {
         this.args = Tuple.create(args);
-        if (this.args.size() == 1
-                && this.args.get(0) instanceof String) {
+        if (this.args.size() == 1 && this.args.get(0) instanceof String) {
             // message
             message = this.args.get(0).toString();
         } else {
@@ -72,12 +72,12 @@ public class BaseException
         return this;
     }
 
-    @SuppressWarnings("javadoc")
+    @Override
     public String repr() {
         return DOT.splitAsStream(getClass().getName())
                 .reduce((id, current) -> current)
                 .orElseThrow(() -> new IllegalStateException("no class name?"))
-                + args;    
+                + args;
     }
 
     @Override
@@ -91,9 +91,10 @@ public class BaseException
                 return args.toString();
         }
     }
-    
+
     @Override
     public String getMessage() {
         return message;
     }
+
 }

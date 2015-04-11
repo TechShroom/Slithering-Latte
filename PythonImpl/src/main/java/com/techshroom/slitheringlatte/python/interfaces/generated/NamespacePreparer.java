@@ -4,7 +4,6 @@ import com.techshroom.slitheringlatte.python.annotations.InterfaceType;
 import com.techshroom.slitheringlatte.python.annotations.KeywordArgs;
 import com.techshroom.slitheringlatte.python.annotations.PythonName;
 import com.techshroom.slitheringlatte.python.interfaces.DunderAttribute;
-
 import java.util.List;
 import java.util.Map;
 
