@@ -25,7 +25,7 @@
 -i METHOD -n ConvertableToBool -p __bool__ -t boolean;
 -i METHOD -n RegularAttributeProvider -p __getattribute__ -t Object -m String:name;
 -i METHOD -n AttributeStorage -p __setattr__ -t Object -m String:name,String:value;
--i METHOD -n AttributeDestructor -p __delattr__ -t Object -m String:name;
+-i METHOD -n AttributeDestructor -p __delattr__ -t void -m String:name;
 -i METHOD -n AttributeSequenceProvider -p __dir__ -t Iterable -g String;
 -i ATTRIBUTE -n AttributeSlots -p __slots__ -t List -g String;
 -i ATTRIBUTE -n AttributeDictionaryAttribute -p __dict__ -w -t java.util.Map -g String,Object;
