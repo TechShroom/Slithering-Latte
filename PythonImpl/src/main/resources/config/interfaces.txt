@@ -10,30 +10,30 @@
 -i METHOD -n ConvertableToBytes -p __bytes__ -t byte[];
 -i METHOD -n Formattable -p __format__ -t String -m String:formatSpec;
 -i METHOD -n Comparable
-    LT -p __lt__ -a lessThan -t boolean -m T:other -g T --share-generic;
+    LT<T> -p __lt__ -a lessThan -t boolean -m T:other;
 -i METHOD -n Comparable
-    LE -p __le__ -a lessThanOrEqualTo -t boolean -m T:other -g T --share-generic;
+    LE<T> -p __le__ -a lessThanOrEqualTo -t boolean -m T:other;
 -i METHOD -n Comparable
-    EQ -p __eq__ -a equalTo -t boolean -m T:other -g T --share-generic;
+    EQ<T> -p __eq__ -a equalTo -t boolean -m T:other;
 -i METHOD -n Comparable
-    NE -p __ne__ -a notEquals -t boolean -m T:other -g T --share-generic;
+    NE<T> -p __ne__ -a notEquals -t boolean -m T:other;
 -i METHOD -n Comparable
-    GT -p __gt__ -a greaterThan -t boolean -m T:other -g T --share-generic;
+    GT<T> -p __gt__ -a greaterThan -t boolean -m T:other;
 -i METHOD -n Comparable
-    GE -p __ge__ -a greaterThanOrEqualTo -t boolean -m T:other -g T --share-generic;
+    GE<T> -p __ge__ -a greaterThanOrEqualTo -t boolean -m T:other;
 # hash is mapped to hashCode
 -i METHOD -n ConvertableToBool -p __bool__ -t boolean;
 -i METHOD -n RegularAttributeProvider -p __getattribute__ -t Object -m String:name;
 -i METHOD -n AttributeStorage -p __setattr__ -t Object -m String:name,String:value;
 -i METHOD -n AttributeDestructor -p __delattr__ -t void -m String:name;
--i METHOD -n AttributeSequenceProvider -p __dir__ -t Iterable -g String;
--i ATTRIBUTE -n AttributeSlots -p __slots__ -t List -g String;
--i ATTRIBUTE -n AttributeDictionaryAttribute -p __dict__ -w -t java.util.Map -g String,Object;
--i MIX -n PythonObject -p object -s Deletable,Representable,ConvertableToBytes,
+-i METHOD -n AttributeSequenceProvider -p __dir__ -t Iterable<String>;
+-i ATTRIBUTE -n AttributeSlots -p __slots__ -t List<String>;
+-i ATTRIBUTE -n AttributeDictionaryAttribute -p __dict__ -w -t Map<String|Object>;
+-i MIX -n PythonObject<T> -p object -s Deletable,Representable,ConvertableToBytes,
                              ComparableMixin<T>,ConvertableToBool,
                              RegularAttributeProvider,AttributeStorage,AttributeDestructor,
                              AttributeSequenceProvider,AttributeSlots,
-                             AttributeDictionaryAttribute -g T;
+                             AttributeDictionaryAttribute;
 
 # some random stuff you can mixin
 -i METHOD -n MissingAttributeProvider -p __getattr__ -t Object -m String:name;
@@ -48,11 +48,10 @@
 -i ATTRIBUTE -n ModuleNameAttribute -p __module__ -w -t String;
 -i ATTRIBUTE -n DefaultArgsAttribute -p __defaults__ -w -t Tuple;
 -i ATTRIBUTE -n CompiledCodeAttribute -p __code__ -w -t String;
--i ATTRIBUTE -n GlobalsAttribute -p __global__ -t java.util.Map -g String,Object;
+-i ATTRIBUTE -n GlobalsAttribute -p __global__ -t Map<String|Object>;
 -i ATTRIBUTE -n ClosureVariablesAttribute -p __closure__ -t Tuple;
--i ATTRIBUTE -n ParameterAnnotationsAttribute -p __annotations__ -w -t java.util.Map -g String,
-                                                                                        Object;
--i ATTRIBUTE -n KeywordDefaultsAttribute -p __kwdefaults__ -w -t java.util.Map -g String,Object;
+-i ATTRIBUTE -n ParameterAnnotationsAttribute -p __annotations__ -w -t Map<String|Object>;
+-i ATTRIBUTE -n KeywordDefaultsAttribute -p __kwdefaults__ -w -t Map<String|Object>;
 -i MIX -n CallableType -s DocumentationAttribute,NameAttribute,QualifiedNameAttribute,
                    ModuleNameAttribute,DefaultArgsAttribute,CompiledCodeAttribute,
                    GlobalsAttribute,AttributeDictionaryAttribute,
@@ -60,7 +59,7 @@
                    KeywordDefaultsAttribute;
 
 # metaclass
--i METHOD -n NamespacePreparer -p __prepare__ -t Map -g String,Object -m String:
+-i METHOD -n NamespacePreparer -p __prepare__ -t Map<String|Object> -m String:
                                                            name,List<String>:bases,
                                                            Map<String|Object>:
                                                            kwargs@KeywordArgs -c return%20
@@ -90,3 +89,10 @@
 # modules
 -i ATTRIBUTE -n FileSource -p __file__ -t String;
 -i MIX -n Module -s AttributeDictionaryAttribute,NameAttribute,DocumentationAttribute,FileSource;
+
+# container types
+-i METHOD -n Sizable -p __len__ -a length -t int;
+-i METHOD -n SizeHint -p __length_hint__ -a lengthHint -t int;
+-i METHOD -n ReadableContainer<K|V> -p __getitem__ -t <V> -m K:key;
+-i METHOD -n MissingItemProvider<K|V> -p __missing__ -a onMissingItem -t <V> -m K:key;
+-i MIX -n Container<K|V> -s Sizable,ReadableContainer<K|V>;
