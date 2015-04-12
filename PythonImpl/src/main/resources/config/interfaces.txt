@@ -10,17 +10,17 @@
 -i METHOD -n ConvertableToBytes -p __bytes__ -t byte[];
 -i METHOD -n Formattable -p __format__ -t String -m String:formatSpec;
 -i METHOD -n Comparable
-    LT<T> -p __lt__ -a lessThan -t boolean -m T:other;
+    LT<T> -p __lt__ -a lessThan -t boolean -m generic.T:other;
 -i METHOD -n Comparable
-    LE<T> -p __le__ -a lessThanOrEqualTo -t boolean -m T:other;
+    LE<T> -p __le__ -a lessThanOrEqualTo -t boolean -m generic.T:other;
 -i METHOD -n Comparable
-    EQ<T> -p __eq__ -a equalTo -t boolean -m T:other;
+    EQ<T> -p __eq__ -a equalTo -t boolean -m generic.T:other;
 -i METHOD -n Comparable
-    NE<T> -p __ne__ -a notEquals -t boolean -m T:other;
+    NE<T> -p __ne__ -a notEquals -t boolean -m generic.T:other;
 -i METHOD -n Comparable
-    GT<T> -p __gt__ -a greaterThan -t boolean -m T:other;
+    GT<T> -p __gt__ -a greaterThan -t boolean -m generic.T:other;
 -i METHOD -n Comparable
-    GE<T> -p __ge__ -a greaterThanOrEqualTo -t boolean -m T:other;
+    GE<T> -p __ge__ -a greaterThanOrEqualTo -t boolean -m generic.T:other;
 # hash is mapped to hashCode
 -i METHOD -n ConvertableToBool -p __bool__ -t boolean;
 -i METHOD -n RegularAttributeProvider -p __getattribute__ -t Object -m String:name;
@@ -90,9 +90,4 @@
 -i ATTRIBUTE -n FileSource -p __file__ -t String;
 -i MIX -n Module -s AttributeDictionaryAttribute,NameAttribute,DocumentationAttribute,FileSource;
 
-# container types
--i METHOD -n Sizable -p __len__ -a length -t int;
--i METHOD -n SizeHint -p __length_hint__ -a lengthHint -t int;
--i METHOD -n ReadableContainer<K|V> -p __getitem__ -t <V> -m K:key;
--i METHOD -n MissingItemProvider<K|V> -p __missing__ -a onMissingItem -t <V> -m K:key;
--i MIX -n Container<K|V> -s Sizable,ReadableContainer<K|V>;
+# container types defined by hand since they're clearly laid out
