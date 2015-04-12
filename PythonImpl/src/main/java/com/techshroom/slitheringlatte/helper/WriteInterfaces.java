@@ -26,7 +26,9 @@ import joptsimple.OptionSpec;
 import joptsimple.ValueConverter;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Multiset;
 import com.google.common.primitives.Primitives;
 import com.squareup.javapoet.*;
 import com.techshroom.slitheringlatte.array.EmptyArray;
@@ -179,9 +181,11 @@ final class WriteInterfaces {
                     "com.techshroom.slitheringlatte.python.annotations",
                     "com.techshroom.slitheringlatte.python.interfaces",
                     PACKAGE);
+        private final Multiset<String> trySet = HashMultiset.create();
 
         @Override
         public Class<?> convert(String value) {
+            int tries = trySet.count(value);
             Supplier<RuntimeException> exec =
                     () -> new IllegalArgumentException(value
                             + " is not a class");
@@ -205,13 +209,35 @@ final class WriteInterfaces {
             } catch (ClassNotFoundException e) {
                 // try again with java.lang
                 if (value.indexOf('.') < 0) {
-                    return importedPackages.stream()
-                            .map(pack -> pack + '.' + value)
-                            .map(this::errorFreeConvert)
-                            .filter(Objects::nonNull).findFirst()
-                            .orElseThrow(() -> execWithCause.apply(e));
+                    Optional<Class<?>> found =
+                            importedPackages.stream()
+                                    .map(pack -> pack + '.' + value)
+                                    .<Class<?>> map(this::errorFreeConvert)
+                                    .filter(Objects::nonNull).findFirst();
+                    if (tries > 10) {
+                        System.err.println("WARNING: " + value
+                                + " took to long to resolve");
+                        return found.orElseThrow(() -> execWithCause.apply(e));
+                    } else {
+                        trySet.add(value);
+                        return found.orElseGet(() -> {
+                            // patch to stop missing classes from killing it
+                                try {
+                                    System.err.println("Sleeping for 1s on "
+                                            + value);
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException ignored) {
+                                }
+                                return convert(value);
+                            });
+                    }
                 } else {
                     throw execWithCause.apply(e);
+                }
+            } finally {
+                if (tries == 0) {
+                    // first one
+                    trySet.setCount(value, 0);
                 }
             }
         }
@@ -440,11 +466,13 @@ final class WriteInterfaces {
                     + " is not a parameter string (<type>:<name>@<annotation>)");
         }
         Optional<String> annot = regexGroupOpt(data, 3);
-        TypeName typeName = null;
-        try {
+        String type = data.group(1);
+        TypeName typeName;
+        if (type.startsWith("generic.")) {
+            // generic type
+            typeName = TO_TYPENAME.apply("<" + type.substring(8) + ">");
+        } else {
             typeName = generateSuperTypeName(data.group(1));
-        } catch (IllegalArgumentException ignore) {
-            typeName = TypeVariableName.get(data.group(1));
         }
         ParameterSpec.Builder builder =
                 ParameterSpec.builder(typeName, data.group(2));
