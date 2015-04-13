@@ -6,7 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -126,9 +128,14 @@ final class WriteInterfaces {
 
     private static final class TypeNameConverter implements
             ValueConverter<TypeName> {
+        private final Map<String, TypeName> typeNames = new HashMap<>();
 
         @Override
-        public TypeName convert(String value) {
+        public TypeName convert(String key) {
+            return typeNames.computeIfAbsent(key, this::convertImpl);
+        }
+
+        private TypeName convertImpl(String value) {
             String className = value;
             String genericToParse = null;
             // 1. Extract generic value
@@ -182,9 +189,14 @@ final class WriteInterfaces {
                     "com.techshroom.slitheringlatte.python.interfaces",
                     PACKAGE);
         private final Multiset<String> trySet = HashMultiset.create();
+        private final Map<String, Class<?>> classes = new HashMap<>();
 
         @Override
-        public Class<?> convert(String value) {
+        public Class<?> convert(String key) {
+            return classes.computeIfAbsent(key, this::convertImpl);
+        }
+
+        private Class<?> convertImpl(String value) {
             int tries = trySet.count(value);
             Supplier<RuntimeException> exec =
                     () -> new IllegalArgumentException(value
