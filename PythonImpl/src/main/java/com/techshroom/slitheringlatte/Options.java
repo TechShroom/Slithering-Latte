@@ -60,9 +60,9 @@ public enum Options {
     }
 
     /**
-     * Returns the input output spec.
+     * Returns the output option spec.
      * 
-     * @return the input output spec.
+     * @return the output option spec.
      */
     public ArgumentAcceptingOptionSpec<String> outputOpt() {
         return output;
