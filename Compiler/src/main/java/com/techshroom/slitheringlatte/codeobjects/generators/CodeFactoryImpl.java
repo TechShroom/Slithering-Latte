@@ -1,6 +1,7 @@
 package com.techshroom.slitheringlatte.codeobjects.generators;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import com.google.common.collect.ImmutableList;
 import com.techshroom.slitheringlatte.array.GenerateArray;
@@ -28,12 +29,9 @@ public class CodeFactoryImpl implements CodeFactory {
     @Override
     public <CType extends CodeContainer> CType wrap(Collection<String> code,
             Language<CType> language) {
-        CType container = language.getConstructorFunction().apply(code);
-        if (container == null) {
-            throw new UnsupportedOperationException("Uknown language "
-                    + language.getName() + ".");
-        }
-        return container;
+        Optional<CType> container =
+                language.getConstructorFunction().apply(code);
+        return container.orElseThrow(() -> new UnsupportedOperationException(
+                "Unknown language " + language.getName() + "."));
     }
-
 }

@@ -1,6 +1,7 @@
 package com.techshroom.slitheringlatte.codeobjects;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.google.auto.value.AutoValue;
@@ -44,20 +45,22 @@ public abstract class Language<Container extends CodeContainer> {
             String name, Class<CType> containerType,
             Function<Collection<String>, CType> constructorFunction) {
         return new AutoValue_Language<>(name, containerType,
-                constructorFunction);
+                constructorFunction.andThen(Optional::ofNullable));
     }
 
     /**
      * Represents the Python language.
      */
     public static final Language<PythonCodeContainer> PYTHON =
-            newLanguage("Python", PythonCodeContainer.class,
+            newLanguage("Python",
+                        PythonCodeContainer.class,
                         StringPythonCodeContainer::wrap);
     /**
      * Represents the Java language.
      */
     public static final Language<JavaCodeContainer> JAVA =
-            newLanguage("Java", JavaCodeContainer.class,
+            newLanguage("Java",
+                        JavaCodeContainer.class,
                         StringJavaCodeContainer::wrap);
 
     /**
@@ -76,8 +79,8 @@ public abstract class Language<Container extends CodeContainer> {
 
     /**
      * Returns a function that can be used to make instances of the code
-     * container type. The given function may return {@code null}, indicating
-     * that there is no implementation of wrapping for this language.
+     * container type. The given function may return {@link Optional#empty()},
+     * indicating that there is no implementation of wrapping for this language.
      * 
      * <p>
      * Note: This is only meant for use by CodeFactory implementations.
@@ -86,6 +89,6 @@ public abstract class Language<Container extends CodeContainer> {
      * @return A function that can be used to make instances of the code
      *         container type
      */
-    public abstract Function<Collection<String>, Container>
+    public abstract Function<Collection<String>, Optional<Container>>
             getConstructorFunction();
 }
