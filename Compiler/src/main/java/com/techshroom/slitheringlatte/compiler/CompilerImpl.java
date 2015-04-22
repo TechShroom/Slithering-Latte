@@ -45,16 +45,16 @@ public class CompilerImpl implements Compiler {
     public CompilerImpl(@Named("inputSource") String in,
             @Named("outputTarget") String out, PythonCodeFactory factory,
             CodeFactory genericFactory) {
-        inSrc = in;
-        outTarget = out;
-        pythonContainers = factory.fromStringDescriptor(in);
-        contList = ImmutableList.copyOf(pythonContainers);
+        this.inSrc = in;
+        this.outTarget = out;
+        this.pythonContainers = factory.fromStringDescriptor(in);
+        this.contList = ImmutableList.copyOf(this.pythonContainers);
         this.factory = genericFactory;
     }
 
     @Override
     public JavaCodeContainer[] generateJavaCode() {
-        for (PythonCodeContainer python : pythonContainers) {
+        for (PythonCodeContainer python : this.pythonContainers) {
             checkNotNull(python);
             if (python.isLoadable()) {
                 python.asLoadable().get().load();
@@ -62,8 +62,8 @@ public class CompilerImpl implements Compiler {
         }
         // for now, just read the containers and try to process them
         List<JavaCodeContainer> javaCode =
-                new ArrayList<>(pythonContainers.length);
-        for (PythonCodeContainer pythonCodeContainer : pythonContainers) {
+                new ArrayList<>(this.pythonContainers.length);
+        for (PythonCodeContainer pythonCodeContainer : this.pythonContainers) {
             javaCode.add(generateJavaCode(pythonCodeContainer));
         }
         return javaCode.toArray(JCC_EMPTY_ARRAY.get());
@@ -71,6 +71,6 @@ public class CompilerImpl implements Compiler {
 
     private JavaCodeContainer generateJavaCode(PythonCodeContainer python) {
         String java = "";
-        return factory.wrap(java, Language.JAVA);
+        return this.factory.wrap(java, Language.JAVA);
     }
 }

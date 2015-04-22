@@ -56,7 +56,7 @@ public class Main {
         @Provides
         @Named("inputSource")
         public String getInput() {
-            return input;
+            return this.input;
         }
 
         /**
@@ -77,7 +77,7 @@ public class Main {
         @Provides
         @Named("outputTarget")
         public String getOutput() {
-            return output;
+            return this.output;
         }
     }
 

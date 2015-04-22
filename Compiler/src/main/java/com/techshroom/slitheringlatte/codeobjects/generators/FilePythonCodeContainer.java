@@ -22,10 +22,10 @@ final class FilePythonCodeContainer
 
     @Override
     public boolean save() {
-        if (closed) {
+        if (this.closed) {
             throw new IllegalStateException("closed");
         }
-        try (Writer writer = Files.newBufferedWriter(file.toPath())) {
+        try (Writer writer = Files.newBufferedWriter(this.file.toPath())) {
             writer.write(getAllCode());
             return true;
         } catch (IOException e) {
@@ -41,7 +41,7 @@ final class FilePythonCodeContainer
         try {
             super.close();
         } finally {
-            closed = true;
+            this.closed = true;
         }
     }
 }

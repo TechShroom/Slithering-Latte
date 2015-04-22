@@ -18,38 +18,38 @@ class StreamPythonCodeContainer implements PythonCodeContainer,
     private Collection<String> dataAsColl;
 
     StreamPythonCodeContainer(Reader reader) {
-        source = reader;
+        this.source = reader;
     }
 
     @Override
     public boolean load() {
         try {
-            data = CharStreams.toString(source);
+            this.data = CharStreams.toString(this.source);
         } catch (IOException e) {
-            System.err.println("Couldn't load " + source);
+            System.err.println("Couldn't load " + this.source);
             if (Options.DEBUG) {
                 e.printStackTrace();
             }
-            data = "raise Error('Not compiled')";
-            dataAsColl = ImmutableList.of(data);
+            this.data = "raise Error('Not compiled')";
+            this.dataAsColl = ImmutableList.of(this.data);
             return false;
         }
-        dataAsColl = ImmutableList.copyOf(GenerateArray.ofLinesInString(data));
+        this.dataAsColl = ImmutableList.copyOf(GenerateArray.ofLinesInString(this.data));
         return true;
     }
 
     @Override
     public Collection<String> getLines() {
-        return dataAsColl;
+        return this.dataAsColl;
     }
 
     @Override
     public String getAllCode() {
-        return data;
+        return this.data;
     }
 
     @Override
     public void close() throws IOException {
-        source.close();
+        this.source.close();
     }
 }
