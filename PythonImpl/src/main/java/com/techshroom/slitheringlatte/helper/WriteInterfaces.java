@@ -132,7 +132,7 @@ final class WriteInterfaces {
 
         @Override
         public TypeName convert(String key) {
-            return typeNames.computeIfAbsent(key, this::convertImpl);
+            return this.typeNames.computeIfAbsent(key, this::convertImpl);
         }
 
         private TypeName convertImpl(String value) {
@@ -193,11 +193,11 @@ final class WriteInterfaces {
 
         @Override
         public Class<?> convert(String key) {
-            return classes.computeIfAbsent(key, this::convertImpl);
+            return this.classes.computeIfAbsent(key, this::convertImpl);
         }
 
         private Class<?> convertImpl(String value) {
-            int tries = trySet.count(value);
+            int tries = this.trySet.count(value);
             Supplier<RuntimeException> exec =
                     () -> new IllegalArgumentException(value
                             + " is not a class");
@@ -222,7 +222,7 @@ final class WriteInterfaces {
                 // try again with java.lang
                 if (value.indexOf('.') < 0) {
                     Optional<Class<?>> found =
-                            importedPackages.stream()
+                            this.importedPackages.stream()
                                     .map(pack -> pack + '.' + value)
                                     .<Class<?>> map(this::errorFreeConvert)
                                     .filter(Objects::nonNull).findFirst();
@@ -231,7 +231,7 @@ final class WriteInterfaces {
                                 + " took to long to resolve");
                         return found.orElseThrow(() -> execWithCause.apply(e));
                     } else {
-                        trySet.add(value);
+                        this.trySet.add(value);
                         return found.orElseGet(() -> {
                             // patch to stop missing classes from killing it
                                 try {
@@ -249,7 +249,7 @@ final class WriteInterfaces {
             } finally {
                 if (tries == 0) {
                     // first one
-                    trySet.setCount(value, 0);
+                    this.trySet.setCount(value, 0);
                 }
             }
         }

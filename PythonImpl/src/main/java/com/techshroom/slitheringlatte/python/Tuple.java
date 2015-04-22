@@ -25,7 +25,7 @@ public final class Tuple
 
     private Tuple(Object[] from) {
         super();
-        contents = from;
+        this.contents = from;
     }
 
     @SuppressWarnings("javadoc")
@@ -35,12 +35,12 @@ public final class Tuple
 
     @Override
     public Object get(int index) {
-        return contents[index];
+        return this.contents[index];
     }
 
     @Override
     public int size() {
-        return contents.length;
+        return this.contents.length;
     }
 
     @Override

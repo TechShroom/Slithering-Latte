@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
+import com.techshroom.slitheringlatte.python.interfaces.collections.abcs.PythonSized;
 import com.techshroom.slitheringlatte.python.interfaces.generated.PythonObject;
 
 /**
@@ -18,6 +19,9 @@ import com.techshroom.slitheringlatte.python.interfaces.generated.PythonObject;
 public interface BasicPythonObject extends PythonObject<PythonObject<?>> {
     @Override
     default boolean bool() {
+        if (this instanceof PythonSized) {
+            return ((PythonSized) this).length() != 0;
+        }
         throw new UnsupportedOperationException("not convertable");
     }
 

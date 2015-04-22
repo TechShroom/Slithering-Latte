@@ -41,9 +41,9 @@ public class BaseException
         this.args = Tuple.create(args);
         if (this.args.size() == 1 && this.args.get(0) instanceof String) {
             // message
-            message = this.args.get(0).toString();
+            this.message = this.args.get(0).toString();
         } else {
-            message = null;
+            this.message = null;
         }
     }
 
@@ -56,7 +56,7 @@ public class BaseException
      */
     public BaseException(String message) {
         this.message = message;
-        args = Tuple.create(message);
+        this.args = Tuple.create(message);
     }
 
     /**
@@ -77,24 +77,24 @@ public class BaseException
         return DOT.splitAsStream(getClass().getName())
                 .reduce((id, current) -> current)
                 .orElseThrow(() -> new IllegalStateException("no class name?"))
-                + args;
+                + this.args;
     }
 
     @Override
     public String toString() {
-        switch (args.len()) {
+        switch (this.args.len()) {
             case 0:
                 return "";
             case 1:
-                return String.valueOf(args.get(0));
+                return String.valueOf(this.args.get(0));
             default:
-                return args.toString();
+                return this.args.toString();
         }
     }
 
     @Override
     public String getMessage() {
-        return message;
+        return this.message;
     }
 
 }

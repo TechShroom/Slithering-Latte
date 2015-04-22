@@ -65,10 +65,10 @@ public final class EmptyArray<T> {
 
     @SuppressWarnings("unchecked")
     private EmptyArray(Class<T> type) {
-        arrayType = type;
-        array = Array.newInstance(arrayType, 0);
-        if (!arrayType.isPrimitive()) {
-            arrayCast = Optional.of((T[]) array);
+        this.arrayType = type;
+        this.array = Array.newInstance(this.arrayType, 0);
+        if (!this.arrayType.isPrimitive()) {
+            this.arrayCast = Optional.of((T[]) this.array);
         }
     }
 
@@ -78,7 +78,7 @@ public final class EmptyArray<T> {
      * @return an empty array of type T
      */
     public Optional<T[]> getRegular() {
-        return arrayCast;
+        return this.arrayCast;
     }
 
     /**
@@ -88,6 +88,6 @@ public final class EmptyArray<T> {
      * @return an empty array
      */
     public Object getUnsafe() {
-        return array;
+        return this.array;
     }
 }

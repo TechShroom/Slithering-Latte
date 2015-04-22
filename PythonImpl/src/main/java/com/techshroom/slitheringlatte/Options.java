@@ -39,15 +39,15 @@ public enum Options {
     }
 
     private void doParserSetup() {
-        input =
-                parser.acceptsAll(ImmutableList.of("i", "input"),
+        this.input =
+                this.parser.acceptsAll(ImmutableList.of("i", "input"),
                                   "Input file (.py usually)").withRequiredArg()
                         .defaultsTo(STREAM);
-        output =
-                parser.acceptsAll(ImmutableList.of("o", "output"),
+        this.output =
+                this.parser.acceptsAll(ImmutableList.of("o", "output"),
                                   "Output file (.class usually)")
                         .withRequiredArg().defaultsTo(STREAM);
-        debug = parser.accepts("debug", "Turns on debug output");
+        this.debug = this.parser.accepts("debug", "Turns on debug output");
     }
 
     /**
@@ -56,7 +56,7 @@ public enum Options {
      * @return the input option spec.
      */
     public ArgumentAcceptingOptionSpec<String> inputOpt() {
-        return input;
+        return this.input;
     }
 
     /**
@@ -65,7 +65,7 @@ public enum Options {
      * @return the output option spec.
      */
     public ArgumentAcceptingOptionSpec<String> outputOpt() {
-        return output;
+        return this.output;
     }
 
     /**
@@ -74,7 +74,7 @@ public enum Options {
      * @return the input output spec.
      */
     public OptionSpec<Void> debugOpt() {
-        return debug;
+        return this.debug;
     }
 
     /**
@@ -83,7 +83,7 @@ public enum Options {
      * @return the active parser
      */
     public OptionParser getParser() {
-        return parser;
+        return this.parser;
     }
 
     /**
@@ -95,7 +95,7 @@ public enum Options {
      */
     public OptionSet parse(String... args) {
         OptionSet opts = getParser().parse(args);
-        DEBUG = opts.has(debug);
+        DEBUG = opts.has(this.debug);
         return opts;
     }
 
