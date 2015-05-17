@@ -38,6 +38,15 @@
 # some random stuff you can mixin
 -i METHOD -n MissingAttributeProvider -p __getattr__ -t Object -m String:name;
 
+###################################
+# the operator overloading sector #
+###################################
+-i METHOD -n Operator
+	
+###################################
+# end operator overloading sector #
+###################################
+
 # descriptors are fun for the whole family
 # but hard-coded since they're simple
 

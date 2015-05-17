@@ -15,7 +15,7 @@ public interface PythonContainer<I> {
      * objects, this should consider the keys of the mapping rather than the
      * values or the key-item pairs.
      * 
-     * For objects that don’t define {@link #contains(Object)}, the membership
+     * For objects that don't define {@link #contains(Object)}, the membership
      * test first tries iteration via {@link Iterable#iterator()}, then the old
      * sequence iteration protocol via {@code ReadableContainer#getitem()}, see
      * this section in the language reference.

@@ -1,6 +1,7 @@
 package com.techshroom.slitheringlatte.python.interfaces.collections.abcs;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import com.techshroom.slitheringlatte.python.error.StopIteration;
 
@@ -38,7 +39,11 @@ public interface PythonIterator<T> extends Iterable<T>, Iterator<T> {
         if (!hasNext()) {
             throw new StopIteration();
         }
-        return next();
+        try {
+            return next();
+        } catch (NoSuchElementException e) {
+            throw new StopIteration(e.getMessage());
+        }
     }
 
 }

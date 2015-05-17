@@ -34,6 +34,7 @@ import com.google.common.collect.Multiset;
 import com.google.common.primitives.Primitives;
 import com.squareup.javapoet.*;
 import com.techshroom.slitheringlatte.array.EmptyArray;
+import com.techshroom.slitheringlatte.helper.HelperConstants.src;
 import com.techshroom.slitheringlatte.python.annotations.InterfaceType;
 import com.techshroom.slitheringlatte.python.annotations.InterfaceType.Value;
 import com.techshroom.slitheringlatte.python.annotations.PythonName;
@@ -48,9 +49,8 @@ import com.techshroom.slitheringlatte.python.interfaces.Writable;
  */
 final class WriteInterfaces {
 
-    private static final Path BASE = Paths.get("src", "main");
-    private static final Path RESOURCES = BASE.resolve("resources");
-    private static final Path CODE = BASE.resolve("java");
+    private static final Path RESOURCES = src.main.resources.path;
+    private static final Path CODE = src.main.java.path;
     private static final Path INTERFACE_SRC = RESOURCES.resolve(Paths
             .get("config", "interfaces.txt"));
     private static final Splitter SPACE = Splitter.on(' ');
