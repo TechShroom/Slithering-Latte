@@ -4,9 +4,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
+import com.google.common.collect.ImmutableList;
 
 public final class Parsing {
 
@@ -17,8 +20,8 @@ public final class Parsing {
     private static JoinInProgress join(Object pattern) {
         checkNotNull(pattern);
         String patStr = pattern.toString();
-        return by -> "(?!" + patStr + checkNotNull(by).toString()
-                + ")*" + patStr;
+        return by -> "(?!" + patStr + checkNotNull(by).toString() + ")*"
+                + patStr;
     }
 
     public static final Pattern VALID_JAVA_IDENTIFIER =
@@ -40,8 +43,8 @@ public final class Parsing {
     private static final Pattern MULTI_GENERIC_PATTERN = Pattern.compile(join(
             GENERIC_PATTERN).by(GENERIC_SPLITTER));
     private static final Pattern CLASS_PATTERN = Pattern.compile("("
-            + VALID_JAVA_CLASS + ")" + OPTSPACE + "<" + OPTSPACE + "("
-            + MULTI_GENERIC_PATTERN + ")" + OPTSPACE + ">");
+            + VALID_JAVA_CLASS + ")" + OPTSPACE + "(?!<" + OPTSPACE + "("
+            + MULTI_GENERIC_PATTERN + ")" + OPTSPACE + ">)?");
 
     public static Stream<Generic> parseGeneric(String raw) {
         checkArgument(MULTI_GENERIC_PATTERN.matcher(raw).matches(),
@@ -71,7 +74,11 @@ public final class Parsing {
         checkArgument(m.matches(), "%s is not a valid class definition", raw);
         String name = m.group(1);
         String genericStr = m.group(2);
-        return ClassDefinition.create(name, parseGeneric(genericStr)::iterator);
+        return ClassDefinition.create(
+                name,
+                Optional.ofNullable(genericStr).map(Parsing::parseGeneric)
+                        .map(s -> (Iterable<Generic>) s::iterator)
+                        .orElseGet(ImmutableList::of));
     }
 
     private Parsing() {

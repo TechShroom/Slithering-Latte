@@ -8,6 +8,12 @@ import com.techshroom.slitheringlatte.python.annotations.InterfaceType;
 
 public interface QuickClass {
 
+    interface Builder<T extends QuickClass> {
+
+        T build();
+
+    }
+
     @AutoValue
     static abstract class Attribute implements QuickClass {
 
@@ -16,7 +22,8 @@ public interface QuickClass {
         }
 
         @AutoValue.Builder
-        public static abstract class Builder {
+        public static abstract class Builder implements
+                QuickClass.Builder<Attribute> {
 
             public abstract Builder packageName(String pkg);
 
@@ -34,6 +41,7 @@ public interface QuickClass {
 
             public abstract Builder valueType(String name);
 
+            @Override
             public abstract Attribute build();
 
         }
@@ -61,9 +69,21 @@ public interface QuickClass {
         }
 
         @AutoValue.Builder
-        public static abstract class Builder {
+        public static abstract class Builder implements
+                QuickClass.Builder<Method> {
 
             public abstract Builder packageName(String pkg);
+
+            public Builder pythonNameAndMethodName(String name) {
+                String mName = name;
+                while (mName.startsWith("_")) {
+                    mName = mName.substring(1);
+                }
+                while (mName.endsWith("_")) {
+                    mName = mName.substring(0, mName.length() - 1);
+                }
+                return originalPythonName(name).name(mName);
+            }
 
             public Builder originalPythonName(String name) {
                 return originalPythonName(Optional.ofNullable(name));
@@ -73,7 +93,7 @@ public interface QuickClass {
 
             public abstract Builder classDefinition(String def);
 
-            public abstract Builder methodName(String name);
+            public abstract Builder name(String name);
 
             public Builder addParameter(String parameter) {
                 parametersBuilder().add(parameter);
@@ -89,6 +109,7 @@ public interface QuickClass {
 
             public abstract Builder returnType(String type);
 
+            @Override
             public abstract Method build();
         }
 
@@ -100,7 +121,7 @@ public interface QuickClass {
             return InterfaceType.Value.METHOD;
         }
 
-        public abstract String getMethodName();
+        public abstract String getName();
 
         public abstract ImmutableList<String> getParameters();
 
@@ -115,7 +136,7 @@ public interface QuickClass {
         }
 
         @AutoValue.Builder
-        public static abstract class Builder {
+        public static abstract class Builder implements QuickClass.Builder<Mix> {
 
             public abstract Builder packageName(String pkg);
 
@@ -139,6 +160,7 @@ public interface QuickClass {
 
             abstract ImmutableList.Builder<String> superInterfacesBuilder();
 
+            @Override
             public abstract Mix build();
         }
 
