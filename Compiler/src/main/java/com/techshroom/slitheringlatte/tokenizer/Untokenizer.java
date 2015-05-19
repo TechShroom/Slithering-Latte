@@ -17,13 +17,14 @@ public final class Untokenizer {
         int row = start.getLine(), col = start.getPosition();
         if (row < this.prev_row
                 || (row == this.prev_row && col < this.prev_col)) {
-            throw new IllegalStateException(
-                    String.format("start ({}, {}) precedes previous end ({}, {})",
-                                  row, col, this.prev_row, this.prev_col));
+            throw new IllegalStateException(String.format(
+                    "start ({}, {}) precedes previous end ({}, {})", row, col,
+                    this.prev_row, this.prev_col));
         }
         int row_offset = row - this.prev_row;
-        if (row_offset != 0){
+        if (row_offset != 0) {
             this.tokens.add("\\\n");
-            this.prev_col = 0;}
+            this.prev_col = 0;
+        }
     }
 }

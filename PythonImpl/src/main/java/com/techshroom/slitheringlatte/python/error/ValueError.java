@@ -1,7 +1,9 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Raised when a built-in operation or function receives an argument that has the right type but an inappropriate value, and the situation is not described by a more precise exception such as {@link IndexError}.
+ * Raised when a built-in operation or function receives an argument that has
+ * the right type but an inappropriate value, and the situation is not described
+ * by a more precise exception such as {@link IndexError}.
  */
 public class ValueError extends Exception {
     private static final long serialVersionUID = 1L;

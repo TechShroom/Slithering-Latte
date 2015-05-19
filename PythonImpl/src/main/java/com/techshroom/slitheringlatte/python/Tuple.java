@@ -8,8 +8,7 @@ import java.util.stream.Collectors;
  * 
  * @author Kenzie Togami
  */
-public final class Tuple
-        extends AbstractList<Object> {
+public final class Tuple extends AbstractList<Object> {
     final Object[] contents;
 
     /**
@@ -51,8 +50,8 @@ public final class Tuple
             case 1:
                 return "(" + get(0) + ",)";
             default:
-                return stream().map(String::valueOf)
-                        .collect(Collectors.joining(", ", "(", ")"));
+                return stream().map(String::valueOf).collect(
+                        Collectors.joining(", ", "(", ")"));
         }
     }
 }

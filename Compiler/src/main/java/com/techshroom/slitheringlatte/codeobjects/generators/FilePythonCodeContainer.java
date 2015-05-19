@@ -10,8 +10,8 @@ import java.nio.file.Files;
 import com.techshroom.slitheringlatte.Options;
 import com.techshroom.slitheringlatte.codeobjects.SavableCodeContainer;
 
-final class FilePythonCodeContainer
-        extends StreamPythonCodeContainer implements SavableCodeContainer {
+final class FilePythonCodeContainer extends StreamPythonCodeContainer implements
+        SavableCodeContainer {
     private final File file;
     private boolean closed;
 

@@ -1,7 +1,9 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Raised when an operation or function is applied to an object of inappropriate type. The associated value is a string giving details about the type mismatch.
+ * Raised when an operation or function is applied to an object of inappropriate
+ * type. The associated value is a string giving details about the type
+ * mismatch.
  */
 public class TypeError extends Exception {
     private static final long serialVersionUID = 1L;

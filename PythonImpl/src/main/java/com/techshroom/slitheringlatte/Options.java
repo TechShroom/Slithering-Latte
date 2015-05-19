@@ -40,12 +40,14 @@ public enum Options {
 
     private void doParserSetup() {
         this.input =
-                this.parser.acceptsAll(ImmutableList.of("i", "input"),
-                                  "Input file (.py usually)").withRequiredArg()
+                this.parser
+                        .acceptsAll(ImmutableList.of("i", "input"),
+                                "Input file (.py usually)").withRequiredArg()
                         .defaultsTo(STREAM);
         this.output =
-                this.parser.acceptsAll(ImmutableList.of("o", "output"),
-                                  "Output file (.class usually)")
+                this.parser
+                        .acceptsAll(ImmutableList.of("o", "output"),
+                                "Output file (.class usually)")
                         .withRequiredArg().defaultsTo(STREAM);
         this.debug = this.parser.accepts("debug", "Turns on debug output");
     }

@@ -5,8 +5,7 @@ package com.techshroom.slitheringlatte.tokenizer;
  * 
  * @author Kenzie Togami
  */
-public class TokenException
-        extends Exception {
+public class TokenException extends Exception {
     private static final long serialVersionUID = 7141954172501034484L;
 
     /**

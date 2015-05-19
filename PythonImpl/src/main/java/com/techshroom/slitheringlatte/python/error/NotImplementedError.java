@@ -1,7 +1,9 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * This exception is derived from {@link RuntimeError}. In user defined base classes, abstract methods should raise this exception when they require derived classes to override the method.
+ * This exception is derived from {@link RuntimeError}. In user defined base
+ * classes, abstract methods should raise this exception when they require
+ * derived classes to override the method.
  */
 public class NotImplementedError extends RuntimeError {
     private static final long serialVersionUID = 1L;

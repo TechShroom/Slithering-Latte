@@ -1,8 +1,10 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Base class for warnings related to resource usage.<div class="versionadded"> 
- *  <p><span class="versionmodified">New in version 3.2.</span></p> 
+ * Base class for warnings related to resource usage.<div class="versionadded">
+ * <p>
+ * <span class="versionmodified">New in version 3.2.</span>
+ * </p>
  * </div>
  */
 public class ResourceWarning extends Warning {

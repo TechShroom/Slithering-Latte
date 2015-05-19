@@ -27,8 +27,7 @@ public class Main {
      * 
      * @author Kenzie Togami
      */
-    public static final class Module
-            extends AbstractModule {
+    public static final class Module extends AbstractModule {
         private String input = "", output = "";
 
         @Override

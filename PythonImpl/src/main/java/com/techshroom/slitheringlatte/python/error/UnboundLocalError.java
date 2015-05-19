@@ -1,7 +1,9 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Raised when a reference is made to a local variable in a function or method, but no value has been bound to that variable. This is a subclass of {@link NameError}.
+ * Raised when a reference is made to a local variable in a function or method,
+ * but no value has been bound to that variable. This is a subclass of
+ * {@link NameError}.
  */
 public class UnboundLocalError extends NameError {
     private static final long serialVersionUID = 1L;

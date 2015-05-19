@@ -153,11 +153,9 @@ public final class WriteExceptionTree {
                         .superclass(ClassName.get(package_, superc));
         subClass.addJavadoc(fetchJavaDoc(subc));
         subClass.addField(FieldSpec
-                .builder(TypeName.LONG,
-                         "serialVersionUID",
-                         Modifier.PRIVATE,
-                         Modifier.STATIC,
-                         Modifier.FINAL).initializer("1L").build());
+                .builder(TypeName.LONG, "serialVersionUID", Modifier.PRIVATE,
+                        Modifier.STATIC, Modifier.FINAL).initializer("1L")
+                .build());
         MethodSpec varargsConstructor =
                 MethodSpec.constructorBuilder()
                         .addJavadoc(constructor1jd, subc)
@@ -177,12 +175,15 @@ public final class WriteExceptionTree {
                         .addModifiers(Modifier.PUBLIC)
                         .returns(subClassName)
                         .addParameter(StackTraceElement[].class, "tb")
-                        .addCode(CodeBlock.builder()
-                                .addStatement("super.with_traceback(tb)")
-                                .addStatement("return this").build()).build();
+                        .addCode(
+                                CodeBlock
+                                        .builder()
+                                        .addStatement(
+                                                "super.with_traceback(tb)")
+                                        .addStatement("return this").build())
+                        .build();
         subClass.addMethods(ImmutableList.of(varargsConstructor,
-                                             messageConstructor,
-                                             withTraceback));
+                messageConstructor, withTraceback));
         JavaFile file =
                 JavaFile.builder(package_, subClass.build()).indent("    ")
                         .skipJavaLangImports(true).build();
@@ -205,17 +206,18 @@ public final class WriteExceptionTree {
         // find the proper exception tag, which sits in front of the actual data
         // then pull the next tag
         return performPatching(doc.getElementById(subc).nextElementSibling(),
-                               subc) + "\n";
+                subc) + "\n";
     }
 
     private static String performPatching(Element element, String name) {
         // patches up the python docs to be usable here
 
         // links that otherwise blow up
-        element.select("a.reference.internal[href^=#]").forEach(e -> {
-            e.replaceWith(new TextNode("{@link " + e.attr("title") + "}",
-                    BASE_URL));
-        });
+        element.select("a.reference.internal[href^=#]").forEach(
+                e -> {
+                    e.replaceWith(new TextNode("{@link " + e.attr("title")
+                            + "}", BASE_URL));
+                });
         // de-relativeize
         element.getAllElements().stream()
                 .filter(e -> !e.attr("href").equals("")).forEach(e -> {

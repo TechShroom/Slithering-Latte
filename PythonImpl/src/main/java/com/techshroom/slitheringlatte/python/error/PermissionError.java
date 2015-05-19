@@ -1,7 +1,11 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Raised when trying to run an operation without the adequate access rights - for example filesystem permissions. Corresponds to <tt class="xref c c-data docutils literal"><span class="pre">errno</span></tt> <tt class="docutils literal"><span class="pre">EACCES</span></tt> and <tt class="docutils literal"><span class="pre">EPERM</span></tt>.
+ * Raised when trying to run an operation without the adequate access rights -
+ * for example filesystem permissions. Corresponds to
+ * <tt class="xref c c-data docutils literal"><span class="pre">errno</span></tt>
+ * <tt class="docutils literal"><span class="pre">EACCES</span></tt> and
+ * <tt class="docutils literal"><span class="pre">EPERM</span></tt>.
  */
 public class PermissionError extends OSError {
     private static final long serialVersionUID = 1L;

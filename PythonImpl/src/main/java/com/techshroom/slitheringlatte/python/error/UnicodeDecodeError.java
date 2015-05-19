@@ -1,7 +1,8 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Raised when a Unicode-related error occurs during decoding. It is a subclass of {@link UnicodeError}.
+ * Raised when a Unicode-related error occurs during decoding. It is a subclass
+ * of {@link UnicodeError}.
  */
 public class UnicodeDecodeError extends UnicodeError {
     private static final long serialVersionUID = 1L;

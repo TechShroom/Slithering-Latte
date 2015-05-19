@@ -1,7 +1,9 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Raised when an error is detected that doesn’t fall in any of the other categories. The associated value is a string indicating what precisely went wrong.
+ * Raised when an error is detected that doesn’t fall in any of the other
+ * categories. The associated value is a string indicating what precisely went
+ * wrong.
  */
 public class RuntimeError extends Exception {
     private static final long serialVersionUID = 1L;

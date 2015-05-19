@@ -24,7 +24,7 @@ public final class SingleArray {
     @SuppressWarnings("unchecked")
     public static <T> T[] of(T object) {
         checkNotNull(object,
-                     "You must specifiy the class if the object is null");
+                "You must specifiy the class if the object is null");
         return of(object, (Class<T>) object.getClass());
     }
 

@@ -1,7 +1,9 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Raised when the second argument of a division or modulo operation is zero. The associated value is a string indicating the type of the operands and the operation.
+ * Raised when the second argument of a division or modulo operation is zero.
+ * The associated value is a string indicating the type of the operands and the
+ * operation.
  */
 public class ZeroDivisionError extends ArithmeticError {
     private static final long serialVersionUID = 1L;

@@ -1,7 +1,10 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Raised when a system call is interrupted by an incoming signal. Corresponds to <tt class="xref c c-data docutils literal"><span class="pre">errno</span></tt> <tt class="docutils literal"><span class="pre">EINTR</span></tt>.
+ * Raised when a system call is interrupted by an incoming signal. Corresponds
+ * to
+ * <tt class="xref c c-data docutils literal"><span class="pre">errno</span></tt>
+ * <tt class="docutils literal"><span class="pre">EINTR</span></tt>.
  */
 public class InterruptedError extends OSError {
     private static final long serialVersionUID = 1L;

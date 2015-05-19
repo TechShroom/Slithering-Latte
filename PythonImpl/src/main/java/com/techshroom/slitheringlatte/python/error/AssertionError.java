@@ -1,7 +1,10 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Raised when an <a class="reference internal" href="https://docs.python.org/3/reference/simple_stmts.html#assert"><tt class="xref std std-keyword docutils literal"><span class="pre">assert</span></tt></a> statement fails.
+ * Raised when an <a class="reference internal"
+ * href="https://docs.python.org/3/reference/simple_stmts.html#assert">
+ * <tt class="xref std std-keyword docutils literal"><span class="pre">assert</span></tt>
+ * </a> statement fails.
  */
 public class AssertionError extends Exception {
     private static final long serialVersionUID = 1L;

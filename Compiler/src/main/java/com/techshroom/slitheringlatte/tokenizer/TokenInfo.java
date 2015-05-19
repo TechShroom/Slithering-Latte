@@ -86,8 +86,8 @@ public abstract class TokenInfo {
 
     @Override
     public String toString() {
-        return String
-                .format("TokenInfo(type=%s, string=\"%s\", start=%s, end=%s, line=%s)",
-                        type(), string(), start(), end(), line());
+        return String.format(
+                "TokenInfo(type=%s, string=\"%s\", start=%s, end=%s, line=%s)",
+                type(), string(), start(), end(), line());
     }
 }

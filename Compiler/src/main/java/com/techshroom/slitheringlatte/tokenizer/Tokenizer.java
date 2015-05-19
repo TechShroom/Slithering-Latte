@@ -26,8 +26,8 @@ public abstract class Tokenizer {
         }
 
         private static String[] convToString(Object... objs) {
-            return partialConvToString(objs).toArray(EmptyArray.STRING
-                    .getRegular().get());
+            return partialConvToString(objs).toArray(
+                    EmptyArray.STRING.getRegular().get());
         }
 
         private static List<String> partialConvToString(Object... objs) {
@@ -87,8 +87,9 @@ public abstract class Tokenizer {
     private static final PatternBuilder builder = PatternBuilder.create();
     private static final Pattern Whitespace = builder._compile("[ \\f\\t]*");
     private static final Pattern Comment = builder._compile("#[^\\r\\n]*");
-    private static final Pattern Ignore = builder.concat(Whitespace, builder
-            .any("\\\\\\r?\\n" + Whitespace.pattern()), builder.maybe(Comment));
+    private static final Pattern Ignore = builder.concat(Whitespace,
+            builder.any("\\\\\\r?\\n" + Whitespace.pattern()),
+            builder.maybe(Comment));
     private static final Pattern Name = builder._compile("\\w+");
     private static final Pattern Hexnumber = builder
             ._compile("0[xX][0-9a-fA-F]+");
@@ -97,85 +98,70 @@ public abstract class Tokenizer {
     private static final Pattern Decnumber = builder
             ._compile("(?:0+|[1-9][0-9]*)");
     private static final Pattern Intnumber = builder.group(Hexnumber,
-                                                           Binnumber,
-                                                           Octnumber,
-                                                           Decnumber);
+            Binnumber, Octnumber, Decnumber);
     private static final Pattern Exponent = builder._compile("[eE][-+]?[0-9]+");
-    private static final Pattern Pointfloat = builder.concat(builder
-            .group("[0-9]+\\.[0-9]*", "\\.[0-9]+"), builder.maybe(Exponent));
+    private static final Pattern Pointfloat = builder.concat(
+            builder.group("[0-9]+\\.[0-9]*", "\\.[0-9]+"),
+            builder.maybe(Exponent));
     private static final Pattern Expfloat = builder.concat("[0-9]+", Exponent);
     private static final Pattern Floatnumber = builder.group(Pointfloat,
-                                                             Expfloat);
-    private static final Pattern Imagnumber = builder
-            .group("[0-9]+[jJ]", builder.concat(Floatnumber, "[jJ]"));
+            Expfloat);
+    private static final Pattern Imagnumber = builder.group("[0-9]+[jJ]",
+            builder.concat(Floatnumber, "[jJ]"));
     private static final Pattern Number = builder.group(Imagnumber,
-                                                        Floatnumber,
-                                                        Intnumber);
+            Floatnumber, Intnumber);
     private static final String StringPrefix = "(?:[bB][rR]?|[rR][bB]?|[uU])?";
     /**
      * Tail end of single quote (') string.
      */
-    private static final Pattern Single = builder
-            .concat(StringPrefix, "[^'\\\\]*(?:\\\\.[^'\\\\]*)*'");
+    private static final Pattern Single = builder.concat(StringPrefix,
+            "[^'\\\\]*(?:\\\\.[^'\\\\]*)*'");
     /**
      * Tail end of double quote (") string.
      */
-    private static final Pattern Double = builder
-            .concat(StringPrefix, "[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"");
+    private static final Pattern Double = builder.concat(StringPrefix,
+            "[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"");
     /**
      * Tail end of triple single quote (''') string.
      */
-    private static final Pattern Single3 =
-            builder.concat(StringPrefix,
-                           "[^'\\\\]*(?:(?:\\\\.|'(?!''))[^'\\\\]*)*'''");
+    private static final Pattern Single3 = builder.concat(StringPrefix,
+            "[^'\\\\]*(?:(?:\\\\.|'(?!''))[^'\\\\]*)*'''");
     /**
      * Tail end of triple double quote (""") string.
      */
-    private static final Pattern Double3 = builder
-            .concat(StringPrefix,
-                    "[^\"\\\\]*(?:(?:\\\\.|\"(?!\"\"))[^\"\\\\]*)*\"\"\"");
-    private static final Pattern Triple = builder
-            .group(StringPrefix + "'''", StringPrefix + "\"\"\"");
+    private static final Pattern Double3 = builder.concat(StringPrefix,
+            "[^\"\\\\]*(?:(?:\\\\.|\"(?!\"\"))[^\"\\\\]*)*\"\"\"");
+    private static final Pattern Triple = builder.group(StringPrefix + "'''",
+            StringPrefix + "\"\"\"");
     /**
      * Single-line ' or " string.
      */
     private static final Pattern String_ = builder.group(StringPrefix
             + "'[^\\n'\\\\]*(?:\\\\.[^\\n'\\\\]*)*'", StringPrefix
             + "\"[^\\n\"\\\\]*(?:\\\\.[^\\n\"\\\\]*)*\"");
-    private static final Pattern Operator = builder.group("\\*\\*=?",
-                                                          ">>=?",
-                                                          "<<=?",
-                                                          "!=",
-                                                          "//=?",
-                                                          "->",
-                                                          "[+\\-*/%&@|^=<>]=?",
-                                                          "~");
+    private static final Pattern Operator = builder.group("\\*\\*=?", ">>=?",
+            "<<=?", "!=", "//=?", "->", "[+\\-*/%&@|^=<>]=?", "~");
     private static final String Bracket = "[\\[\\](){}]";
     private static final Pattern Special = builder.group("\\r?\\n",
-                                                         "\\.\\.\\.",
-                                                         "[:;.,@]");
-    private static final Pattern Funny = builder.group(Operator,
-                                                       Bracket,
-                                                       Special);
-    private static final Pattern PlainToken = builder.group(Number,
-                                                            Funny,
-                                                            String_,
-                                                            Name);
+            "\\.\\.\\.", "[:;.,@]");
+    private static final Pattern Funny = builder.group(Operator, Bracket,
+            Special);
+    private static final Pattern PlainToken = builder.group(Number, Funny,
+            String_, Name);
     private static final Pattern Token = builder.concat(Ignore, PlainToken);
     /**
      * First (or only) line of ' or " string.
      */
-    private static final Pattern ContStr = builder.group(builder
-            .concat(StringPrefix, "'[^\\n'\\\\]*(?:\\\\.[^\\n'\\\\]*)*"
-                    + builder.group("'", "\\\\\\r?\\n")), builder
-            .concat(StringPrefix,
-                    "\"[^\\n\"\\\\]*(?:\\\\.[^\\n\"\\\\]*)*",
-                    builder.group('"', "\\\\\\r?\\n")));
-    private static final Pattern PseudoExtras = builder
-            .group("\\\\\\r?\\n|\\Z", Comment, Triple);
-    private static final Pattern PseudoToken = builder
-            .concat(Whitespace,
-                    builder.group(PseudoExtras, Number, Funny, ContStr, Name));
+    private static final Pattern ContStr = builder.group(builder.concat(
+            StringPrefix,
+            "'[^\\n'\\\\]*(?:\\\\.[^\\n'\\\\]*)*"
+                    + builder.group("'", "\\\\\\r?\\n")), builder.concat(
+            StringPrefix, "\"[^\\n\"\\\\]*(?:\\\\.[^\\n\"\\\\]*)*",
+            builder.group('"', "\\\\\\r?\\n")));
+    private static final Pattern PseudoExtras = builder.group(
+            "\\\\\\r?\\n|\\Z", Comment, Triple);
+    private static final Pattern PseudoToken = builder.concat(Whitespace,
+            builder.group(PseudoExtras, Number, Funny, ContStr, Name));
     private static final ImmutableMap<String, Pattern> endpats;
     static {
         ImmutableMap.Builder<String, Pattern> builder = ImmutableMap.builder();

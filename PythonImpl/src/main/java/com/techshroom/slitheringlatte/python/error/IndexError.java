@@ -1,7 +1,9 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Raised when a sequence subscript is out of range. (Slice indices are silently truncated to fall in the allowed range; if an index is not an integer, {@link TypeError} is raised.)
+ * Raised when a sequence subscript is out of range. (Slice indices are silently
+ * truncated to fall in the allowed range; if an index is not an integer,
+ * {@link TypeError} is raised.)
  */
 public class IndexError extends LookupError {
     private static final long serialVersionUID = 1L;

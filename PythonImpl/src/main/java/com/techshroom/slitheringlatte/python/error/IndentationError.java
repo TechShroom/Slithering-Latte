@@ -1,7 +1,8 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Base class for syntax errors related to incorrect indentation. This is a subclass of {@link SyntaxError}.
+ * Base class for syntax errors related to incorrect indentation. This is a
+ * subclass of {@link SyntaxError}.
  */
 public class IndentationError extends SyntaxError {
     private static final long serialVersionUID = 1L;

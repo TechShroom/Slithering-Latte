@@ -51,17 +51,14 @@ public abstract class Language<Container extends CodeContainer> {
     /**
      * Represents the Python language.
      */
-    public static final Language<PythonCodeContainer> PYTHON =
-            newLanguage("Python",
-                        PythonCodeContainer.class,
-                        StringPythonCodeContainer::wrap);
+    public static final Language<PythonCodeContainer> PYTHON = newLanguage(
+            "Python", PythonCodeContainer.class,
+            StringPythonCodeContainer::wrap);
     /**
      * Represents the Java language.
      */
-    public static final Language<JavaCodeContainer> JAVA =
-            newLanguage("Java",
-                        JavaCodeContainer.class,
-                        StringJavaCodeContainer::wrap);
+    public static final Language<JavaCodeContainer> JAVA = newLanguage("Java",
+            JavaCodeContainer.class, StringJavaCodeContainer::wrap);
 
     /**
      * Returns the name of this Language.

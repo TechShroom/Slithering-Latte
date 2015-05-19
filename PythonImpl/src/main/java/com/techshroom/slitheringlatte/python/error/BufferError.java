@@ -1,7 +1,9 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Raised when a <a class="reference internal" href="https://docs.python.org/3/c-api/buffer.html#bufferobjects"><em>buffer</em></a> related operation cannot be performed.
+ * Raised when a <a class="reference internal"
+ * href="https://docs.python.org/3/c-api/buffer.html#bufferobjects">
+ * <em>buffer</em></a> related operation cannot be performed.
  */
 public class BufferError extends Exception {
     private static final long serialVersionUID = 1L;

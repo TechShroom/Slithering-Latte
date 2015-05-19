@@ -1,7 +1,13 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Raised when a directory operation (such as <a class="reference internal" href="https://docs.python.org/3/library/os.html#os.listdir" title="os.listdir"><tt class="xref py py-func docutils literal"><span class="pre">os.listdir()</span></tt></a>) is requested on something which is not a directory. Corresponds to <tt class="xref c c-data docutils literal"><span class="pre">errno</span></tt> <tt class="docutils literal"><span class="pre">ENOTDIR</span></tt>.
+ * Raised when a directory operation (such as <a class="reference internal"
+ * href="https://docs.python.org/3/library/os.html#os.listdir"
+ * title="os.listdir">
+ * <tt class="xref py py-func docutils literal"><span class="pre">os.listdir()</span></tt>
+ * </a>) is requested on something which is not a directory. Corresponds to
+ * <tt class="xref c c-data docutils literal"><span class="pre">errno</span></tt>
+ * <tt class="docutils literal"><span class="pre">ENOTDIR</span></tt>.
  */
 public class NotADirectoryError extends OSError {
     private static final long serialVersionUID = 1L;

@@ -1,7 +1,8 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * All built-in, non-system-exiting exceptions are derived from this class. All user-defined exceptions should also be derived from this class.
+ * All built-in, non-system-exiting exceptions are derived from this class. All
+ * user-defined exceptions should also be derived from this class.
  */
 public class Exception extends BaseException {
     private static final long serialVersionUID = 1L;

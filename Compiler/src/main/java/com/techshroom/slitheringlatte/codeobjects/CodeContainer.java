@@ -36,7 +36,7 @@ public interface CodeContainer extends Closeable {
      */
     default Optional<LoadableCodeContainer> asLoadable() {
         return isLoadable() ? Optional.of((LoadableCodeContainer) this)
-                           : Optional.empty();
+                : Optional.empty();
     }
 
     /**
@@ -56,7 +56,7 @@ public interface CodeContainer extends Closeable {
      */
     default Optional<SavableCodeContainer> asSavable() {
         return isSavable() ? Optional.of((SavableCodeContainer) this)
-                          : Optional.empty();
+                : Optional.empty();
     }
 
     /**

@@ -1,7 +1,8 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Raised when a mapping (dictionary) key is not found in the set of existing keys.
+ * Raised when a mapping (dictionary) key is not found in the set of existing
+ * keys.
  */
 public class KeyError extends LookupError {
     private static final long serialVersionUID = 1L;

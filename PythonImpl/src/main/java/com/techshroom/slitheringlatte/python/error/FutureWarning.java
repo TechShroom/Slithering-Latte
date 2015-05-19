@@ -1,7 +1,8 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Base class for warnings about constructs that will change semantically in the future.
+ * Base class for warnings about constructs that will change semantically in the
+ * future.
  */
 public class FutureWarning extends Warning {
     private static final long serialVersionUID = 1L;

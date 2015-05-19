@@ -34,7 +34,8 @@ class StreamPythonCodeContainer implements PythonCodeContainer,
             this.dataAsColl = ImmutableList.of(this.data);
             return false;
         }
-        this.dataAsColl = ImmutableList.copyOf(GenerateArray.ofLinesInString(this.data));
+        this.dataAsColl =
+                ImmutableList.copyOf(GenerateArray.ofLinesInString(this.data));
         return true;
     }
 

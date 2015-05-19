@@ -1,7 +1,12 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Raised when a <a class="reference internal" href="https://docs.python.org/3/glossary.html#term-generator"><em class="xref std std-term">generator</em></a>‘s <tt class="xref py py-meth docutils literal"><span class="pre">close()</span></tt> method is called. It directly inherits from {@link BaseException} instead of {@link Exception} since it is technically not an error.
+ * Raised when a <a class="reference internal"
+ * href="https://docs.python.org/3/glossary.html#term-generator">
+ * <em class="xref std std-term">generator</em></a>‘s
+ * <tt class="xref py py-meth docutils literal"><span class="pre">close()</span></tt>
+ * method is called. It directly inherits from {@link BaseException} instead of
+ * {@link Exception} since it is technically not an error.
  */
 public class GeneratorExit extends BaseException {
     private static final long serialVersionUID = 1L;

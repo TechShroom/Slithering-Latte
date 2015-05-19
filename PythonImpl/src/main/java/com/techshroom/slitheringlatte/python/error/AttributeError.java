@@ -1,7 +1,11 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Raised when an attribute reference (see <a class="reference internal" href="https://docs.python.org/3/reference/expressions.html#attribute-references"><em>Attribute references</em></a>) or assignment fails. (When an object does not support attribute references or attribute assignments at all, {@link TypeError} is raised.)
+ * Raised when an attribute reference (see <a class="reference internal" href=
+ * "https://docs.python.org/3/reference/expressions.html#attribute-references">
+ * <em>Attribute references</em></a>) or assignment fails. (When an object does
+ * not support attribute references or attribute assignments at all,
+ * {@link TypeError} is raised.)
  */
 public class AttributeError extends Exception {
     private static final long serialVersionUID = 1L;

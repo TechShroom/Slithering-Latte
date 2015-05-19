@@ -51,8 +51,8 @@ final class WriteInterfaces {
 
     private static final Path RESOURCES = src.main.resources.path;
     private static final Path CODE = src.main.java.path;
-    private static final Path INTERFACE_SRC = RESOURCES.resolve(Paths
-            .get("config", "interfaces.txt"));
+    private static final Path INTERFACE_SRC = RESOURCES.resolve(Paths.get(
+            "config", "interfaces.txt"));
     private static final Splitter SPACE = Splitter.on(' ');
     private static final Splitter PIPE = Splitter.on('|');
 
@@ -100,7 +100,7 @@ final class WriteInterfaces {
                     current += uncollapsed.get(i);
                 }
                 writeInterface(current.substring(0, current.length() - 1),
-                               startLine);
+                        startLine);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -158,9 +158,8 @@ final class WriteInterfaces {
                 TypeName[] generic =
                         StreamSupport
                                 .stream(PIPE.split(genericToParse)
-                                                .spliterator(),
-                                        false).map(this::convert)
-                                .toArray(TypeName[]::new);
+                                        .spliterator(), false)
+                                .map(this::convert).toArray(TypeName[]::new);
                 result = ParameterizedTypeName.get((ClassName) result, generic);
             }
             // 6. Return result
@@ -181,13 +180,11 @@ final class WriteInterfaces {
 
     private static final class ClassConverter implements
             ValueConverter<Class<?>> {
-        private final List<String> importedPackages = ImmutableList
-                .of("java.lang",
-                    "java.util",
-                    "com.techshroom.slitheringlatte.python",
-                    "com.techshroom.slitheringlatte.python.annotations",
-                    "com.techshroom.slitheringlatte.python.interfaces",
-                    PACKAGE);
+        private final List<String> importedPackages = ImmutableList.of(
+                "java.lang", "java.util",
+                "com.techshroom.slitheringlatte.python",
+                "com.techshroom.slitheringlatte.python.annotations",
+                "com.techshroom.slitheringlatte.python.interfaces", PACKAGE);
         private final Multiset<String> trySet = HashMultiset.create();
         private final Map<String, Class<?>> classes = new HashMap<>();
 
@@ -292,10 +289,8 @@ final class WriteInterfaces {
             this.spec =
                     AnnotationSpec
                             .builder(InterfaceType.class)
-                            .addMember("value",
-                                       "$T.$L",
-                                       Value.class,
-                                       linked.name()).build();
+                            .addMember("value", "$T.$L", Value.class,
+                                    linked.name()).build();
         }
     }
 
@@ -303,46 +298,46 @@ final class WriteInterfaces {
     private static final OptionParser PARSER = new OptionParser();
     private static final ArgumentAcceptingOptionSpec<IType> TYPE = PARSER
             .acceptsAll(ImmutableList.of("i", "interface-type"),
-                        "The type of the interface (ATTRIBUTE, MIX, METHOD)")
+                    "The type of the interface (ATTRIBUTE, MIX, METHOD)")
             .withRequiredArg().ofType(IType.class).required();
     private static final ArgumentAcceptingOptionSpec<String> JAVA_NAME = PARSER
             .acceptsAll(ImmutableList.of("n", "name"),
-                        "Name of the Java annotation.").withRequiredArg()
+                    "Name of the Java annotation.").withRequiredArg()
             .required();
     private static final ArgumentAcceptingOptionSpec<String> SUPERTYPES =
-            PARSER.acceptsAll(ImmutableList.of("s", "supertype"),
-                              "'Supertypes' of annotation, "
-                                      + "actually just applied meta-annotations.")
+            PARSER.acceptsAll(
+                    ImmutableList.of("s", "supertype"),
+                    "'Supertypes' of annotation, "
+                            + "actually just applied meta-annotations.")
                     .withRequiredArg().withValuesSeparatedBy(',')
                     .defaultsTo(new String[0]);
     private static final ArgumentAcceptingOptionSpec<String> PYTHON_NAME =
             PARSER.acceptsAll(ImmutableList.of("p", "python-name"),
-                              "Name of the Java annotation.").withRequiredArg();
+                    "Name of the Java annotation.").withRequiredArg();
     private static final ArgumentAcceptingOptionSpec<Boolean> WRITABLE = PARSER
             .acceptsAll(ImmutableList.of("w", "writable"),
-                        "Boolean value for writing.").withOptionalArg()
+                    "Boolean value for writing.").withOptionalArg()
             .ofType(Boolean.class).defaultsTo(true);
     private static final ArgumentAcceptingOptionSpec<Boolean> OVERRIDES =
             PARSER.acceptsAll(ImmutableList.of("o", "overrides"),
-                              "Boolean value for overriding.")
-                    .withOptionalArg().ofType(Boolean.class).defaultsTo(true);
+                    "Boolean value for overriding.").withOptionalArg()
+                    .ofType(Boolean.class).defaultsTo(true);
     private static final ArgumentAcceptingOptionSpec<String> ATTR_METHOD_NAME =
             PARSER.acceptsAll(ImmutableList.of("a", "attribute-func-name"),
-                              "Name for the getter/setter function")
+                    "Name for the getter/setter function")
                     .requiredUnless(PYTHON_NAME, SUPERTYPES).withRequiredArg();
     private static final ArgumentAcceptingOptionSpec<TypeName> ATTR_TYPE =
             PARSER.acceptsAll(ImmutableList.of("t", "attribute-type"),
-                              "The type of the attribute")
-                    .requiredUnless(SUPERTYPES).withRequiredArg()
+                    "The type of the attribute").requiredUnless(SUPERTYPES)
+                    .withRequiredArg()
                     .withValuesConvertedBy(TYPENAME_CONVERTER);
     private static final ArgumentAcceptingOptionSpec<String> PARAMETERS =
             PARSER.acceptsAll(ImmutableList.of("m", "parameters"),
-                              "The parameters for the method")
-                    .withRequiredArg().withValuesSeparatedBy(',')
-                    .defaultsTo(new String[] {});
+                    "The parameters for the method").withRequiredArg()
+                    .withValuesSeparatedBy(',').defaultsTo(new String[] {});
     private static final ArgumentAcceptingOptionSpec<String> CODEBLOCK = PARSER
             .acceptsAll(ImmutableList.of("c", "codeblock"),
-                        "The codeblock for the method").withRequiredArg();
+                    "The codeblock for the method").withRequiredArg();
     private static final Pattern PARAMETER_SPEC_REGEX = Pattern
             .compile("(.+):(.+?)(?:@(.+))?");
 
@@ -352,16 +347,15 @@ final class WriteInterfaces {
 
     private static Optional<String> regexGroupOpt(Matcher m, int group) {
         return m.groupCount() <= group ? Optional.ofNullable(m.group(group))
-                                      : Optional.empty();
+                : Optional.empty();
     }
 
     private static void writeInterface(String line, int lineNumber) {
         try {
             OptionSet lineOpts =
-                    PARSER.parse(StreamSupport.stream(SPACE.split(line)
-                                                              .spliterator(),
-                                                      false)
-                            .toArray(String[]::new));
+                    PARSER.parse(StreamSupport.stream(
+                            SPACE.split(line).spliterator(), false).toArray(
+                            String[]::new));
             String classDetails = JAVA_NAME.value(lineOpts);
             int genericIndex = classDetails.indexOf('<');
             String name = classDetails;
@@ -369,16 +363,16 @@ final class WriteInterfaces {
             if (genericIndex > 0) {
                 name = name.substring(0, genericIndex);
                 generics =
-                        PIPE.splitToList(classDetails
-                                .substring(genericIndex + 1,
-                                           classDetails.length() - 1));
+                        PIPE.splitToList(classDetails.substring(
+                                genericIndex + 1, classDetails.length() - 1));
             }
             IType type = TYPE.value(lineOpts);
             type.unusedOptions
                     .stream()
                     .filter(lineOpts::has)
-                    .forEach(opt -> System.err.println("Ignoring " + opt
-                            + " on line " + lineNumber));
+                    .forEach(
+                            opt -> System.err.println("Ignoring " + opt
+                                    + " on line " + lineNumber));
             TypeSpec.Builder iface =
                     TypeSpec.interfaceBuilder(name)
                             .addModifiers(Modifier.PUBLIC)
@@ -392,10 +386,10 @@ final class WriteInterfaces {
                     .collect(Collectors.toList()));
             if (type == IType.ATTRIBUTE || type == IType.METHOD) {
                 String methodName =
-                        argOpt(ATTR_METHOD_NAME, lineOpts)
-                                .orElseGet(() -> argOpt(PYTHON_NAME, lineOpts)
-                                        .map(s -> s.replace("__", ""))
-                                        .orElseThrow(() -> new IllegalStateException(
+                        argOpt(ATTR_METHOD_NAME, lineOpts).orElseGet(
+                                () -> argOpt(PYTHON_NAME, lineOpts).map(
+                                        s -> s.replace("__", "")).orElseThrow(
+                                        () -> new IllegalStateException(
                                                 "no name")));
                 Supplier<MethodSpec.Builder> methodBase =
                         () -> {
@@ -407,24 +401,30 @@ final class WriteInterfaces {
                             }
                             if (lineOpts.has(CODEBLOCK)) {
                                 b.addModifiers(Modifier.PUBLIC,
-                                               Modifier.DEFAULT)
-                                        .addCode(CodeBlock
-                                                .builder()
-                                                .addStatement(CODEBLOCK
-                                                        .value(lineOpts)
-                                                        .replace("$", "$$")
-                                                        .replace("%20", " "))
-                                                .build());
+                                        Modifier.DEFAULT)
+                                        .addCode(
+                                                CodeBlock
+                                                        .builder()
+                                                        .addStatement(
+                                                                CODEBLOCK
+                                                                        .value(lineOpts)
+                                                                        .replace(
+                                                                                "$",
+                                                                                "$$")
+                                                                        .replace(
+                                                                                "%20",
+                                                                                " "))
+                                                        .build());
                             } else {
                                 b.addModifiers(Modifier.PUBLIC,
-                                               Modifier.ABSTRACT);
+                                        Modifier.ABSTRACT);
                             }
                             return b;
                         };
                 TypeName returnType = ATTR_TYPE.value(lineOpts);
                 boolean isWritable =
                         lineOpts.has(WRITABLE) ? WRITABLE.value(lineOpts)
-                                              : false;
+                                : false;
                 if (isWritable) {
                     iface.addSuperinterface(WRITABLE_TYPE);
                     MethodSpec setter =
@@ -440,11 +440,13 @@ final class WriteInterfaces {
                 if (type == IType.METHOD) {
                     getter =
                             getter.toBuilder()
-                                    .addParameters(PARAMETERS
-                                            .values(lineOpts)
-                                            .stream()
-                                            .map(WriteInterfaces::generateParameterSpec)
-                                            .collect(Collectors.toList()))
+                                    .addParameters(
+                                            PARAMETERS
+                                                    .values(lineOpts)
+                                                    .stream()
+                                                    .map(WriteInterfaces::generateParameterSpec)
+                                                    .collect(
+                                                            Collectors.toList()))
                                     .build();
                 }
                 iface.addMethod(getter);
@@ -502,10 +504,9 @@ final class WriteInterfaces {
         // to alleviate parsing issues, we split generics by | (pipe)
         TypeName[] generics =
                 StreamSupport
-                        .stream(PIPE.split(superType.substring(idx + 1,
-                                                               superType
-                                                                       .length() - 1))
-                                        .spliterator(),
+                        .stream(PIPE.split(
+                                superType.substring(idx + 1,
+                                        superType.length() - 1)).spliterator(),
                                 false).map(x -> {
                             if (x.indexOf('.') < 0) {
                                 // generic from class
@@ -514,8 +515,8 @@ final class WriteInterfaces {
                             }
                             return generateSuperTypeName(x);
                         }).toArray(TypeName[]::new);
-        return ParameterizedTypeName.get((ClassName) TO_TYPENAME
-                .apply(baseClass), generics);
+        return ParameterizedTypeName.get(
+                (ClassName) TO_TYPENAME.apply(baseClass), generics);
     }
 
     private WriteInterfaces() {

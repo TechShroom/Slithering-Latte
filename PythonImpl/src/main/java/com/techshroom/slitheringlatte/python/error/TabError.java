@@ -1,7 +1,8 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * Raised when indentation contains an inconsistent use of tabs and spaces. This is a subclass of {@link IndentationError}.
+ * Raised when indentation contains an inconsistent use of tabs and spaces. This
+ * is a subclass of {@link IndentationError}.
  */
 public class TabError extends IndentationError {
     private static final long serialVersionUID = 1L;

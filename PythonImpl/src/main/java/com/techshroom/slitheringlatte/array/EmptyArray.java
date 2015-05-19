@@ -37,9 +37,9 @@ public final class EmptyArray<T> {
                                 Iterable<? extends Class<?>> keys) {
                             Collector<Class<?>, ?, Map<Class<?>, EmptyArray<?>>> toMap =
                                     Collectors.toMap(Function.identity(),
-                                                     this::load);
+                                            this::load);
                             return StreamSupport.stream(keys.spliterator(),
-                                                        false).collect(toMap);
+                                    false).collect(toMap);
                         }
                     });
     /**

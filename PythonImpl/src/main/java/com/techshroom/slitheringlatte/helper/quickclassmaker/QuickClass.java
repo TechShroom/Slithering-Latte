@@ -1,114 +1,164 @@
 package com.techshroom.slitheringlatte.helper.quickclassmaker;
 
+import java.util.Optional;
+
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.techshroom.slitheringlatte.python.annotations.InterfaceType;
 
 public interface QuickClass {
 
-	@AutoValue
-	static abstract class Mix implements QuickClass {
+    @AutoValue
+    static abstract class Attribute implements QuickClass {
 
-		public static final Builder builder() {
-			return new AutoValue_QuickClass_Mix.Builder();
-		}
+        public static final Builder builder() {
+            return new AutoValue_QuickClass_Attribute.Builder();
+        }
 
-		@AutoValue.Builder
-		public interface Builder {
-			Builder originalPythonName(String name);
+        @AutoValue.Builder
+        public static abstract class Builder {
 
-			Builder classDefinition(String def);
+            public abstract Builder packageName(String pkg);
 
-			ImmutableList.Builder<String> superInterfacesBuilder();
+            public Builder originalPythonName(String name) {
+                return originalPythonName(Optional.ofNullable(name));
+            }
 
-			Mix build();
-		}
+            abstract Builder originalPythonName(Optional<String> name);
 
-		Mix() {
-		}
+            public abstract Builder classDefinition(String def);
 
-		@Override
-		public InterfaceType.Value getType() {
-			return InterfaceType.Value.MIX;
-		}
+            public abstract Builder writable(boolean writable);
 
-		public abstract ImmutableList<String> getSuperInterfaces();
-	}
+            public abstract Builder name(String name);
 
-	@AutoValue
-	static abstract class Attribute implements QuickClass {
+            public abstract Builder valueType(String name);
 
-		public static final Builder builder() {
-			return new AutoValue_QuickClass_Attribute.Builder();
-		}
+            public abstract Attribute build();
 
-		@AutoValue.Builder
-		public interface Builder {
-			Builder originalPythonName(String name);
+        }
 
-			Builder classDefinition(String def);
+        Attribute() {
+        }
 
-			Builder name(String name);
+        @Override
+        public InterfaceType.Value getType() {
+            return InterfaceType.Value.ATTRIBUTE;
+        }
 
-			Builder valueType(String name);
+        public abstract boolean isWritable();
 
-			Attribute build();
-		}
+        public abstract String getName();
 
-		Attribute() {
-		}
+        public abstract String getValueType();
+    }
 
-		@Override
-		public InterfaceType.Value getType() {
-			return InterfaceType.Value.ATTRIBUTE;
-		}
+    @AutoValue
+    static abstract class Method implements QuickClass {
 
-		public abstract String getName();
+        public static final Builder builder() {
+            return new AutoValue_QuickClass_Method.Builder();
+        }
 
-		public abstract String getValueType();
-	}
+        @AutoValue.Builder
+        public static abstract class Builder {
 
-	@AutoValue
-	static abstract class Method implements QuickClass {
+            public abstract Builder packageName(String pkg);
 
-		public static final Builder builder() {
-			return new AutoValue_QuickClass_Method.Builder();
-		}
+            public Builder originalPythonName(String name) {
+                return originalPythonName(Optional.ofNullable(name));
+            }
 
-		@AutoValue.Builder
-		public interface Builder {
-			Builder originalPythonName(String name);
+            abstract Builder originalPythonName(Optional<String> name);
 
-			Builder classDefinition(String def);
+            public abstract Builder classDefinition(String def);
 
-			Builder methodName(String name);
+            public abstract Builder methodName(String name);
 
-			ImmutableList.Builder<String> parametersBuilder();
+            public Builder addParameter(String parameter) {
+                parametersBuilder().add(parameter);
+                return this;
+            }
 
-			Builder returnType(String type);
+            public Builder addParameters(String... parameter) {
+                parametersBuilder().add(parameter);
+                return this;
+            }
 
-			Method build();
-		}
+            abstract ImmutableList.Builder<String> parametersBuilder();
 
-		Method() {
-		}
+            public abstract Builder returnType(String type);
 
-		@Override
-		public InterfaceType.Value getType() {
-			return InterfaceType.Value.METHOD;
-		}
+            public abstract Method build();
+        }
 
-		public abstract String getMethodName();
+        Method() {
+        }
 
-		public abstract ImmutableList<String> getParameters();
+        @Override
+        public InterfaceType.Value getType() {
+            return InterfaceType.Value.METHOD;
+        }
 
-		public abstract String getReturnType();
-	}
+        public abstract String getMethodName();
 
-	public InterfaceType.Value getType();
+        public abstract ImmutableList<String> getParameters();
 
-	String getClassDefinition();
+        public abstract String getReturnType();
+    }
 
-	String getOriginalPythonName();
+    @AutoValue
+    static abstract class Mix implements QuickClass {
+
+        public static final Builder builder() {
+            return new AutoValue_QuickClass_Mix.Builder();
+        }
+
+        @AutoValue.Builder
+        public static abstract class Builder {
+
+            public abstract Builder packageName(String pkg);
+
+            public Builder originalPythonName(String name) {
+                return originalPythonName(Optional.ofNullable(name));
+            }
+
+            abstract Builder originalPythonName(Optional<String> name);
+
+            public abstract Builder classDefinition(String def);
+
+            public Builder addSuperInterface(String name) {
+                superInterfacesBuilder().add(name);
+                return this;
+            }
+
+            public Builder addSuperInterfaces(String... names) {
+                superInterfacesBuilder().add(names);
+                return this;
+            }
+
+            abstract ImmutableList.Builder<String> superInterfacesBuilder();
+
+            public abstract Mix build();
+        }
+
+        Mix() {
+        }
+
+        @Override
+        public InterfaceType.Value getType() {
+            return InterfaceType.Value.MIX;
+        }
+
+        public abstract ImmutableList<String> getSuperInterfaces();
+    }
+
+    String getPackageName();
+
+    InterfaceType.Value getType();
+
+    String getClassDefinition();
+
+    Optional<String> getOriginalPythonName();
 
 }

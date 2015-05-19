@@ -45,7 +45,7 @@ public class ArrayTest {
     @Test
     public void checkSingleArrayNonNullWithClass() throws Exception {
         assertArrayEquals(new Object[] { this },
-                          SingleArray.of(this, Object.class));
+                SingleArray.of(this, Object.class));
     }
 
     /**
@@ -57,7 +57,7 @@ public class ArrayTest {
     @Test
     public void checkSingleArrayNullWithClass() throws Exception {
         assertArrayEquals(new Object[] { null },
-                          SingleArray.of(null, Object.class));
+                SingleArray.of(null, Object.class));
     }
 
     /**

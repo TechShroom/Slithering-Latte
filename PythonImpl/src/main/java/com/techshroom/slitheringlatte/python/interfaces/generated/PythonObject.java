@@ -6,5 +6,8 @@ import com.techshroom.slitheringlatte.python.interfaces.ComparableMixin;
 
 @InterfaceType(InterfaceType.Value.MIX)
 @PythonName("object")
-public interface PythonObject<T> extends Deletable, Representable, ConvertableToBytes, ComparableMixin<T>, ConvertableToBool, RegularAttributeProvider, AttributeStorage, AttributeDestructor, AttributeSequenceProvider, AttributeSlots, AttributeDictionaryAttribute {
+public interface PythonObject<T> extends Deletable, Representable,
+        ConvertableToBytes, ComparableMixin<T>, ConvertableToBool,
+        RegularAttributeProvider, AttributeStorage, AttributeDestructor,
+        AttributeSequenceProvider, AttributeSlots, AttributeDictionaryAttribute {
 }

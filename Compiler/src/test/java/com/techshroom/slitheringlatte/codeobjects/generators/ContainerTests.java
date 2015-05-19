@@ -15,7 +15,7 @@ public class ContainerTests {
     public void loadsFile() throws Exception {
 
     }
-    
+
     /**
      * Check that StreamPythonCodeContainer works.
      * 
@@ -24,6 +24,6 @@ public class ContainerTests {
      */
     @Test
     public void loadsStream() throws Exception {
-        
+
     }
 }

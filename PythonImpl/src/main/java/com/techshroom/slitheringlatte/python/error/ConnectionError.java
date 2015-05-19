@@ -1,7 +1,11 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * A base class for connection-related issues.<p>Subclasses are {@link BrokenPipeError}, {@link ConnectionAbortedError}, {@link ConnectionRefusedError} and {@link ConnectionResetError}.</p>
+ * A base class for connection-related issues.
+ * <p>
+ * Subclasses are {@link BrokenPipeError}, {@link ConnectionAbortedError},
+ * {@link ConnectionRefusedError} and {@link ConnectionResetError}.
+ * </p>
  */
 public class ConnectionError extends OSError {
     private static final long serialVersionUID = 1L;

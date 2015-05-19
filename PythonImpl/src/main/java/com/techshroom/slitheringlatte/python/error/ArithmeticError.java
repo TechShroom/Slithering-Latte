@@ -1,7 +1,9 @@
 package com.techshroom.slitheringlatte.python.error;
 
 /**
- * The base class for those built-in exceptions that are raised for various arithmetic errors: {@link OverflowError}, {@link ZeroDivisionError}, {@link FloatingPointError}.
+ * The base class for those built-in exceptions that are raised for various
+ * arithmetic errors: {@link OverflowError}, {@link ZeroDivisionError},
+ * {@link FloatingPointError}.
  */
 public class ArithmeticError extends Exception {
     private static final long serialVersionUID = 1L;

@@ -7,7 +7,8 @@ import com.techshroom.slitheringlatte.python.interfaces.collections.abcs.PythonI
  * 
  * @author Kenzie Togami
  * @param <T>
- *            - The type of the reversed iterator's contents, probably the same as this type
+ *            - The type of the reversed iterator's contents, probably the same
+ *            as this type
  */
 public interface Reversible<T> {
 
