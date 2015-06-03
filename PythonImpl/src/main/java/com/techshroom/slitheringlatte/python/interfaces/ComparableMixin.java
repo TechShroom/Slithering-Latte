@@ -45,7 +45,7 @@ public interface ComparableMixin<T> extends Comparable<T>, ComparableGE<T>,
     }
 
     @Override
-    default boolean notEquals(T other) {
+    default boolean notEqualTo(T other) {
         return this.compareTo(other) != 0;
     }
 

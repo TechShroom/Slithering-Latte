@@ -1,11 +1,11 @@
 package com.techshroom.slitheringlatte.python.interfaces.generated;
 
-import com.techshroom.slitheringlatte.python.annotations.InterfaceType;
+import com.techshroom.slitheringlatte.python.annotations.MethodType;
 import com.techshroom.slitheringlatte.python.annotations.PythonName;
-import com.techshroom.slitheringlatte.python.interfaces.DunderAttribute;
+import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 
-@InterfaceType(InterfaceType.Value.METHOD)
-@PythonName("__ne__")
-public interface ComparableNE<T> extends DunderAttribute {
-    boolean notEquals(T other);
+public interface ComparableNE<T> extends DunderInterface {
+    @MethodType(MethodType.Value.METHOD)
+    @PythonName("__ne__")
+    boolean notEqualTo(T other);
 }

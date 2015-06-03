@@ -83,7 +83,7 @@ public interface BasicPythonObject extends PythonObject<PythonObject<?>> {
     }
 
     @Override
-    default Object setattr(String name, String value) {
+    default Object setattr(String name, Object value) {
         return dict().put(name, value);
     }
 

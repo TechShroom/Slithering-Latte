@@ -20,7 +20,6 @@ buildscript {
     }
 }
 ['APUnderscore', 'Compiler', 'PythonImpl'].each { project(it) {
-    ext.FTP_USER="ket1999"
     version = rootProject.version
 
     apply plugin: 'java'
@@ -86,7 +85,10 @@ buildscript {
 }}
 
 project('jcomplexnumber') {
+    version = '1.0'
+
     apply plugin: 'java'
+    apply plugin: 'eclipse'
     apply plugin: 'aversion-util'
 
     util {

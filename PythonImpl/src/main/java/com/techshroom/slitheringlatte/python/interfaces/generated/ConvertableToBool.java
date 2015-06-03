@@ -1,11 +1,11 @@
 package com.techshroom.slitheringlatte.python.interfaces.generated;
 
-import com.techshroom.slitheringlatte.python.annotations.InterfaceType;
+import com.techshroom.slitheringlatte.python.annotations.MethodType;
 import com.techshroom.slitheringlatte.python.annotations.PythonName;
-import com.techshroom.slitheringlatte.python.interfaces.DunderAttribute;
+import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 
-@InterfaceType(InterfaceType.Value.METHOD)
-@PythonName("__bool__")
-public interface ConvertableToBool extends DunderAttribute {
+public interface ConvertableToBool extends DunderInterface {
+    @MethodType(MethodType.Value.METHOD)
+    @PythonName("__bool__")
     boolean bool();
 }

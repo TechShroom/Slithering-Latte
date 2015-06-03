@@ -4,13 +4,18 @@ import java.util.Optional;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
-import com.techshroom.slitheringlatte.python.annotations.InterfaceType;
+import com.squareup.javapoet.CodeBlock;
+import com.techshroom.slitheringlatte.python.annotations.MethodType;
 
 public interface QuickClass {
 
-    interface Builder<T extends QuickClass> {
+    interface Builder<T extends QuickClass, B extends Builder<T, B>> {
 
         T build();
+
+        B classDefinition(String def);
+
+        String getClassDefinition();
 
     }
 
@@ -18,59 +23,13 @@ public interface QuickClass {
     static abstract class Attribute implements QuickClass {
 
         public static final Builder builder() {
-            return new AutoValue_QuickClass_Attribute.Builder();
+            return new AutoValue_QuickClass_Attribute.Builder().writable(false)
+                    .originalPythonName(Optional.empty());
         }
 
         @AutoValue.Builder
         public static abstract class Builder implements
-                QuickClass.Builder<Attribute> {
-
-            public abstract Builder packageName(String pkg);
-
-            public Builder originalPythonName(String name) {
-                return originalPythonName(Optional.ofNullable(name));
-            }
-
-            abstract Builder originalPythonName(Optional<String> name);
-
-            public abstract Builder classDefinition(String def);
-
-            public abstract Builder writable(boolean writable);
-
-            public abstract Builder name(String name);
-
-            public abstract Builder valueType(String name);
-
-            @Override
-            public abstract Attribute build();
-
-        }
-
-        Attribute() {
-        }
-
-        @Override
-        public InterfaceType.Value getType() {
-            return InterfaceType.Value.ATTRIBUTE;
-        }
-
-        public abstract boolean isWritable();
-
-        public abstract String getName();
-
-        public abstract String getValueType();
-    }
-
-    @AutoValue
-    static abstract class Method implements QuickClass {
-
-        public static final Builder builder() {
-            return new AutoValue_QuickClass_Method.Builder();
-        }
-
-        @AutoValue.Builder
-        public static abstract class Builder implements
-                QuickClass.Builder<Method> {
+                QuickClass.Builder<Attribute, Builder> {
 
             public abstract Builder packageName(String pkg);
 
@@ -91,6 +50,72 @@ public interface QuickClass {
 
             abstract Builder originalPythonName(Optional<String> name);
 
+            @Override
+            public abstract Builder classDefinition(String def);
+
+            public abstract Builder writable(boolean writable);
+
+            public abstract Builder name(String name);
+
+            public abstract Builder valueType(String name);
+
+            @Override
+            public abstract Attribute build();
+
+        }
+
+        Attribute() {
+        }
+
+        @Override
+        public MethodType.Value getType() {
+            return MethodType.Value.ATTRIBUTE;
+        }
+
+        public abstract boolean isWritable();
+
+        public abstract String getName();
+
+        public abstract String getValueType();
+
+        public Builder toBuilder() {
+            return new AutoValue_QuickClass_Attribute.Builder(this);
+        }
+
+    }
+
+    @AutoValue
+    static abstract class Method implements QuickClass {
+
+        public static final Builder builder() {
+            return new AutoValue_QuickClass_Method.Builder().defaultCode(
+                    Optional.empty()).originalPythonName(Optional.empty());
+        }
+
+        @AutoValue.Builder
+        public static abstract class Builder implements
+                QuickClass.Builder<Method, Builder> {
+
+            public abstract Builder packageName(String pkg);
+
+            public Builder pythonNameAndMethodName(String name) {
+                String mName = name;
+                while (mName.startsWith("_")) {
+                    mName = mName.substring(1);
+                }
+                while (mName.endsWith("_")) {
+                    mName = mName.substring(0, mName.length() - 1);
+                }
+                return originalPythonName(name).name(mName);
+            }
+
+            public Builder originalPythonName(String name) {
+                return originalPythonName(Optional.ofNullable(name));
+            }
+
+            abstract Builder originalPythonName(Optional<String> name);
+
+            @Override
             public abstract Builder classDefinition(String def);
 
             public abstract Builder name(String name);
@@ -109,16 +134,23 @@ public interface QuickClass {
 
             public abstract Builder returnType(String type);
 
+            public Builder defaultCode(CodeBlock code) {
+                return defaultCode(Optional.ofNullable(code));
+            }
+
+            abstract Builder defaultCode(Optional<CodeBlock> code);
+
             @Override
             public abstract Method build();
+
         }
 
         Method() {
         }
 
         @Override
-        public InterfaceType.Value getType() {
-            return InterfaceType.Value.METHOD;
+        public MethodType.Value getType() {
+            return MethodType.Value.METHOD;
         }
 
         public abstract String getName();
@@ -126,17 +158,26 @@ public interface QuickClass {
         public abstract ImmutableList<String> getParameters();
 
         public abstract String getReturnType();
+
+        public abstract Optional<CodeBlock> getDefaultCode();
+
+        public Builder toBuilder() {
+            return new AutoValue_QuickClass_Method.Builder(this);
+        }
+
     }
 
     @AutoValue
     static abstract class Mix implements QuickClass {
 
         public static final Builder builder() {
-            return new AutoValue_QuickClass_Mix.Builder();
+            return new AutoValue_QuickClass_Mix.Builder()
+                    .originalPythonName(Optional.empty());
         }
 
         @AutoValue.Builder
-        public static abstract class Builder implements QuickClass.Builder<Mix> {
+        public static abstract class Builder implements
+                QuickClass.Builder<Mix, Builder> {
 
             public abstract Builder packageName(String pkg);
 
@@ -146,6 +187,7 @@ public interface QuickClass {
 
             abstract Builder originalPythonName(Optional<String> name);
 
+            @Override
             public abstract Builder classDefinition(String def);
 
             public Builder addSuperInterface(String name) {
@@ -153,8 +195,13 @@ public interface QuickClass {
                 return this;
             }
 
-            public Builder addSuperInterfaces(String... names) {
-                superInterfacesBuilder().add(names);
+            public Builder addSuperInterfaces(String first, String second,
+                    String... rest) {
+                String[] nArray = new String[rest.length + 2];
+                nArray[0] = first;
+                nArray[1] = second;
+                System.arraycopy(rest, 0, nArray, 2, rest.length);
+                superInterfacesBuilder().add(nArray);
                 return this;
             }
 
@@ -162,22 +209,28 @@ public interface QuickClass {
 
             @Override
             public abstract Mix build();
+
         }
 
         Mix() {
         }
 
         @Override
-        public InterfaceType.Value getType() {
-            return InterfaceType.Value.MIX;
+        public MethodType.Value getType() {
+            return MethodType.Value.MIX;
         }
 
         public abstract ImmutableList<String> getSuperInterfaces();
+
+        public Builder toBuilder() {
+            return new AutoValue_QuickClass_Mix.Builder(this);
+        }
+
     }
 
     String getPackageName();
 
-    InterfaceType.Value getType();
+    MethodType.Value getType();
 
     String getClassDefinition();
 

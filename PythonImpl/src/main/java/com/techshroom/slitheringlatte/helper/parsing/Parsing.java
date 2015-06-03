@@ -20,31 +20,45 @@ public final class Parsing {
     private static JoinInProgress join(Object pattern) {
         checkNotNull(pattern);
         String patStr = pattern.toString();
-        return by -> "(?!" + patStr + checkNotNull(by).toString() + ")*"
+        return by -> "(?:" + patStr + checkNotNull(by).toString() + ")*"
                 + patStr;
     }
 
     public static final Pattern VALID_JAVA_IDENTIFIER =
             Pattern.compile("\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*");
-    public static final Pattern VALID_JAVA_PACKAGE = Pattern.compile("(?!"
+    public static final Pattern VALID_JAVA_PACKAGE = Pattern.compile("(?:"
             + VALID_JAVA_IDENTIFIER + "\\.)*");
     public static final Pattern VALID_JAVA_CLASS = Pattern
             .compile(VALID_JAVA_PACKAGE.pattern()
                     + VALID_JAVA_IDENTIFIER.pattern());
-    private static final String SPACE = "\\s+";
-    private static final String OPTSPACE = "\\s*";
+    public static final String SPACE = "\\s+";
+    public static final String OPTSPACE = "\\s*";
     private static final Pattern GENERIC_SPLITTER = Pattern.compile(","
             + OPTSPACE);
     private static final Pattern GENERIC_BITS = Pattern.compile(OPTSPACE + "&"
             + OPTSPACE);
     private static final Pattern GENERIC_PATTERN = Pattern.compile("("
-            + VALID_JAVA_IDENTIFIER + ")" + SPACE + "(extends|super)?" + SPACE
-            + "(" + join(VALID_JAVA_CLASS).by(GENERIC_BITS) + ")");
+            + VALID_JAVA_CLASS + "|\\?)(?:" + OPTSPACE + "|(?:" + SPACE
+            + "(extends|super)" + SPACE + "("
+            + join(VALID_JAVA_CLASS).by(GENERIC_BITS) + "))?)");
     private static final Pattern MULTI_GENERIC_PATTERN = Pattern.compile(join(
             GENERIC_PATTERN).by(GENERIC_SPLITTER));
     private static final Pattern CLASS_PATTERN = Pattern.compile("("
-            + VALID_JAVA_CLASS + ")" + OPTSPACE + "(?!<" + OPTSPACE + "("
+            + VALID_JAVA_CLASS + ")" + OPTSPACE + "(?:<" + OPTSPACE + "("
             + MULTI_GENERIC_PATTERN + ")" + OPTSPACE + ">)?");
+    private static final String classPatternWithNoMatchingGroup = "(?:"
+            + VALID_JAVA_CLASS + ")\\s*(?:<\\s*(?:(?:(?:"
+            + VALID_JAVA_IDENTIFIER
+            + "|\\?)(?:\\s*|(?:\\s+(?:extends|super)\\s+(?:(?:"
+            + VALID_JAVA_CLASS + "\\s*&\\s*)*" + VALID_JAVA_CLASS
+            + "))?),\\s*)*(?:" + VALID_JAVA_IDENTIFIER
+            + "|\\?)(?:\\s*|(?:\\s+(?:extends|super)\\s+(?:(?:"
+            + VALID_JAVA_CLASS + "\\s*&\\s*)*" + VALID_JAVA_CLASS
+            + "))?))\\s*>)?";
+
+    public static String getClassMatchingPattern() {
+        return classPatternWithNoMatchingGroup;
+    }
 
     public static Stream<Generic> parseGeneric(String raw) {
         checkArgument(MULTI_GENERIC_PATTERN.matcher(raw).matches(),

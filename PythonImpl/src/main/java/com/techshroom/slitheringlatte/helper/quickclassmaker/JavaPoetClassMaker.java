@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.lang.model.element.Modifier;
@@ -16,7 +18,6 @@ import javax.lang.model.element.Modifier;
 import autovalue.shaded.com.google.common.common.base.Throwables;
 import autovalue.shaded.com.google.common.common.collect.Lists;
 
-import com.google.common.base.Splitter;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -25,17 +26,23 @@ import com.google.common.primitives.Primitives;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+import com.squareup.javapoet.WildcardTypeName;
+import com.techshroom.slitheringlatte.helper.active.GenerateDunderInterfaces;
 import com.techshroom.slitheringlatte.helper.parsing.ClassDefinition;
 import com.techshroom.slitheringlatte.helper.parsing.Parsing;
 import com.techshroom.slitheringlatte.helper.parsing.Relation;
 import com.techshroom.slitheringlatte.helper.resolver.ClassResolver;
 import com.techshroom.slitheringlatte.helper.resolver.NameResolver;
-import com.techshroom.slitheringlatte.python.annotations.InterfaceType;
-import com.techshroom.slitheringlatte.python.annotations.InterfaceType.Value;
+import com.techshroom.slitheringlatte.python.annotations.MethodType;
+import com.techshroom.slitheringlatte.python.annotations.MethodType.Value;
 import com.techshroom.slitheringlatte.python.annotations.PythonName;
+import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
+import com.techshroom.slitheringlatte.python.interfaces.WritableAttribute;
 
 public interface JavaPoetClassMaker<QC extends QuickClass> {
 
@@ -56,9 +63,13 @@ public interface JavaPoetClassMaker<QC extends QuickClass> {
 
         // @formatter:off
         private final Map<String, Class<?>> primitiveMap = ImmutableMap
-                .<String, Class<?>> copyOf(Primitives.allPrimitiveTypes()
-                        .stream().collect(Collectors.toMap(Class::getName,
+                .<String, Class<?>> copyOf(Primitives
+                        .allPrimitiveTypes()
+                        .stream()
+                        .collect(
+                                Collectors.toMap(Class::getName,
                                         Function.identity())));
+
         // @formatter:on
 
         @Override
@@ -164,7 +175,7 @@ public interface JavaPoetClassMaker<QC extends QuickClass> {
                 for (String pkg : this.packages) {
                     try {
                         return Class.forName(pkg + "." + raw);
-                    } catch (ClassNotFoundException supressed) {
+                    } catch (Throwable supressed) {
                         exception.addSuppressed(supressed);
                     }
                 }
@@ -221,34 +232,100 @@ public interface JavaPoetClassMaker<QC extends QuickClass> {
 
         @Override
         public TypeName resolve(String raw) {
-            TypeName name = null;
-            try {
-                Class<?> resolved = this.classResolver.resolve(raw);
-                checkNotNull(resolved);
-                name = ClassName.get(resolved);
-            } catch (Exception fail) {
-                if (raw.indexOf('.') != -1) {
-                    // try for class
-                    name = ClassName.bestGuess(raw);
-                } else {
-                    try {
-                        checkState(
-                                Character.isAlphabetic(raw.charAt(0))
-                                        && raw.chars()
-                                                .skip(1)
-                                                .allMatch(
-                                                        Character::isLetterOrDigit),
-                                "invalid generic %s", raw);
-                    } catch (IllegalStateException ise) {
-                        ise.initCause(fail);
-                        throw ise;
+            ClassDefinition def = null;
+            if (raw.contains("[]")
+                    || (def = Parsing.parseClassDefinition(raw)).getGenerics()
+                            .isEmpty()) {
+                // process slightly more
+                try {
+                    Class<?> resolved = this.classResolver.resolve(raw);
+                    checkNotNull(resolved);
+                    return TypeName.get(resolved);
+                } catch (Exception fail) {
+                    // assume strings longer than 3 characters are just
+                    // non-existent classes
+                    if (raw.length() > 3) {
+                        // blasted hard coding
+                        raw = GenerateDunderInterfaces.PACKAGE + "." + raw;
                     }
-                    name = TypeVariableName.get(raw);
+                    if (raw.indexOf('.') != -1) {
+                        // try for class
+                        return ClassName.bestGuess(raw);
+                    } else {
+                        try {
+                            checkState(
+                                    Character.isAlphabetic(raw.charAt(0))
+                                            && raw.chars()
+                                                    .skip(1)
+                                                    .allMatch(
+                                                            Character::isLetterOrDigit),
+                                    "invalid generic %s", raw);
+                        } catch (IllegalStateException ise) {
+                            ise.initCause(fail);
+                            throw ise;
+                        }
+                        return TypeVariableName.get(raw);
+                    }
                 }
             }
-            return name;
+            Class<?> resolved = this.classResolver.resolve(def.getName());
+            checkState(resolved == null || !resolved.isArray(),
+                    "Cannot use arrays with generics");
+            ClassName justClass;
+            if (resolved == null) {
+                System.err.println("auto-resolving " + def.getName()
+                        + ", this will probably need a re-run");
+                justClass = ClassName.bestGuess(def.getName());
+            } else {
+                justClass = ClassName.get(resolved);
+            }
+            TypeName[] genericBits =
+                    def.getGenerics()
+                            .stream()
+                            .map(gen -> {
+                                String gName = gen.getName();
+                                TypeName[] typeNames =
+                                        gen.getRelatedNames().stream()
+                                                .map(ClassName::bestGuess)
+                                                .toArray(TypeName[]::new);
+                                if (gName.equals("?")) {
+                                    checkState(typeNames.length <= 1,
+                                            "Cannot have more than one bound on a wildcard");
+                                    if (gen.getRelation().isPresent()) {
+                                        Relation r = gen.getRelation().get();
+                                        checkState(
+                                                r == Relation.EXTENDS
+                                                        || r == Relation.SUPER,
+                                                "%s has an unknown relation %s",
+                                                gen, r);
+                                        if (r == Relation.EXTENDS) {
+                                            return WildcardTypeName
+                                                    .subtypeOf(typeNames[0]);
+                                        } else {
+                                            return WildcardTypeName
+                                                    .supertypeOf(typeNames[0]);
+                                        }
+                                    } else {
+                                        return WildcardTypeName
+                                                .get(Object.class);
+                                    }
+                                } else {
+                                    if (gen.getRelation().isPresent()) {
+                                        Relation r = gen.getRelation().get();
+                                        checkState(
+                                                r == Relation.EXTENDS,
+                                                "%s must have a relation of EXTENDS",
+                                                gen);
+                                        return TypeVariableName.get(
+                                                gen.getName(), typeNames);
+                                    } else {
+                                        return TypeVariableName.get(gen
+                                                .getName());
+                                    }
+                                }
+                            }).toArray(TypeName[]::new);
+            return ParameterizedTypeName.get(justClass, genericBits);
         }
-
     }
 
     enum Attribute implements JavaPoetClassMaker<QuickClass.Attribute> {
@@ -258,13 +335,29 @@ public interface JavaPoetClassMaker<QC extends QuickClass> {
         @Override
         public TypeSpec makeTypeSpec(QuickClass.Attribute qclass) {
             TypeSpec.Builder spec = parseClassDefinition(qclass);
-            MethodSpec base =
-                    MethodSpec.methodBuilder(qclass.getName())
+            MethodSpec.Builder base =
+                    MethodSpec
+                            .methodBuilder(qclass.getName())
                             .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                            .build();
-            spec.addMethod(base.toBuilder()
-                    .returns(TYPENAME_RESOLVER.resolve(qclass.getValueType()))
-                    .build());
+                            .addAnnotation(
+                                    AnnotationSpec
+                                            .builder(MethodType.class)
+                                            .addMember("value", "$T.$L",
+                                                    Value.class,
+                                                    qclass.getType().name())
+                                            .build());
+            qclass.getOriginalPythonName().ifPresent(
+                    pyname -> base.addAnnotation(AnnotationSpec
+                            .builder(PythonName.class)
+                            .addMember("value", "$S", pyname).build()));
+            TypeName type = TYPENAME_RESOLVER.resolve(qclass.getValueType());
+            MethodSpec tempSpec = base.build();
+            spec.addMethod(tempSpec.toBuilder().returns(type).build());
+            if (qclass.isWritable()) {
+                spec.addMethod(tempSpec.toBuilder()
+                        .addParameter(type, qclass.getName())
+                        .returns(Void.TYPE).build());
+            }
             return spec.build();
         }
 
@@ -274,7 +367,18 @@ public interface JavaPoetClassMaker<QC extends QuickClass> {
 
         INSTANCE;
 
-        private static final Splitter SPACE = Splitter.on(' ');
+        private static final Pattern ANNOTATION_PATTERN = Pattern.compile("@("
+                + Parsing.VALID_JAVA_CLASS + ")(?:\\((.+)\\))?");
+        /*
+         * first part looks like ANNOTATION_PATTERN but has only one general
+         * matching group
+         */
+        private static final Pattern PARAMETER_PATTERN = Pattern
+                .compile("(?:(@" + Parsing.VALID_JAVA_CLASS + "(?:\\(.+\\))?)"
+                        + Parsing.SPACE + "|" + Parsing.OPTSPACE + ")" + "("
+                        + Parsing.getClassMatchingPattern() + ")"
+                        + Parsing.SPACE + "(" + Parsing.VALID_JAVA_IDENTIFIER
+                        + ")");
 
         @Override
         public TypeSpec makeTypeSpec(QuickClass.Method qclass) {
@@ -282,22 +386,56 @@ public interface JavaPoetClassMaker<QC extends QuickClass> {
             MethodSpec.Builder method =
                     MethodSpec
                             .methodBuilder(qclass.getName())
-                            .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                            .addAnnotation(
+                                    AnnotationSpec
+                                            .builder(MethodType.class)
+                                            .addMember("value", "$T.$L",
+                                                    Value.class,
+                                                    qclass.getType().name())
+                                            .build())
+                            .addModifiers(
+                                    Modifier.PUBLIC,
+                                    qclass.getDefaultCode().isPresent() ? Modifier.DEFAULT
+                                            : Modifier.ABSTRACT)
                             .returns(
                                     TYPENAME_RESOLVER.resolve(qclass
                                             .getReturnType()));
+            qclass.getOriginalPythonName().ifPresent(
+                    pyname -> method.addAnnotation(AnnotationSpec
+                            .builder(PythonName.class)
+                            .addMember("value", "$S", pyname).build()));
             for (String param : qclass.getParameters()) {
-                List<String> splits = SPACE.splitToList(param);
-                checkState(splits.size() == 2, "bad parameter %s", param);
-                String type = splits.get(0);
-                String name = splits.get(1);
+                Matcher m = PARAMETER_PATTERN.matcher(param);
+                checkState(m.matches(), "%s is not a valid parameter", param);
+                String type = m.group(2);
+                String name = m.group(3);
+                Optional<AnnotationSpec> annotation =
+                        Optional.ofNullable(m.group(1)).map(
+                                this::parseAnnotation);
                 TypeName resolved = TYPENAME_RESOLVER.resolve(type);
-                method.addParameter(resolved, name);
+                ParameterSpec.Builder pBuilder =
+                        ParameterSpec.builder(resolved, name);
+                annotation.ifPresent(pBuilder::addAnnotation);
+                method.addParameter(pBuilder.build());
             }
+            qclass.getDefaultCode().ifPresent(method::addCode);
             spec.addMethod(method.build());
             return spec.build();
         }
 
+        private AnnotationSpec parseAnnotation(String annot) {
+            Matcher m = ANNOTATION_PATTERN.matcher(annot);
+            checkState(m.matches(), "bad annotation %s", annot);
+            String annotClass = m.group(1);
+            Optional<String> parameters = Optional.ofNullable(m.group(2));
+            AnnotationSpec.Builder builder =
+                    AnnotationSpec.builder((ClassName) TYPENAME_RESOLVER
+                            .resolve(annotClass));
+            parameters.ifPresent(x -> {
+                throw new UnsupportedOperationException(x + " params");
+            });
+            return builder.build();
+        }
     }
 
     enum Mix implements JavaPoetClassMaker<QuickClass.Mix> {
@@ -307,6 +445,11 @@ public interface JavaPoetClassMaker<QC extends QuickClass> {
         @Override
         public TypeSpec makeTypeSpec(QuickClass.Mix qclass) {
             TypeSpec.Builder spec = parseClassDefinition(qclass);
+            List<TypeName> supers =
+                    qclass.getSuperInterfaces().stream()
+                            .map(TYPENAME_RESOLVER::resolve)
+                            .collect(Collectors.toList());
+            spec.addSuperinterfaces(supers);
             return spec.build();
         }
 
@@ -333,26 +476,22 @@ public interface JavaPoetClassMaker<QC extends QuickClass> {
                                                         gen.getName(),
                                                         gen.getRelatedNames()
                                                                 .stream()
-                                                                .map(name -> ClassName
-                                                                        .bestGuess(name))
+                                                                .map(ClassName::bestGuess)
                                                                 .toArray(
                                                                         TypeName[]::new));
                                             } else {
                                                 return TypeVariableName.get(gen
                                                         .getName());
                                             }
-                                        }).collect(Collectors.toList()))
-                        .addAnnotation(
-                                AnnotationSpec
-                                        .builder(InterfaceType.class)
-                                        .addMember("value", "$T.$L",
-                                                Value.class,
-                                                qclass.getType().name())
-                                        .build());
-        qclass.getOriginalPythonName().ifPresent(
-                pyname -> spec.addAnnotation(AnnotationSpec
-                        .builder(PythonName.class)
-                        .addMember("value", "$S", pyname).build()));
+                                        }).collect(Collectors.toList()));
+        if (qclass.getType() != Value.MIX) {
+            if (qclass.getType() == Value.ATTRIBUTE
+                    && ((QuickClass.Attribute) qclass).isWritable()) {
+                spec.addSuperinterface(ClassName.get(WritableAttribute.class));
+            } else {
+                spec.addSuperinterface(ClassName.get(DunderInterface.class));
+            }
+        }
         return spec;
     }
 
