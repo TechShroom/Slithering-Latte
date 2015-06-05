@@ -9,8 +9,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 
+import com.techshroom.slitheringlatte.python.error.IndexError;
 import com.techshroom.slitheringlatte.python.error.ValueError;
 import com.techshroom.slitheringlatte.python.interfaces.Reversible;
+import com.techshroom.slitheringlatte.python.interfaces.generated.OperatorIAdd;
 
 /**
  * @author Kenzie Togami
@@ -21,7 +23,8 @@ import com.techshroom.slitheringlatte.python.interfaces.Reversible;
 public interface PythonSequence<T> extends PythonSized, Iterable<T>,
         PythonContainer<T>, Reversible<T> {
 
-    interface Mutable<T> extends PythonSequence<T> {
+    interface Mutable<T> extends PythonSequence<T>, OperatorIAdd {
+
         /**
          * Called to implement assignment to {@code self[key]}. Same note as for
          * {@link #getItem(int)}. This should only be implemented for mappings
@@ -70,6 +73,9 @@ public interface PythonSequence<T> extends PythonSized, Iterable<T>,
             insert(length(), item);
         }
 
+        /**
+         * Removes all items.
+         */
         default void clear() {
             while (length() > 0) {
                 pop();
@@ -90,6 +96,12 @@ public interface PythonSequence<T> extends PythonSized, Iterable<T>,
             }
         }
 
+        /**
+         * Extends this sequence by appending elements from the iterable.
+         * 
+         * @param values
+         *            - The elements to append
+         */
         default void extend(Iterable<T> values) {
             Iterator<T> it = values.iterator();
             while (it.hasNext()) {
@@ -102,6 +114,8 @@ public interface PythonSequence<T> extends PythonSized, Iterable<T>,
          * Removes and returns the item at the end of the sequence.
          * 
          * @return The popped item
+         * @throws IndexError
+         *             if list is empty
          */
         default T pop() {
             return pop(-1);
@@ -113,6 +127,8 @@ public interface PythonSequence<T> extends PythonSized, Iterable<T>,
          * @param index
          *            - The index of the item to pop
          * @return The popped item
+         * @throws IndexError
+         *             if list is empty or {@code index} is out of range
          */
         default T pop(int index) {
             T t = getItem(index);
@@ -120,8 +136,23 @@ public interface PythonSequence<T> extends PythonSized, Iterable<T>,
             return t;
         }
 
+        /**
+         * Removes the first occurrence of {@code value}.
+         * 
+         * @param value
+         *            - The value to remove
+         * @throws ValueError
+         *             if {@code value} is not present
+         */
         default void remove(T value) {
             delItem(index(value));
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        default Mutable<T> iAdd(Object other) {
+            this.extend((Iterable<T>) other);
+            return this;
         }
 
     }
