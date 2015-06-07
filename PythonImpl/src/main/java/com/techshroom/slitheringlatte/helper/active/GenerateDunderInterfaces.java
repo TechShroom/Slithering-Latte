@@ -19,6 +19,7 @@ import com.techshroom.slitheringlatte.helper.parsing.ClassDefinition;
 import com.techshroom.slitheringlatte.helper.parsing.Parsing;
 import com.techshroom.slitheringlatte.helper.quickclassmaker.JavaPoetClassMaker;
 import com.techshroom.slitheringlatte.helper.quickclassmaker.QuickClass;
+import com.techshroom.slitheringlatte.helper.quickclassmaker.QuickClass.Method;
 import com.techshroom.slitheringlatte.helper.quickclassmaker.QuickClass.Method.Builder;
 import com.techshroom.slitheringlatte.python.annotations.MethodType.Value;
 import com.techshroom.slitheringlatte.python.error.NotImplementedError;
@@ -138,7 +139,7 @@ public final class GenerateDunderInterfaces {
         String[][] prefixes = { { "", "" }, { "R", "r" }, { "I", "i" } };
         Stream<String[][]> binaryOps =
                 Stream.of("add", "sub", "mul", "truediv", "floordiv", "mod",
-                        "divmod", "pow", "lshift", "rshift", "and", "xor", "or")
+                        "divmod", "lshift", "rshift", "and", "xor", "or")
                         .flatMap(
                                 x -> Stream.of(prefixes).map(
                                         s -> new String[][] { s,
@@ -147,8 +148,22 @@ public final class GenerateDunderInterfaces {
                 Stream.of("neg", "pos", "add", "invert", "round")
                         .map(x -> new String[][] { prefixes[0],
                                 new String[] { x } });
-        Stream.concat(binaryOps, unaryOps).forEachOrdered(
-                GenerateDunderInterfaces::$doCreateOperatorInterface);
+        String[][][] pow =
+                { { { "R", "r" }, { "pow" } }, { { "I", "i" }, { "pow" } } };
+        Stream<String[][]> powOp = Stream.of(pow);
+        Stream.concat(Stream.concat(binaryOps, unaryOps), powOp)
+                .forEachOrdered(
+                        GenerateDunderInterfaces::$doCreateOperatorInterface);
+        makePowInterface();
+    }
+
+    private static void makePowInterface() {
+        Method.Builder base =
+                method().classDefinition("none")
+                        .pythonNameAndMethodName("__pow__")
+                        .addParameter("Object other").returnType("Object");
+        makeClass("OperatorPow", base,
+                base.build().toBuilder().addParameter("Object mod"));
     }
 
     private static void addNumberConversionInterfaces() {
@@ -312,8 +327,7 @@ public final class GenerateDunderInterfaces {
     private static void addFormatInterfaces() {
         make(method().classDefinition("Formattable")
                 .pythonNameAndMethodName("__format__")
-                .addParameter("String formatSpec")
-                .returnType("String"));
+                .addParameter("String formatSpec").returnType("String"));
     }
 
     private static void addContextManagerInterfaces() {
