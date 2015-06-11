@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableList;
 public final class Parsing {
 
     private static interface JoinInProgress {
+
         String by(Object by);
     }
 

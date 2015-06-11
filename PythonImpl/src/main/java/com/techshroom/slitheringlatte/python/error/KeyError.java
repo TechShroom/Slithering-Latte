@@ -5,6 +5,7 @@ package com.techshroom.slitheringlatte.python.error;
  * keys.
  */
 public class KeyError extends LookupError {
+
     private static final long serialVersionUID = 1L;
 
     /**

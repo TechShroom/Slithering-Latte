@@ -9,6 +9,7 @@ package com.techshroom.slitheringlatte.python.error;
  * <tt class="docutils literal"><span class="pre">ESHUTDOWN</span></tt>.
  */
 public class BrokenPipeError extends ConnectionError {
+
     private static final long serialVersionUID = 1L;
 
     /**

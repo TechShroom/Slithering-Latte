@@ -17,6 +17,7 @@ import com.techshroom.slitheringlatte.codeobjects.generators.StringPythonCodeCon
  */
 @AutoValue
 public abstract class Language<Container extends CodeContainer> {
+
     /**
      * Creates a new language, with the code container type set to the most
      * broad one.

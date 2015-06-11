@@ -5,6 +5,7 @@ package com.techshroom.slitheringlatte.python.error;
  * future.
  */
 public class FutureWarning extends Warning {
+
     private static final long serialVersionUID = 1L;
 
     /**

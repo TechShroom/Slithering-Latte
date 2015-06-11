@@ -6,6 +6,7 @@ package com.techshroom.slitheringlatte.python.error;
  * by a more precise exception such as {@link IndexError}.
  */
 public class ValueError extends Exception {
+
     private static final long serialVersionUID = 1L;
 
     /**

@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorInvert extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__invert__")
     default Object invert(Object other) {

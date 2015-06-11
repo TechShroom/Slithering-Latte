@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorIMod extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__imod__")
     default Object iMod(Object other) {

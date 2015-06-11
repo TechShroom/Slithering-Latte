@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorIPow extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__ipow__")
     default Object iPow(Object other) {

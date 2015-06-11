@@ -9,9 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface Metaclass extends DunderInterface, CallableType {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__prepare__")
-    default Map<String, Object> prepare(String name, List<String> bases, @KeywordArgs Map<String, Object> kwargs) {
+    default Map<String, Object> prepare(String name, List<String> bases,
+            @KeywordArgs Map<String, Object> kwargs) {
         return new java.util.HashMap<>();
     }
 

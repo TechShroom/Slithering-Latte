@@ -9,6 +9,7 @@ package com.techshroom.slitheringlatte.python.error;
  * handling in C, most floating point operations are not checked.
  */
 public class OverflowError extends ArithmeticError {
+
     private static final long serialVersionUID = 1L;
 
     /**

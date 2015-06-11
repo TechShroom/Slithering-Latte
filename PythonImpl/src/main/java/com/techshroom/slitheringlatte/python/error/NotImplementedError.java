@@ -6,6 +6,7 @@ package com.techshroom.slitheringlatte.python.error;
  * derived classes to override the method.
  */
 public class NotImplementedError extends RuntimeError {
+
     private static final long serialVersionUID = 1L;
 
     /**

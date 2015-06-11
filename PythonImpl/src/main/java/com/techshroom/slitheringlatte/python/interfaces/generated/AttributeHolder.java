@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface AttributeHolder extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__getattribute__")
     Object getattribute(String key);

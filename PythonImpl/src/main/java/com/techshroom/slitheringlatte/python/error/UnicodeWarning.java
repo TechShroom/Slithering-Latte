@@ -4,6 +4,7 @@ package com.techshroom.slitheringlatte.python.error;
  * Base class for warnings related to Unicode.
  */
 public class UnicodeWarning extends Warning {
+
     private static final long serialVersionUID = 1L;
 
     /**

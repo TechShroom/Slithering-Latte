@@ -4,6 +4,7 @@ package com.techshroom.slitheringlatte.python.error;
  * Base class for warnings about deprecated features.
  */
 public class DeprecationWarning extends Warning {
+
     private static final long serialVersionUID = 1L;
 
     /**

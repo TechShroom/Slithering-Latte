@@ -6,6 +6,7 @@ package com.techshroom.slitheringlatte.python.error;
  * wrong.
  */
 public class RuntimeError extends Exception {
+
     private static final long serialVersionUID = 1L;
 
     /**

@@ -240,6 +240,7 @@ public enum Token {
      * Encoding.
      */
     ENCODING;
+
     /**
      * Number of tokens.
      */

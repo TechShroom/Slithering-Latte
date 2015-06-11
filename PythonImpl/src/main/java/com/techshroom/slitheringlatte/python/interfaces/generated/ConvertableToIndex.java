@@ -6,6 +6,7 @@ import com.techshroom.slitheringlatte.python.error.NotImplementedError;
 import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 
 public interface ConvertableToIndex extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__index__")
     default int index() {

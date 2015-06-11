@@ -17,6 +17,7 @@ import com.techshroom.slitheringlatte.python.interfaces.generated.PythonObject;
  * @author Kenzie Togami
  */
 public interface BasicPythonObject extends PythonObject<PythonObject<?>> {
+
     @Override
     default boolean bool() {
         if (this instanceof PythonSized) {

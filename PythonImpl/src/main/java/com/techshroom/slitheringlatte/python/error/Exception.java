@@ -5,6 +5,7 @@ package com.techshroom.slitheringlatte.python.error;
  * user-defined exceptions should also be derived from this class.
  */
 public class Exception extends BaseException {
+
     private static final long serialVersionUID = 1L;
 
     /**

@@ -6,6 +6,7 @@ import com.techshroom.slitheringlatte.python.interfaces.WritableAttribute;
 import java.lang.Object;
 
 public interface BoundCallableType extends WritableAttribute, CallableType {
+
     @MethodType(MethodType.Value.ATTRIBUTE)
     @PythonName("__self__")
     Object self();

@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorOr extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__or__")
     default Object or(Object other) {

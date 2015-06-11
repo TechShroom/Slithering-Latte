@@ -8,6 +8,7 @@ import com.techshroom.slitheringlatte.codeobjects.JavaCodeContainer;
  * @author Kenzie Togami
  */
 public interface Compiler {
+
     /**
      * Generate some Java from the Python given.
      * 

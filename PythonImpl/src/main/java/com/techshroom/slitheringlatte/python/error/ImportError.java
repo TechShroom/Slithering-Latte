@@ -27,6 +27,7 @@ package com.techshroom.slitheringlatte.python.error;
  * </div>
  */
 public class ImportError extends Exception {
+
     private static final long serialVersionUID = 1L;
 
     /**

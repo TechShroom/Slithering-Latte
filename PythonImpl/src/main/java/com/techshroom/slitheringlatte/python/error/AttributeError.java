@@ -8,6 +8,7 @@ package com.techshroom.slitheringlatte.python.error;
  * {@link TypeError} is raised.)
  */
 public class AttributeError extends Exception {
+
     private static final long serialVersionUID = 1L;
 
     /**

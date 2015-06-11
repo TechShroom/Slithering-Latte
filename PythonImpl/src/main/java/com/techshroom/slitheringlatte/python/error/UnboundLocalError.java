@@ -6,6 +6,7 @@ package com.techshroom.slitheringlatte.python.error;
  * {@link NameError}.
  */
 public class UnboundLocalError extends NameError {
+
     private static final long serialVersionUID = 1L;
 
     /**

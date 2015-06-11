@@ -8,6 +8,7 @@ import java.lang.String;
 import java.util.Map;
 
 public interface CallableType extends WritableAttribute, AttributeHolder {
+
     @MethodType(MethodType.Value.ATTRIBUTE)
     @PythonName("__doc__")
     String doc();

@@ -11,6 +11,7 @@ package com.techshroom.slitheringlatte.python.error;
  * file.
  */
 public class FloatingPointError extends ArithmeticError {
+
     private static final long serialVersionUID = 1L;
 
     /**

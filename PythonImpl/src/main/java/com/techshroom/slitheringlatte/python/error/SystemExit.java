@@ -55,6 +55,7 @@ package com.techshroom.slitheringlatte.python.error;
  * </dl>
  */
 public class SystemExit extends BaseException {
+
     private static final long serialVersionUID = 1L;
 
     /**

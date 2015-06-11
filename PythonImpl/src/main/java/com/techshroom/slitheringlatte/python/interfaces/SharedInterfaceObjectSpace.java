@@ -17,6 +17,7 @@ import com.techshroom.slitheringlatte.python.error.AttributeError;
  * @author Kenzie Togami
  */
 public final class SharedInterfaceObjectSpace {
+
     private static final Table<WeakReference<Object>, WeakReference<String>, Object> sharedObjectSpace =
             HashBasedTable.create();
     private static final LoadingCache<Object, WeakReference<?>> referenceCache =

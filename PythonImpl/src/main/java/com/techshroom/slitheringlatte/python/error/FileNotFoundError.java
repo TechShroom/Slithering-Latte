@@ -7,6 +7,7 @@ package com.techshroom.slitheringlatte.python.error;
  * <tt class="docutils literal"><span class="pre">ENOENT</span></tt>.
  */
 public class FileNotFoundError extends OSError {
+
     private static final long serialVersionUID = 1L;
 
     /**

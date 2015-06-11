@@ -22,6 +22,7 @@ import com.techshroom.slitheringlatte.codeobjects.generators.PythonCodeFactory;
  * @author Kenzie Togami
  */
 public class CompilerImpl implements Compiler {
+
     private static final Optional<JavaCodeContainer[]> JCC_EMPTY_ARRAY =
             EmptyArray.of(JavaCodeContainer.class).getRegular();
     private final String inSrc, outTarget;

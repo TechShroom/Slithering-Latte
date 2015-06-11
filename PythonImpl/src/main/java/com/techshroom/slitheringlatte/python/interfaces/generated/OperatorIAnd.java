@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorIAnd extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__iand__")
     default Object iAnd(Object other) {

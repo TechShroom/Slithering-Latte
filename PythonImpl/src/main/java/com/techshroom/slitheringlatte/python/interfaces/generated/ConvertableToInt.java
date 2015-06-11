@@ -6,6 +6,7 @@ import com.techshroom.slitheringlatte.python.error.NotImplementedError;
 import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 
 public interface ConvertableToInt extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__int__")
     default int int$() {

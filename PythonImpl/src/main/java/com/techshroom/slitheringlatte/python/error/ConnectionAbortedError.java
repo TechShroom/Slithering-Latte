@@ -7,6 +7,7 @@ package com.techshroom.slitheringlatte.python.error;
  * <tt class="docutils literal"><span class="pre">ECONNABORTED</span></tt>.
  */
 public class ConnectionAbortedError extends ConnectionError {
+
     private static final long serialVersionUID = 1L;
 
     /**

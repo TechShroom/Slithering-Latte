@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorIXor extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__ixor__")
     default Object iXor(Object other) {

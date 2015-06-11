@@ -6,6 +6,7 @@ package com.techshroom.slitheringlatte.codeobjects;
  * @author Kenzie Togami
  */
 public interface SavableCodeContainer extends CodeContainer {
+
     /**
      * Save the code currently contained.
      * 

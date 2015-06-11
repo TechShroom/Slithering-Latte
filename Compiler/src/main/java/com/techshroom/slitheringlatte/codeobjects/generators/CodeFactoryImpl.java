@@ -14,6 +14,7 @@ import com.techshroom.slitheringlatte.codeobjects.Language;
  * @author Kenzie Togami
  */
 public class CodeFactoryImpl implements CodeFactory {
+
     @Override
     public <CType extends CodeContainer> CType wrap(String code,
             Language<CType> language) {

@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorISub extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__isub__")
     default Object iSub(Object other) {

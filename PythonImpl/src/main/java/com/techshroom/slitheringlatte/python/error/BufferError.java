@@ -6,6 +6,7 @@ package com.techshroom.slitheringlatte.python.error;
  * <em>buffer</em></a> related operation cannot be performed.
  */
 public class BufferError extends Exception {
+
     private static final long serialVersionUID = 1L;
 
     /**

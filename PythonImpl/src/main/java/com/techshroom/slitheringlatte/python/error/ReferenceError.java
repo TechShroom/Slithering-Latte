@@ -15,6 +15,7 @@ package com.techshroom.slitheringlatte.python.error;
  * </a> module.
  */
 public class ReferenceError extends Exception {
+
     private static final long serialVersionUID = 1L;
 
     /**

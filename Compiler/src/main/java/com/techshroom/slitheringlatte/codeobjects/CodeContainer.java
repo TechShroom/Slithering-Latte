@@ -12,6 +12,7 @@ import com.techshroom.slitheringlatte.array.EmptyArray;
  * @author Kenzie Togami
  */
 public interface CodeContainer extends Closeable {
+
     /**
      * Get the language this code is.
      * 

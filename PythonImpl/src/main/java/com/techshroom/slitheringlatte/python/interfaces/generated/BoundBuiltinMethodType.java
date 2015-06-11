@@ -5,7 +5,9 @@ import com.techshroom.slitheringlatte.python.annotations.PythonName;
 import com.techshroom.slitheringlatte.python.interfaces.WritableAttribute;
 import java.lang.Object;
 
-public interface BoundBuiltinMethodType extends WritableAttribute, BuiltinMethodType {
+public interface BoundBuiltinMethodType extends WritableAttribute,
+        BuiltinMethodType {
+
     @MethodType(MethodType.Value.ATTRIBUTE)
     @PythonName("__self__")
     Object self();

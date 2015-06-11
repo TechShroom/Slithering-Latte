@@ -10,6 +10,7 @@ package com.techshroom.slitheringlatte.python.error;
  * </a>.
  */
 public class LookupError extends Exception {
+
     private static final long serialVersionUID = 1L;
 
     /**

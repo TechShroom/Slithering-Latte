@@ -37,6 +37,7 @@ package com.techshroom.slitheringlatte.python.error;
  * </div>
  */
 public class StopIteration extends Exception {
+
     private static final long serialVersionUID = 1L;
 
     /**

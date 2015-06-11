@@ -10,6 +10,7 @@ import java.lang.reflect.Array;
  * @author Kenzie Togami
  */
 public final class SingleArray {
+
     private SingleArray() {
         throw new AssertionError();
     }

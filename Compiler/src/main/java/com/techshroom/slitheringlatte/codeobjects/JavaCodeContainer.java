@@ -6,6 +6,7 @@ package com.techshroom.slitheringlatte.codeobjects;
  * @author Kenzie Togami
  */
 public interface JavaCodeContainer extends CodeContainer {
+
     @Override
     default public Language<? extends JavaCodeContainer> language() {
         return Language.JAVA;

@@ -7,6 +7,7 @@ package com.techshroom.slitheringlatte.python.error;
  * <tt class="docutils literal"><span class="pre">EINTR</span></tt>.
  */
 public class InterruptedError extends OSError {
+
     private static final long serialVersionUID = 1L;
 
     /**

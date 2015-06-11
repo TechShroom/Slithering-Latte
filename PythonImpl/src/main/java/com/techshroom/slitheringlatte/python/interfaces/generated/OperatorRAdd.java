@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorRAdd extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__radd__")
     default Object rAdd(Object other) {

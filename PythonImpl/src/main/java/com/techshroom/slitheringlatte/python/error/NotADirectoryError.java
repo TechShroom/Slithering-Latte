@@ -10,6 +10,7 @@ package com.techshroom.slitheringlatte.python.error;
  * <tt class="docutils literal"><span class="pre">ENOTDIR</span></tt>.
  */
 public class NotADirectoryError extends OSError {
+
     private static final long serialVersionUID = 1L;
 
     /**

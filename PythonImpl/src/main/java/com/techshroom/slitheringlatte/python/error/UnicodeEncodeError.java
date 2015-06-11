@@ -5,6 +5,7 @@ package com.techshroom.slitheringlatte.python.error;
  * of {@link UnicodeError}.
  */
 public class UnicodeEncodeError extends UnicodeError {
+
     private static final long serialVersionUID = 1L;
 
     /**

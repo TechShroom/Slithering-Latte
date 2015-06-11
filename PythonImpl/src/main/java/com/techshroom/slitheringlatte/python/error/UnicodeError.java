@@ -74,6 +74,7 @@ package com.techshroom.slitheringlatte.python.error;
  * </dl>
  */
 public class UnicodeError extends ValueError {
+
     private static final long serialVersionUID = 1L;
 
     /**

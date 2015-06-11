@@ -5,6 +5,7 @@ package com.techshroom.slitheringlatte.python.error;
  * subclass of {@link SyntaxError}.
  */
 public class IndentationError extends SyntaxError {
+
     private static final long serialVersionUID = 1L;
 
     /**

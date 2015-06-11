@@ -5,6 +5,7 @@ package com.techshroom.slitheringlatte.python.error;
  * is a subclass of {@link IndentationError}.
  */
 public class TabError extends IndentationError {
+
     private static final long serialVersionUID = 1L;
 
     /**

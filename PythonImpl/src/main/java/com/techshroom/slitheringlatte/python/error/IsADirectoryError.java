@@ -9,6 +9,7 @@ package com.techshroom.slitheringlatte.python.error;
  * <tt class="docutils literal"><span class="pre">EISDIR</span></tt>.
  */
 public class IsADirectoryError extends OSError {
+
     private static final long serialVersionUID = 1L;
 
     /**

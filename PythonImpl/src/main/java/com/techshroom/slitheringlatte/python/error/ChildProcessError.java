@@ -6,6 +6,7 @@ package com.techshroom.slitheringlatte.python.error;
  * <tt class="docutils literal"><span class="pre">ECHILD</span></tt>.
  */
 public class ChildProcessError extends OSError {
+
     private static final long serialVersionUID = 1L;
 
     /**

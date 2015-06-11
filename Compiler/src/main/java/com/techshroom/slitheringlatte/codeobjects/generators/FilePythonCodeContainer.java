@@ -12,6 +12,7 @@ import com.techshroom.slitheringlatte.codeobjects.SavableCodeContainer;
 
 final class FilePythonCodeContainer extends StreamPythonCodeContainer implements
         SavableCodeContainer {
+
     private final File file;
     private boolean closed;
 

@@ -6,6 +6,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.String;
 
 public interface Formattable extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__format__")
     String format(String formatSpec);

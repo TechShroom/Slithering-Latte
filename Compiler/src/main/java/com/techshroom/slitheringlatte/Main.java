@@ -22,12 +22,14 @@ import com.techshroom.slitheringlatte.compiler.CompilerImpl;
  * @author Kenzie Togami
  */
 public class Main {
+
     /**
      * Module for binding.
      * 
      * @author Kenzie Togami
      */
     public static final class Module extends AbstractModule {
+
         private String input = "", output = "";
 
         @Override

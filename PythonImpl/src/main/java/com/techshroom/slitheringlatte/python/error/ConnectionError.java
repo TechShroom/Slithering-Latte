@@ -8,6 +8,7 @@ package com.techshroom.slitheringlatte.python.error;
  * </p>
  */
 public class ConnectionError extends OSError {
+
     private static final long serialVersionUID = 1L;
 
     /**

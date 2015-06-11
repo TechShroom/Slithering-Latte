@@ -1,7 +1,6 @@
 package com.techshroom.slitheringlatte.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.function.Consumer;
 
@@ -23,16 +22,10 @@ public class GeneratorTest {
                 yielder -> yielder.yield(true);
         Generator<Boolean> gen = Generator.newGenerator(func);
         assertEquals(true, gen.python$next());
-        try {
-            gen.python$next();
-            fail("StopIteration not thrown");
-        } catch (StopIteration expected) {
-            // TODO assert exception message?
-        }
     }
 
     @Test
-    public void singleValueGeneratorPropagate() {
+    public void singleValueGeneratorPropagatesException() {
         Consumer<Generator.YieldProvider<Boolean>> func = yielder -> {
             throw new AssertionError("propogated");
         };
@@ -46,7 +39,7 @@ public class GeneratorTest {
     }
 
     @Test
-    public void singleValueGeneratorNextThenPropagate() {
+    public void singleValueGeneratorProducesAndPropogates() {
         Consumer<Generator.YieldProvider<Boolean>> func = yielder -> {
             yielder.yield(true);
             throw new AssertionError("propogated");
@@ -74,11 +67,27 @@ public class GeneratorTest {
         Generator<Boolean> gen = Generator.newGenerator(func);
         try {
             // prepare
-            gen.next();
+            assertEquals(true, gen.python$next());
             // then close
             gen.close();
             fail("no exception not thrown");
         } catch (RuntimeError expected) {
+        }
+    }
+
+    @Test
+    public void generatorRepeatedlyThrowsStopIteration() throws Exception {
+        Consumer<Generator.YieldProvider<Boolean>> func = yielder -> {
+            yielder.yield(true);
+        };
+        Generator<Boolean> gen = Generator.newGenerator(func);
+        assertEquals(true, gen.python$next());
+        for (int i = 0; i < 5; i++) {
+            try {
+                gen.python$next();
+                fail("StopIteration not thrown");
+            } catch (StopIteration expected) {
+            }
         }
     }
 

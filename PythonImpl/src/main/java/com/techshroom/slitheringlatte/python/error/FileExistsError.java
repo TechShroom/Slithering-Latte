@@ -7,6 +7,7 @@ package com.techshroom.slitheringlatte.python.error;
  * <tt class="docutils literal"><span class="pre">EEXIST</span></tt>.
  */
 public class FileExistsError extends OSError {
+
     private static final long serialVersionUID = 1L;
 
     /**

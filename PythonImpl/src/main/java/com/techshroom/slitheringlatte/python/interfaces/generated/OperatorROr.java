@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorROr extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__ror__")
     default Object rOr(Object other) {

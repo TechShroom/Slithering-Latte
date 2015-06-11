@@ -6,6 +6,7 @@ package com.techshroom.slitheringlatte.python.error;
  * operation.
  */
 public class ZeroDivisionError extends ArithmeticError {
+
     private static final long serialVersionUID = 1L;
 
     /**

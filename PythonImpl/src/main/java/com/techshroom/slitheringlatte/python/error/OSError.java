@@ -80,6 +80,7 @@ package com.techshroom.slitheringlatte.python.error;
  * </div>
  */
 public class OSError extends Exception {
+
     private static final long serialVersionUID = 1L;
 
     /**

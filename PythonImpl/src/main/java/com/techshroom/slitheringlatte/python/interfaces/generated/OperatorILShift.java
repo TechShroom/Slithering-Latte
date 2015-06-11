@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorILShift extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__ilshift__")
     default Object iLShift(Object other) {

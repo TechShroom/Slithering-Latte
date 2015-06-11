@@ -7,6 +7,7 @@ import java.lang.Exception;
 import java.lang.Object;
 
 public interface ContextManager extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__enter__")
     Object enter();

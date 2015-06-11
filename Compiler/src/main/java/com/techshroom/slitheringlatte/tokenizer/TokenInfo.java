@@ -9,6 +9,7 @@ import com.google.auto.value.AutoValue;
  */
 @AutoValue
 public abstract class TokenInfo {
+
     /**
      * Create a new TokenInfo instance.
      * 

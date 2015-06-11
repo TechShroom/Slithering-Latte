@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorIAdd extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__iadd__")
     default Object iAdd(Object other) {

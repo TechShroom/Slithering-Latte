@@ -14,6 +14,7 @@ package com.techshroom.slitheringlatte.python.error;
  * </a> methods return an empty string when they hit EOF.)
  */
 public class EOFError extends Exception {
+
     private static final long serialVersionUID = 1L;
 
     /**

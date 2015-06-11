@@ -31,6 +31,7 @@ package com.techshroom.slitheringlatte.python.error;
  * </dl>
  */
 public class BlockingIOError extends OSError {
+
     private static final long serialVersionUID = 1L;
 
     /**

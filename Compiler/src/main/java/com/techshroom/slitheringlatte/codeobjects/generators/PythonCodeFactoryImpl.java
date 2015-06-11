@@ -16,6 +16,7 @@ import com.techshroom.slitheringlatte.codeobjects.PythonCodeContainer;
  * @author Kenzie Togami
  */
 public class PythonCodeFactoryImpl implements PythonCodeFactory {
+
     private static final Optional<PythonCodeContainer[]> PCC_EMPTY_ARRAY =
             EmptyArray.of(PythonCodeContainer.class).getRegular();
 

@@ -6,6 +6,7 @@ package com.techshroom.slitheringlatte.codeobjects;
  * @author Kenzie Togami
  */
 public interface LoadableCodeContainer extends CodeContainer {
+
     /**
      * Load the code into the container.
      * 

@@ -6,6 +6,7 @@ package com.techshroom.slitheringlatte.array;
  * @author Kenzie Togami
  */
 public final class GenerateArray {
+
     private GenerateArray() {
         throw new AssertionError();
     }

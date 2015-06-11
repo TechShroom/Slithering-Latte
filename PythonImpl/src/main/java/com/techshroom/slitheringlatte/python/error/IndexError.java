@@ -6,6 +6,7 @@ package com.techshroom.slitheringlatte.python.error;
  * {@link TypeError} is raised.)
  */
 public class IndexError extends LookupError {
+
     private static final long serialVersionUID = 1L;
 
     /**

@@ -15,6 +15,7 @@ import com.techshroom.slitheringlatte.codeobjects.PythonCodeContainer;
 @AutoValue
 public abstract class StringPythonCodeContainer implements PythonCodeContainer,
         VoidCloseable {
+
     /**
      * Wrap the given lines in a code container. Please use
      * {@link CodeFactory#wrap(Collection, com.techshroom.slitheringlatte.codeobjects.Language)}

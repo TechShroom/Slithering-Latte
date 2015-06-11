@@ -14,6 +14,7 @@ package com.techshroom.slitheringlatte.python.error;
  * </p>
  */
 public class SystemError extends Exception {
+
     private static final long serialVersionUID = 1L;
 
     /**

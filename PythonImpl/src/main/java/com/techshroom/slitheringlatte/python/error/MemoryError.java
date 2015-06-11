@@ -11,6 +11,7 @@ package com.techshroom.slitheringlatte.python.error;
  * can be printed, in case a run-away program was the cause.
  */
 public class MemoryError extends Exception {
+
     private static final long serialVersionUID = 1L;
 
     /**

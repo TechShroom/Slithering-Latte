@@ -11,6 +11,7 @@ package com.techshroom.slitheringlatte.python.error;
  * </a>.
  */
 public class BytesWarning extends Warning {
+
     private static final long serialVersionUID = 1L;
 
     /**

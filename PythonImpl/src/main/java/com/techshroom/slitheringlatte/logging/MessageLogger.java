@@ -1,6 +1,7 @@
 package com.techshroom.slitheringlatte.logging;
 
 interface MessageLogger {
+
     void log(Level level, Object message);
 
     void logException(Exception exception);

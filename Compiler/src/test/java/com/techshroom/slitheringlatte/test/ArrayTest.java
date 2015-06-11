@@ -13,6 +13,7 @@ import org.junit.Test;
  * @author Kenzie Togami
  */
 public class ArrayTest {
+
     /**
      * A call to {@link SingleArray#of(Object)} with a non-null object works.
      * 

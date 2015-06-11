@@ -25,6 +25,7 @@ import com.techshroom.slitheringlatte.python.annotations.MethodType.Value;
 import com.techshroom.slitheringlatte.python.error.NotImplementedError;
 
 public final class GenerateDunderInterfaces {
+
     public static final String PACKAGE =
             "com.techshroom.slitheringlatte.python.interfaces.generated";
 

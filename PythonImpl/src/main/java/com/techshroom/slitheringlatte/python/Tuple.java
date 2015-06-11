@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
  * @author Kenzie Togami
  */
 public final class Tuple extends AbstractList<Object> {
+
     final Object[] contents;
 
     /**

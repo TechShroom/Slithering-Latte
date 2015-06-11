@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorRXor extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__rxor__")
     default Object rXor(Object other) {

@@ -47,10 +47,15 @@ import com.techshroom.slitheringlatte.python.Tuple;
  * @author Kenzie Togami
  */
 public final class WriteExceptionTree {
+
     private static final OptionParser parser = new OptionParser();
     private static final OptionSpec<String> exceptionTree = parser
             .accepts("exception-tree", "Exception tree file.")
-            .withRequiredArg().defaultsTo(Options.STREAM);
+            .withRequiredArg()
+            .defaultsTo(
+                    HelperConstants.src.main.resources.path
+                            .resolve("exceptions.txt").toAbsolutePath()
+                            .toString());
 
     private WriteExceptionTree() {
     }

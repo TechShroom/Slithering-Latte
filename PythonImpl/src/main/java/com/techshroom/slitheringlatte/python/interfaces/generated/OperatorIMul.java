@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorIMul extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__imul__")
     default Object iMul(Object other) {

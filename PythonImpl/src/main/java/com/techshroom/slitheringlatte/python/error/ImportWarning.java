@@ -4,6 +4,7 @@ package com.techshroom.slitheringlatte.python.error;
  * Base class for warnings about probable mistakes in module imports.
  */
 public class ImportWarning extends Warning {
+
     private static final long serialVersionUID = 1L;
 
     /**

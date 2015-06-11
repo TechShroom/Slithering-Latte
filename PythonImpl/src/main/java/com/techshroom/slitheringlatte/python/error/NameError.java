@@ -6,6 +6,7 @@ package com.techshroom.slitheringlatte.python.error;
  * name that could not be found.
  */
 public class NameError extends Exception {
+
     private static final long serialVersionUID = 1L;
 
     /**

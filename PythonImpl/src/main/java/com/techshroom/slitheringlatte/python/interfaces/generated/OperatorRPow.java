@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorRPow extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__rpow__")
     default Object rPow(Object other) {

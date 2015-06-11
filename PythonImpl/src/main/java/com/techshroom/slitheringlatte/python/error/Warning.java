@@ -4,6 +4,7 @@ package com.techshroom.slitheringlatte.python.error;
  * Base class for warning categories.
  */
 public class Warning extends Exception {
+
     private static final long serialVersionUID = 1L;
 
     /**

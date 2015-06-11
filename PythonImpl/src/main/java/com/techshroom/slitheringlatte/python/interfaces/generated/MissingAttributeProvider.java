@@ -7,6 +7,7 @@ import java.lang.Object;
 import java.lang.String;
 
 public interface MissingAttributeProvider extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__getattr__")
     Object getattr(String key);

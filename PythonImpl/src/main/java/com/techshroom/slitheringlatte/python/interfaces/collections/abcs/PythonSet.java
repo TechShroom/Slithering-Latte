@@ -45,6 +45,7 @@ public interface PythonSet<T> extends PythonSized, Iterable<T>,
             Class<?> pythonSetClass) {
         return SharedInterfaceObjectSpace.get(pythonSetClass, "TypeToken",
                 () -> new TypeToken<S>(pythonSetClass) {
+
                     private static final long serialVersionUID = 1L;
                 });
     }

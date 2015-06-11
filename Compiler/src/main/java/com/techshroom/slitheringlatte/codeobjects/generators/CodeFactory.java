@@ -11,6 +11,7 @@ import com.techshroom.slitheringlatte.codeobjects.Language;
  * @author Kenzie Togami
  */
 public interface CodeFactory {
+
     /**
      * Creates a new code container wrapping the given values.
      * 

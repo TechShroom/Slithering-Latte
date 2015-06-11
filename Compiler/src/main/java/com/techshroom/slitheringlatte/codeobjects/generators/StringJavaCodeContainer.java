@@ -15,6 +15,7 @@ import com.techshroom.slitheringlatte.codeobjects.JavaCodeContainer;
 @AutoValue
 public abstract class StringJavaCodeContainer implements JavaCodeContainer,
         VoidCloseable {
+
     /**
      * Wrap the given lines in a code container. Please use
      * {@link CodeFactory#wrap(Collection, com.techshroom.slitheringlatte.codeobjects.Language)}

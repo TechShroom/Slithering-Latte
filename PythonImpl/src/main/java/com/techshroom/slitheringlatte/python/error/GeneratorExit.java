@@ -9,6 +9,7 @@ package com.techshroom.slitheringlatte.python.error;
  * {@link Exception} since it is technically not an error.
  */
 public class GeneratorExit extends BaseException {
+
     private static final long serialVersionUID = 1L;
 
     /**

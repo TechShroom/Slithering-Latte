@@ -6,6 +6,7 @@ package com.techshroom.slitheringlatte.python.error;
  * mismatch.
  */
 public class TypeError extends Exception {
+
     private static final long serialVersionUID = 1L;
 
     /**

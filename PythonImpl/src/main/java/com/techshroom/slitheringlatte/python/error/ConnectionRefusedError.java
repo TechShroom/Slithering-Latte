@@ -7,6 +7,7 @@ package com.techshroom.slitheringlatte.python.error;
  * <tt class="docutils literal"><span class="pre">ECONNREFUSED</span></tt>.
  */
 public class ConnectionRefusedError extends ConnectionError {
+
     private static final long serialVersionUID = 1L;
 
     /**

@@ -7,6 +7,7 @@ package com.techshroom.slitheringlatte.python.error;
  * </a> statement fails.
  */
 public class AssertionError extends Exception {
+
     private static final long serialVersionUID = 1L;
 
     /**

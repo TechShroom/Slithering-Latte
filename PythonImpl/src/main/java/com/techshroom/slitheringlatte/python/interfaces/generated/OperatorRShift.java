@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorRShift extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__rshift__")
     default Object rshift(Object other) {

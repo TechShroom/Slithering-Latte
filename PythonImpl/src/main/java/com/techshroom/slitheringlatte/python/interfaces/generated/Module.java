@@ -6,6 +6,7 @@ import com.techshroom.slitheringlatte.python.interfaces.WritableAttribute;
 import java.lang.String;
 
 public interface Module extends WritableAttribute, AttributeHolder {
+
     @MethodType(MethodType.Value.ATTRIBUTE)
     @PythonName("__doc__")
     String doc();

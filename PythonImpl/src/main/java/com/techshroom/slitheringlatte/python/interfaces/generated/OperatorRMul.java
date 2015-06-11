@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorRMul extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__rmul__")
     default Object rMul(Object other) {

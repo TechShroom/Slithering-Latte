@@ -10,6 +10,7 @@ import com.google.auto.value.AutoValue;
  */
 @AutoValue
 public abstract class LinePosition {
+
     /**
      * Creates a new line position.
      * 

@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorRAnd extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__rand__")
     default Object rAnd(Object other) {

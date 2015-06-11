@@ -13,6 +13,7 @@ import com.techshroom.slitheringlatte.array.EmptyArray;
  * @author Kenzie Togami
  */
 public abstract class Tokenizer {
+
     private static final String COOKIE_RE_SRC =
             "^[ \\t\\f]*#.*coding[:=][ \\t]*([-\\w.]+)";
     private static final String BLANK_RE_SRC = "^[ \\t\\f]*(?:[#\\r\\n]|$)";
@@ -20,6 +21,7 @@ public abstract class Tokenizer {
     private static final Pattern BLANK_RE = Pattern.compile(BLANK_RE_SRC);
 
     private static final class PatternBuilder {
+
         public static Pattern compile(String s) {
             return Pattern.compile(s, Pattern.UNICODE_CASE | Pattern.CANON_EQ
                     | Pattern.UNICODE_CHARACTER_CLASS);

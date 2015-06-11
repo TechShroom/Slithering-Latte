@@ -29,7 +29,7 @@ public final class GeneratorImpl<T> implements Generator<T>,
             .newCachedThreadPool();
 
     private final Consumer<Generator.YieldProvider<T>> genFunc;
-    private final AtomicBoolean running = new AtomicBoolean();
+    private final AtomicBoolean started = new AtomicBoolean();
     private final AtomicBoolean aboutToExit = new AtomicBoolean();
     private volatile CompletableFuture<T> genToRequester =
             new CompletableFuture<>();
@@ -63,10 +63,10 @@ public final class GeneratorImpl<T> implements Generator<T>,
      * @return {@code true} if the generator was just started
      */
     private boolean attemptStart() {
-        synchronized (this.running) {
-            if (!this.running.get() && !this.aboutToExit.get()) {
+        synchronized (this.started) {
+            if (!this.started.get() && !this.aboutToExit.get()) {
                 generatorRunner.submit(() -> this.genFunc.accept(this));
-                this.running.set(true);
+                this.started.set(true);
                 return true;
             }
         }
@@ -137,7 +137,7 @@ public final class GeneratorImpl<T> implements Generator<T>,
     public T send(Object o) {
         throwStopIfDone();
         boolean doComplete = true;
-        if (!this.running.get()) {
+        if (!this.started.get()) {
             if (o != None) {
                 throw new TypeError(
                         "can't send non-None value to a just-started generator");
@@ -162,7 +162,7 @@ public final class GeneratorImpl<T> implements Generator<T>,
     @Override
     public T throwException(RuntimeException e) {
         throwStopIfDone();
-        if (!this.running.get()) {
+        if (!this.started.get()) {
             this.aboutToExit.set(true);
             throw e;
         }
@@ -179,7 +179,7 @@ public final class GeneratorImpl<T> implements Generator<T>,
 
     @Override
     public void close() {
-        if (!this.running.get() || this.aboutToExit.get()) {
+        if (!this.started.get() || this.aboutToExit.get()) {
             return;
         }
         try {

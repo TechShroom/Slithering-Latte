@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorRSub extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__rsub__")
     default Object rSub(Object other) {

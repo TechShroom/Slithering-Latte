@@ -13,6 +13,7 @@ import com.techshroom.slitheringlatte.codeobjects.PythonCodeContainer;
 
 class StreamPythonCodeContainer implements PythonCodeContainer,
         LoadableCodeContainer {
+
     private final Reader source;
     private String data;
     private Collection<String> dataAsColl;

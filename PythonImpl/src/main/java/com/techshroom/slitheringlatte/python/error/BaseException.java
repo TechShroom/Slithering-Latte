@@ -16,6 +16,7 @@ import com.techshroom.slitheringlatte.python.interfaces.BasicPythonObject;
  */
 public class BaseException extends RuntimeException implements
         BasicPythonObject {
+
     private static final long serialVersionUID = 1131936802208300547L;
     private static final Pattern DOT = Pattern.compile(".", Pattern.LITERAL);
 

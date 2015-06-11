@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.error.NotImplementedError;
 import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 
 public interface ConvertableToComplex extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__complex__")
     default ComplexNumber complex() {

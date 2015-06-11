@@ -8,6 +8,7 @@ package com.techshroom.slitheringlatte.python.error;
  * </div>
  */
 public class ResourceWarning extends Warning {
+
     private static final long serialVersionUID = 1L;
 
     /**

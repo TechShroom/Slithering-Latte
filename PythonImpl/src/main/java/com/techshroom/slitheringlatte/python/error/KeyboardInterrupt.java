@@ -10,6 +10,7 @@ package com.techshroom.slitheringlatte.python.error;
  * exiting.
  */
 public class KeyboardInterrupt extends BaseException {
+
     private static final long serialVersionUID = 1L;
 
     /**

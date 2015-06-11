@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 public final class Untokenizer {
+
     private List<String> tokens = Lists.newArrayList();
     private int prev_row = 1;
     private int prev_col = 0;

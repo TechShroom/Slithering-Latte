@@ -7,6 +7,7 @@ import com.techshroom.slitheringlatte.python.interfaces.DunderInterface;
 import java.lang.Object;
 
 public interface OperatorRFloordiv extends DunderInterface {
+
     @MethodType(MethodType.Value.METHOD)
     @PythonName("__rfloordiv__")
     default Object rFloordiv(Object other) {
