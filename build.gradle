@@ -82,7 +82,23 @@ buildscript {
 
         testCompile group: 'junit', name: 'junit', version: '4.+'
     }
-}}
+
+    sourceSets {
+        // retains the default format
+        generated
+    }
+    sourceSets {
+        main {
+            compileClasspath += generated.output
+            runtimeClasspath += generated.output
+        }
+        test {
+            compileClasspath += generated.output
+            runtimeClasspath += generated.output
+        }
+    }
+}
+}
 
 project('jcomplexnumber') {
     version = '1.0'
