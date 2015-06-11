@@ -5,7 +5,6 @@ import static org.junit.Assert.fail;
 
 import java.util.function.Consumer;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.techshroom.slitheringlatte.python.error.GeneratorExit;
@@ -16,8 +15,6 @@ import com.techshroom.slitheringlatte.python.interfaces.Generator;
 /**
  * Ensures that the generator object system works correctly.
  */
-@Ignore
-// until not broken
 public class GeneratorTest {
 
     @Test
@@ -69,12 +66,16 @@ public class GeneratorTest {
         Consumer<Generator.YieldProvider<Boolean>> func = yielder -> {
             try {
                 yielder.yield(true);
+                yielder.yield(true);
             } catch (GeneratorExit ignored) {
                 yielder.yield(false);
             }
         };
         Generator<Boolean> gen = Generator.newGenerator(func);
         try {
+            // prepare
+            gen.next();
+            // then close
             gen.close();
             fail("no exception not thrown");
         } catch (RuntimeError expected) {
