@@ -6,7 +6,12 @@
 .project
 .metadata/
 .settings/
+.recommenders/
 bin/
+
+# (no) idea
+.idea
+*.iml
 
 # gradle
 .gradle/
@@ -15,6 +20,6 @@ build/
 # custom
 .build/
 *.log*
-/.apt_generated/
+.apt_generated
 
 *.factorypath
