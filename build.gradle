@@ -84,17 +84,11 @@ buildscript {
     }
 
     sourceSets {
-        // retains the default format
-        generated
-    }
-    sourceSets {
-        main {
-            compileClasspath += generated.output
-            runtimeClasspath += generated.output
+        main.java {
+            srcDir 'src/generated/java'
         }
-        test {
-            compileClasspath += generated.output
-            runtimeClasspath += generated.output
+        main.resources {
+            srcDir 'src/generated/resources'
         }
     }
 }
