@@ -2,13 +2,13 @@ package com.techshroom.slitheringlatte.helper;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
@@ -53,7 +53,7 @@ public final class WriteExceptionTree {
             .accepts("exception-tree", "Exception tree file.")
             .withRequiredArg()
             .defaultsTo(
-                    HelperConstants.src.main.resources.path
+                    HelperConstants.src.generated.resources.path
                             .resolve("exceptions.txt").toAbsolutePath()
                             .toString());
 
@@ -131,8 +131,8 @@ public final class WriteExceptionTree {
      *            - file to load
      * @return contents of target
      */
-    public static String loadFromFile(String target) {
-        try (Reader r = new FileReader(target)) {
+    public static String loadFromFile(Path target) {
+        try (Reader r = Files.newBufferedReader(target)) {
             return CharStreams.toString(r);
         } catch (IOException e) {
             throw new Error(e);
@@ -140,9 +140,11 @@ public final class WriteExceptionTree {
     }
 
     private static final String constructor1jd =
-            loadFromFile("src/main/resources/error/init1.txt");
+            loadFromFile(HelperConstants.src.generated.resources.path
+                    .resolve("error/init1.txt"));
     private static final String constructor2jd =
-            loadFromFile("src/main/resources/error/init2.txt");
+            loadFromFile(HelperConstants.src.generated.resources.path
+                    .resolve("error/init2.txt"));
 
     private static void writeClass(String subc, String superc) {
         if (subc.equals("BaseException")) {
@@ -193,7 +195,7 @@ public final class WriteExceptionTree {
                 JavaFile.builder(package_, subClass.build()).indent("    ")
                         .skipJavaLangImports(true).build();
         try {
-            file.writeTo(Paths.get("src/main/java"));
+            file.writeTo(HelperConstants.src.generated.java.path);
         } catch (IOException e) {
             Throwables.propagate(e);
         }

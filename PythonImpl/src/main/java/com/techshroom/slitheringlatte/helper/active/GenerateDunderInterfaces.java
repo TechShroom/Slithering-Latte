@@ -96,7 +96,7 @@ public final class GenerateDunderInterfaces {
                     JavaFile.builder(PACKAGE, typeSpec).indent("    ")
                             .skipJavaLangImports(false).build();
             try {
-                file.writeTo(HelperConstants.src.main.java.path);
+                file.writeTo(HelperConstants.src.generated.java.path);
             } catch (IOException e) {
                 e.printStackTrace();
             }

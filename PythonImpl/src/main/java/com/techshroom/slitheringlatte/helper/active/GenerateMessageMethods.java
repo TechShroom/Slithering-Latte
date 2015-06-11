@@ -34,7 +34,7 @@ public final class GenerateMessageMethods {
         try {
             JavaFile.builder(PACKAGE, spec.build()).indent("    ")
                     .skipJavaLangImports(true).build()
-                    .writeTo(HelperConstants.src.main.java.path);
+                    .writeTo(HelperConstants.src.generated.java.path);
         } catch (IOException e) {
             e.printStackTrace();
         }
